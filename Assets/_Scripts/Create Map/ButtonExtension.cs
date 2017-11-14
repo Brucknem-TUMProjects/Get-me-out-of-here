@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ButtonHoldPosition : MonoBehaviour {
+public class ButtonExtension : MonoBehaviour
+{
 
     int x;
     int y;
-	
+
     public void SetPosition(int x, int y)
     {
         this.x = x;
