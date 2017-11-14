@@ -22,6 +22,7 @@ public class CreateMap : MonoBehaviour
 
     private int[,] grid;
     private int[,] value;
+    private char[,] policy;
     private Dictionary<Vector2, GameObject> tiles;
     private bool setGoals = false;
     private bool setCosts = false;
@@ -33,12 +34,14 @@ public class CreateMap : MonoBehaviour
     private readonly float mapHeight = 555;
 
     private Vector2[] delta;
+    private char[] deltaNames;
 
     // Use this for initialization
     void Start()
     {
         tiles = new Dictionary<Vector2, GameObject>();
         grid = new int[(int)widthSlider.maxValue, (int)heightSlider.maxValue];
+        policy = new char[(int)widthSlider.maxValue, (int)heightSlider.maxValue];
         InitTable(ref grid, 1);
         goals = new List<Vector2>();
         widthSlider.onValueChanged.AddListener(delegate { AdjustMap(); });
@@ -54,6 +57,7 @@ public class CreateMap : MonoBehaviour
             new Vector2( 1, 0 ),
             new Vector2(-1, 0 )
         };
+        deltaNames = new char[] { '^', 'v', '>', '<' };
     }
 
     // Update is called once per frame
@@ -75,6 +79,7 @@ public class CreateMap : MonoBehaviour
             tile.Value.GetComponent<Image>().color = CostToColor(grid[(int)tile.Key.x, (int)tile.Key.y]);
             tile.Value.transform.GetChild(0).gameObject.SetActive(false);
             tile.Value.GetComponent<Button>().enabled = true;
+            tile.Value.transform.GetChild(0).GetComponent<InputField>().contentType = InputField.ContentType.IntegerNumber;
         }
 
         for (int x = 0; x < width; x++)
@@ -240,6 +245,7 @@ public class CreateMap : MonoBehaviour
                             if (value[x, y] > 0)
                             {
                                 value[x, y] = 0;
+                                policy[x, y] = '*';
                                 change = true;
                             }
                         }
@@ -262,6 +268,7 @@ public class CreateMap : MonoBehaviour
                                     {
                                         change = true;
                                         value[x, y] = v2;
+                                        policy[x, y] = deltaNames[a];
                                     }
                                 }
                             }
@@ -302,7 +309,8 @@ public class CreateMap : MonoBehaviour
                     {
                         tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.white;
                     }
-                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = value[x, y].ToString();
+                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().contentType = InputField.ContentType.Standard;
+                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = policy[x, y].ToString();
                 }
             }
         }

@@ -320,8 +320,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 231dd2c09a73b1d4681ef7e779f86be6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: {fileID: 972950544}
-  height: {fileID: 1846598034}
+  widthSlider: {fileID: 972950544}
+  heightSlider: {fileID: 1846598034}
   createButton: {fileID: 1739078491}
   setGoalsButton: {fileID: 1152068662}
   costButton: {fileID: 1226045792}
