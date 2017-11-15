@@ -127,4 +127,9 @@ public class GameData3D {
             }
         }
     }
+
+    public Color CostToColor(int cost)
+    {
+        return new Color(1, (255 - cost / 2) / 255.0f, (255 - cost) / 255.0f);
+    }
 }

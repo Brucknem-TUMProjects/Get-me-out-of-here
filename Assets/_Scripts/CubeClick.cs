@@ -25,7 +25,7 @@ public class CubeClick : MonoBehaviour {
     {
         if (Time.time - clickStartTime < 0.25f)
         {
-            GetComponent<Renderer>().material.color = Color.green;
+            GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z]);
             if (GameData3D.Instance.setGoals)
             {
                 if (!GameData3D.Instance.goals.Contains( new Vector2(transform.position.x, transform.position.z) ))
@@ -50,10 +50,13 @@ public class CubeClick : MonoBehaviour {
                     {
                         GetComponent<Renderer>().material.color = Color.black;
                         GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z] = GameData3D.Instance.MaxCost;
+                        transform.GetChild(1).gameObject.SetActive(true);
                     }
                     else
                     {
                         GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z] = 1;
+                        GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z]);
+                        transform.GetChild(1).gameObject.SetActive(false);
                     }
                 }
             }

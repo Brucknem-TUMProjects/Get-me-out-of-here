@@ -59,8 +59,9 @@ public class CreateMap3D : MonoBehaviour
         foreach (KeyValuePair<Vector2, GameObject> tile in tiles)
         {
             tile.Value.SetActive(false);
-            tile.Value.GetComponent<Renderer>().material.color = CostToColor(GameData3D.Instance.grid[(int)tile.Key.x, (int)tile.Key.y]);
+            tile.Value.GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)tile.Key.x, (int)tile.Key.y]);
             tile.Value.transform.GetChild(0).gameObject.SetActive(false);
+            tile.Value.transform.GetChild(1).gameObject.SetActive(false);
         }
         
         for (int x = 0; x < GameData3D.Instance.currentWidth; x++)
@@ -72,33 +73,9 @@ public class CreateMap3D : MonoBehaviour
                 {
                     tiles.Add(pos, Instantiate(tile));
                     tiles[pos].transform.SetParent(map.transform);
-                    //tiles[pos].GetComponent<ButtonExtension>().SetPosition(x, y);
-                    //tiles[pos].GetComponent<Button>().onClick.AddListener(delegate { OnClick(tiles[pos].GetComponent<ButtonExtension>().GetPosition()); });
-                    //tiles[pos].transform.GetChild(0).GetComponent<InputField>().onValueChanged.AddListener(
-                        //delegate
-                        //{
-                        //    OnCostChanged(tiles[pos].GetComponent<ButtonExtension>().GetPosition(),
-                        //        tiles[pos].transform.GetChild(0).GetComponent<InputField>().text);
-                        //});
-                    tiles[pos].GetComponent<Renderer>().material.color = CostToColor(GameData3D.Instance.grid[x, y]);
+                    tiles[pos].GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x, y]);
                 }
                 tiles[pos].SetActive(true);
-                //if (setCosts)
-                //{
-                //    if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
-                //    {
-                //        tiles[pos].GetComponent<Renderer>().material.color = Color.black;
-                //    }
-                //    else
-                //    {
-                //        //tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
-                //        //tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = grid[x, y].ToString();
-                //        //if (goals.Contains(pos))
-                //        //    tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.blue;
-                //        //else
-                //        //    tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = CostToColor(grid[x, y]);
-                //    }
-                //}
                 tiles[pos].transform.position = new Vector3(x, 0, y);
 
                 if (GameData3D.Instance.goals.Contains(pos))
@@ -108,6 +85,7 @@ public class CreateMap3D : MonoBehaviour
                 else if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
                 {
                     tiles[pos].GetComponent<Renderer>().material.color = Color.black;
+                    tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
                 }
             }
         }
@@ -126,23 +104,7 @@ public class CreateMap3D : MonoBehaviour
         }
         print(s);
     }
-
-    Color CostToColor(int cost)
-    {
-        int r, g;
-        if (cost > 255 / 2)
-        {
-            r = 255;
-            g = 255 - (cost - 255 / 2) * 2;
-        }
-        else
-        {
-            g = 255;
-            r = cost * 2;
-        }
-        return new Color(r / 255.0f, g / 255.0f, 0);
-    }
-
+    
     void ButtonColorChange(Button b, bool var)
     {
         if (var)
@@ -163,6 +125,7 @@ public class CreateMap3D : MonoBehaviour
                 {
                     tiles[pos].GetComponent<Renderer>().material.color = Color.black;
                     tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                    tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
                 }
                 else
                 {
@@ -176,7 +139,7 @@ public class CreateMap3D : MonoBehaviour
                     }
                     else
                     {
-                        tiles[pos].GetComponent<Renderer>().material.color = CostToColor(GameData3D.Instance.grid[x,y]);
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x,y]);
                         int rotation = Array.IndexOf(GameData3D.Instance.deltaNames, GameData3D.Instance.policy[x, y]);
                         tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
                         tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
