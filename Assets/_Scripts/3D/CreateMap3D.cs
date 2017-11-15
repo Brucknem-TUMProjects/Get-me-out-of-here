@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +21,6 @@ public class CreateMap3D : MonoBehaviour
 
 
     private Dictionary<Vector2, GameObject> tiles;
-    private bool setGoals = false;
     private bool setCosts = false;
     private bool showValues = false;
     private bool calculatingValues = false;
@@ -37,10 +37,10 @@ public class CreateMap3D : MonoBehaviour
 
         widthSlider.onValueChanged.AddListener(delegate { AdjustMap(); });
         heightSlider.onValueChanged.AddListener(delegate { AdjustMap(); });
-        setGoalsButton.onClick.AddListener(delegate { setGoals = !setGoals; ButtonColorChange(setGoalsButton, setGoals); });
+        setGoalsButton.onClick.AddListener(delegate { GameData3D.Instance.setGoals = !GameData3D.Instance.setGoals; ButtonColorChange(setGoalsButton, GameData3D.Instance.setGoals); });
         costButton.onClick.AddListener(delegate { setCosts = !setCosts; ButtonColorChange(costButton, setCosts); AdjustMap(); });
-        randomButton.onClick.AddListener(delegate { GameData3D.Instance.RandomGrid(); AdjustMap(); });
-        createButton.onClick.AddListener(delegate { showValues = !showValues; if (showValues) GameData3D.Instance.CalculateValue(); else AdjustMap(); ButtonColorChange(createButton, showValues); });
+        randomButton.onClick.AddListener(delegate { GameData3D.Instance.RandomGrid(); Print2DArray<int>(GameData3D.Instance.grid); AdjustMap(); });
+        createButton.onClick.AddListener(delegate { showValues = !showValues; if (showValues) { GameData3D.Instance.CalculateValue(); ShowCostTable(); } else AdjustMap(); ButtonColorChange(createButton, showValues); });
     }
 
     // Update is called once per frame
@@ -49,7 +49,7 @@ public class CreateMap3D : MonoBehaviour
 
     }
 
-    void AdjustMap()
+    public void AdjustMap()
     {
         GameData3D.Instance.currentWidth = (int)widthSlider.value;
         GameData3D.Instance.currentHeight = (int)heightSlider.value;
@@ -60,11 +60,9 @@ public class CreateMap3D : MonoBehaviour
         {
             tile.Value.SetActive(false);
             tile.Value.GetComponent<Renderer>().material.color = CostToColor(GameData3D.Instance.grid[(int)tile.Key.x, (int)tile.Key.y]);
-            //tile.Value.transform.GetChild(0).gameObject.SetActive(false);
-            //tile.Value.GetComponent<Button>().enabled = true;
-            //tile.Value.transform.GetChild(0).GetComponent<InputField>().contentType = InputField.ContentType.IntegerNumber;
+            tile.Value.transform.GetChild(0).gameObject.SetActive(false);
         }
-
+        
         for (int x = 0; x < GameData3D.Instance.currentWidth; x++)
         {
             for (int y = 0; y < GameData3D.Instance.currentHeight; y++)
@@ -85,75 +83,35 @@ public class CreateMap3D : MonoBehaviour
                     tiles[pos].GetComponent<Renderer>().material.color = CostToColor(GameData3D.Instance.grid[x, y]);
                 }
                 tiles[pos].SetActive(true);
-                if (setCosts)
-                {
-                    if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
-                    {
-                        tiles[pos].GetComponent<Renderer>().material.color = Color.black;
-                    }
-                    else
-                    {
-                        //tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
-                        //tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = grid[x, y].ToString();
-                        //if (goals.Contains(pos))
-                        //    tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.blue;
-                        //else
-                        //    tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = CostToColor(grid[x, y]);
-                    }
-                }
+                //if (setCosts)
+                //{
+                //    if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
+                //    {
+                //        tiles[pos].GetComponent<Renderer>().material.color = Color.black;
+                //    }
+                //    else
+                //    {
+                //        //tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
+                //        //tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = grid[x, y].ToString();
+                //        //if (goals.Contains(pos))
+                //        //    tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.blue;
+                //        //else
+                //        //    tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = CostToColor(grid[x, y]);
+                //    }
+                //}
                 tiles[pos].transform.position = new Vector3(x, 0, y);
 
-                if (GameData3D.Instance.goals.Contains(new int[] { (int)pos.x, (int)pos.y }))
+                if (GameData3D.Instance.goals.Contains(pos))
+                {
                     tiles[pos].GetComponent<Renderer>().material.color = Color.blue;
+                }
+                else if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
+                {
+                    tiles[pos].GetComponent<Renderer>().material.color = Color.black;
+                }
             }
         }
     }
-
-    //void OnClick(Vector2 pos)
-    //{
-    //    if (setGoals)
-    //    {
-    //        if (!goals.Contains(pos))
-    //        {
-    //            if (!(grid[(int)pos.x, (int)pos.y] == maxCost))
-    //            {
-    //                goals.Add(pos);
-    //            }
-    //        }
-    //        else
-    //            goals.Remove(pos);
-    //    }
-    //    else
-    //    {
-    //        if (grid[(int)pos.x, (int)pos.y] == maxCost)
-    //            grid[(int)pos.x, (int)pos.y] = 0;
-    //        else
-    //            grid[(int)pos.x, (int)pos.y] = maxCost;
-    //    }
-    //    AdjustMap();
-    //}
-
-    //void OnCostChanged(Vector2 pos, string cost)
-    //{
-    //    if (!calculatingValues)
-    //        grid[(int)pos.x, (int)pos.y] = int.Parse(cost);
-    //}
-
-    //void RandomGrid()
-    //{
-    //    goals = new List<Vector2>();
-    //    for (int x = 0; x < widthSlider.value; x++)
-    //    {
-    //        for (int y = 0; y < heightSlider.value; y++)
-    //        {
-    //            int randomCost = UnityEngine.Random.Range(0, 255);
-    //            if (randomCost <= 200 && UnityEngine.Random.Range(0, 100) < 3)
-    //                goals.Add(new Vector2(x, y));
-    //            grid[x, y] = randomCost > 200 ? maxCost : randomCost;
-    //        }
-    //    }
-    //    AdjustMap();
-    //}
 
     void Print2DArray<T>(T[,] array)
     {
@@ -193,49 +151,38 @@ public class CreateMap3D : MonoBehaviour
             b.GetComponent<Image>().color = Color.white;
     }
 
-    
-
     void ShowCostTable()
     {
-        int width = (int)widthSlider.value;
-        int height = (int)heightSlider.value;
-
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < GameData3D.Instance.currentWidth; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < GameData3D.Instance.currentHeight; y++)
             {
                 Vector2 pos = new Vector2(x, y);
                 tiles[pos].SetActive(true);
                 if (GameData3D.Instance.value[x, y] == GameData3D.Instance.MaxCost)
                 {
+                    tiles[pos].GetComponent<Renderer>().material.color = Color.black;
                     tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
-                    tiles[pos].GetComponent<Button>().image.color = Color.black;
                 }
                 else
                 {
                     tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
-                    if (GameData3D.Instance.goals.Contains(new int[] { (int)pos.x, (int)pos.y }))
+                    if (GameData3D.Instance.policy[x, y] == '*')
                     {
-                        tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.blue;
+                        tiles[pos].GetComponent<Renderer>().material.color = Color.blue;
+                        tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(0, 0, -90);
+                        tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(2, .4f, .4f);
+                        tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 2.5f, 0);
                     }
                     else
                     {
-                        tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.white;
+                        tiles[pos].GetComponent<Renderer>().material.color = CostToColor(GameData3D.Instance.grid[x,y]);
+                        int rotation = Array.IndexOf(GameData3D.Instance.deltaNames, GameData3D.Instance.policy[x, y]);
+                        tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
+                        tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
+                        tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 1, 0);
                     }
-                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().contentType = InputField.ContentType.Standard;
-                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = GameData3D.Instance.policy[x, y].ToString();
                 }
-            }
-        }
-    }
-
-    void InitTable(ref int[,] table, int value)
-    {
-        for (int x = 0; x < table.GetLength(0); x++)
-        {
-            for (int y = 0; y < table.GetLength(1); y++)
-            {
-                table[x, y] = value;
             }
         }
     }

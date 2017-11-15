@@ -29,13 +29,14 @@ public class GameData3D {
     public char[,] policy;
 
     //List for holding goals, deltas...
-    public List<int[]> goals = new List<int[]>();
-    public List<int[]> delta = new List<int[]> { new int[] { 0, 1 }, new int[] { 0, -1 }, new int[] { 1, 0 }, new int[] { -1, 0 } };
-    public char[] deltaNames = new char[] { '^', 'v', '>', '<' };
+    public List<Vector2> goals = new List<Vector2>();
+    public List<Vector2> delta = new List<Vector2> { new Vector2(1, 0), new Vector2 ( 0, -1 ),  new Vector2(- 1, 0 ), new Vector2(0, 1) };
+    public char[] deltaNames = new char[] { '>', 'v', '<', '^' };
 
     public int MaxCost { get { return 100000000; } }
 
     public int currentWidth, currentHeight;
+    public bool setGoals = false;
 
     public void SetGridSize(int x, int y)
     {
@@ -57,14 +58,14 @@ public class GameData3D {
 
     public void RandomGrid()
     {
-        goals = new List<int[]>();
+        goals = new List<Vector2>();
         for (int x = 0; x < currentWidth; x++)
         {
-            for (int y = 0; y < currentWidth; y++)
+            for (int y = 0; y < currentHeight; y++)
             {
                 int randomCost = UnityEngine.Random.Range(0, 255);
                 if (randomCost <= 200 && UnityEngine.Random.Range(0, 100) < 3)
-                    goals.Add(new int[] { x, y });
+                    goals.Add(new Vector2( x, y ));
                 grid[x, y] = randomCost > 200 ? MaxCost : randomCost;
             }
         }
@@ -72,7 +73,6 @@ public class GameData3D {
 
     public void CalculateValue()
     {
-        //calculatingValues = true;
         value = new int[currentWidth, currentHeight];
 
         InitGrid<int>(ref value, MaxCost);
@@ -126,8 +126,5 @@ public class GameData3D {
                 }
             }
         }
-
-        //ShowCostTable();
-        //calculatingValues = false;
     }
 }
