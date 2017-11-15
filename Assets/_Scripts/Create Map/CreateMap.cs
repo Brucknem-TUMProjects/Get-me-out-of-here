@@ -173,7 +173,7 @@ public class CreateMap : MonoBehaviour
             for (int y = 0; y < heightSlider.value; y++)
             {
                 int randomCost = UnityEngine.Random.Range(0, 255);
-                if (randomCost <= 200 && UnityEngine.Random.Range(0, 100) < 10)
+                if (randomCost <= 200 && UnityEngine.Random.Range(0, 100) < 3)
                     goals.Add(new Vector2(x, y));
                 grid[x, y] = randomCost > 200 ? maxCost : randomCost;
             }
