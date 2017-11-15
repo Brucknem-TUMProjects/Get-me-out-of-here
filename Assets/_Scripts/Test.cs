@@ -1,9 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Test : MonoBehaviour
 {
+//lol
     public int[,] grid;
     public Vector2 goal;
     public int[,] delta;
