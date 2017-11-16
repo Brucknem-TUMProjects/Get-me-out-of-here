@@ -132,4 +132,19 @@ public class GameData3D {
     {
         return new Color(1, (255 - cost / 2) / 255.0f, (255 - cost) / 255.0f);
     }
+
+
+    public string Print2DArray<T>(T[,] array)
+    {
+        string s = "";
+        for (int i = 0; i < array.GetLength(0); i++)
+        {
+            for (int j = 0; j < array.GetLength(1); j++)
+            {
+                s += (array[i, j] + " ");
+            }
+            s += ("\n");
+        }
+        return (s);
+    }
 }

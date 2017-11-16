@@ -4,43 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CreateMap3D : MonoBehaviour
+public class CreateMap3D : CreateMap
 {
-
-    [Header("Sliders")]
-    public Slider widthSlider;
-    public Slider heightSlider;
-    [Header("Buttons")]
-    public Button createButton;
-    public Button setGoalsButton;
-    public Button costButton;
-    public Button randomButton;
-    public RectTransform map;
     [Header("GameObjects")]
     public GameObject tile;
 
-
-    private Dictionary<Vector2, GameObject> tiles;
-    private bool setCosts = false;
-    private bool showValues = false;
-    private bool calculatingValues = false;
-
-    private readonly float mapWidth = 800;
-    private readonly float mapHeight = 555;
-
+ 
     // Use this for initialization
     void Start()
     {
-        tiles = new Dictionary<Vector2, GameObject>();
-        GameData3D.Instance.SetGridSize((int)widthSlider.maxValue, (int)heightSlider.maxValue);
-        GameData3D.Instance.InitGrid<int>(ref GameData3D.Instance.grid, 1);
-
-        widthSlider.onValueChanged.AddListener(delegate { AdjustMap(); });
-        heightSlider.onValueChanged.AddListener(delegate { AdjustMap(); });
-        setGoalsButton.onClick.AddListener(delegate { GameData3D.Instance.setGoals = !GameData3D.Instance.setGoals; ButtonColorChange(setGoalsButton, GameData3D.Instance.setGoals); });
-        costButton.onClick.AddListener(delegate { setCosts = !setCosts; ButtonColorChange(costButton, setCosts); AdjustMap(); });
-        randomButton.onClick.AddListener(delegate { GameData3D.Instance.RandomGrid(); Print2DArray<int>(GameData3D.Instance.grid); AdjustMap(); });
-        createButton.onClick.AddListener(delegate { showValues = !showValues; if (showValues) { GameData3D.Instance.CalculateValue(); ShowCostTable(); } else AdjustMap(); ButtonColorChange(createButton, showValues); });
+        Init();
     }
 
     // Update is called once per frame
@@ -49,17 +22,14 @@ public class CreateMap3D : MonoBehaviour
 
     }
 
-    public void AdjustMap()
+    public override void AdjustMap()
     {
-        GameData3D.Instance.currentWidth = (int)widthSlider.value;
-        GameData3D.Instance.currentHeight = (int)heightSlider.value;
-
         float tileDim = Mathf.Min(1.0f * mapHeight / GameData3D.Instance.currentHeight, 1.0f * mapWidth / GameData3D.Instance.currentWidth, 30);
 
         foreach (KeyValuePair<Vector2, GameObject> tile in tiles)
         {
             tile.Value.SetActive(false);
-            tile.Value.GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)tile.Key.x, (int)tile.Key.y]);
+            
             tile.Value.transform.GetChild(0).gameObject.SetActive(false);
             tile.Value.transform.GetChild(1).gameObject.SetActive(false);
         }
@@ -69,10 +39,11 @@ public class CreateMap3D : MonoBehaviour
             for (int y = 0; y < GameData3D.Instance.currentHeight; y++)
             {
                 Vector2 pos = new Vector2(x, y);
+                
                 if (!tiles.ContainsKey(pos))
                 {
                     tiles.Add(pos, Instantiate(tile));
-                    tiles[pos].transform.SetParent(map.transform);
+                    tiles[pos].transform.SetParent(/*map.*/transform);
                     tiles[pos].GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x, y]);
                 }
                 tiles[pos].SetActive(true);
@@ -87,33 +58,16 @@ public class CreateMap3D : MonoBehaviour
                     tiles[pos].GetComponent<Renderer>().material.color = Color.black;
                     tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
                 }
+                else
+                {
+                    tiles[pos].GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)pos.x, (int)pos.y]);
+                    tiles[pos].transform.GetChild(2).transform.GetChild(0).GetComponent<InputField>().text = GameData3D.Instance.grid[(int)pos.x, (int)pos.y].ToString();
+                }
             }
         }
-    }
-
-    void Print2DArray<T>(T[,] array)
-    {
-        string s = "";
-        for (int i = 0; i < array.GetLength(0); i++)
-        {
-            for (int j = 0; j < array.GetLength(1); j++)
-            {
-                s += (array[i, j] + " ");
-            }
-            s += ("\n");
-        }
-        print(s);
     }
     
-    void ButtonColorChange(Button b, bool var)
-    {
-        if (var)
-            b.GetComponent<Image>().color = Color.cyan;
-        else
-            b.GetComponent<Image>().color = Color.white;
-    }
-
-    void ShowCostTable()
+    public override void ShowCostTable()
     {
         for (int x = 0; x < GameData3D.Instance.currentWidth; x++)
         {
