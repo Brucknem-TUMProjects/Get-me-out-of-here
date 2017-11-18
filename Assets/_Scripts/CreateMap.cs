@@ -12,7 +12,6 @@ public abstract class CreateMap : MonoBehaviour {
     [Header("Buttons and Sliders")]
     public Inputs inputs;
 
-
     public readonly float mapWidth = 800;
     public readonly float mapHeight = 555;
 

@@ -36,7 +36,7 @@ public class GameData3D {
     public int MaxCost { get { return 100000000; } }
 
     public int currentWidth, currentHeight;
-    public bool setGoals = false;
+    public bool calculateValues = false;
 
     public void SetGridSize(int x, int y)
     {

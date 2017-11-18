@@ -8,19 +8,6 @@ public class CreateMap2D : CreateMap
     [Header("GameObjects")]
     public GameObject tile;
 
-
-    // Use this for initialization
-    void Start()
-    {
-        Init();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public override void AdjustMap()
     {
         float tileDim = Mathf.Min(1.0f * mapHeight / GameData3D.Instance.currentHeight, 1.0f * mapWidth / GameData3D.Instance.currentWidth, 30);
@@ -28,10 +15,10 @@ public class CreateMap2D : CreateMap
         foreach (KeyValuePair<Vector2, GameObject> tile in tiles)
         {
             tile.Value.SetActive(false);
-            tile.Value.GetComponent<Image>().color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)tile.Key.x, (int)tile.Key.y]);
-            tile.Value.transform.GetChild(0).gameObject.SetActive(false);
-            tile.Value.GetComponent<Button>().enabled = true;
-            tile.Value.transform.GetChild(0).GetComponent<InputField>().contentType = InputField.ContentType.IntegerNumber;
+            //tile.Value.GetComponent<Image>().color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)tile.Key.x, (int)tile.Key.y]);
+            //tile.Value.transform.GetChild(0).gameObject.SetActive(false);
+            //tile.Value.GetComponent<Button>().enabled = true;
+            //tile.Value.transform.GetChild(0).GetComponent<InputField>().contentType = InputField.ContentType.IntegerNumber;
         }
 
         for (int x = 0; x < GameData3D.Instance.currentWidth; x++)
@@ -43,34 +30,34 @@ public class CreateMap2D : CreateMap
                 {
                     tiles.Add(pos, Instantiate(tile));
                     tiles[pos].transform.SetParent(transform);
-                    tiles[pos].GetComponent<ButtonExtension>().SetPosition(x, y);
-                    tiles[pos].GetComponent<Button>().onClick.AddListener(delegate { OnClick(tiles[pos].GetComponent<ButtonExtension>().GetPosition()); });
-                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().onValueChanged.AddListener(
-                        delegate
-                        {
-                            OnCostChanged(
-                     tiles[pos].GetComponent<ButtonExtension>().GetPosition(),
-                     tiles[pos].transform.GetChild(0).GetComponent<InputField>().text);
-                        });
-                    tiles[pos].GetComponent<Image>().color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x, y]);
+                    tiles[pos].GetComponent<TileClick>().SetPosition(pos);
+                    //tiles[pos].GetComponent<Button>().onClick.AddListener(delegate { OnClick(tiles[pos].GetComponent<ButtonExtension>().GetPosition()); });
+                    //tiles[pos].transform.GetChild(0).GetComponent<InputField>().onValueChanged.AddListener(
+                    //    delegate
+                    //    {
+                    //        OnCostChanged(
+                    // tiles[pos].GetComponent<ButtonExtension>().GetPosition(),
+                    // tiles[pos].transform.GetChild(0).GetComponent<InputField>().text);
+                    //    });
+                    //tiles[pos].GetComponent<Image>().color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x, y]);
                 }
                 tiles[pos].SetActive(true);
-                if (inputs.SetCosts)
-                {
-                    if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
-                    {
-                        tiles[pos].GetComponent<Button>().enabled = false;
-                    }
-                    else
-                    {
-                        tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
-                        tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = GameData3D.Instance.grid[x, y].ToString();
-                        if (GameData3D.Instance.goals.Contains(pos))
-                            tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.blue;
-                        else
-                            tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x, y]);
-                    }
-                }
+                //if (inputs.SetCosts)
+                //{
+                //    if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
+                //    {
+                //        tiles[pos].GetComponent<Button>().enabled = false;
+                //    }
+                //    else
+                //    {
+                //        tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
+                //        tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = GameData3D.Instance.grid[x, y].ToString();
+                //        if (GameData3D.Instance.goals.Contains(pos))
+                //            tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.blue;
+                //        else
+                //            tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x, y]);
+                //    }
+                //}
                 tiles[pos].GetComponent<RectTransform>().localPosition = new Vector3(
                     (x - GameData3D.Instance.currentWidth / 2.0f) * tileDim + 0.5f * tileDim,
                     (y - GameData3D.Instance.currentHeight / 2.0f) * tileDim + 0.5f * tileDim
@@ -83,13 +70,19 @@ public class CreateMap2D : CreateMap
                     tiles[pos].GetComponent<Image>().color = Color.blue;
                 else if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
                     tiles[pos].GetComponent<Image>().color = Color.black;
+                else
+                {
+                    int cost = GameData3D.Instance.grid[(int)pos.x, (int)pos.y];
+                    tiles[pos].GetComponent<Image>().color = GameData3D.Instance.CostToColor(cost);
+                    tiles[pos].GetComponent<InputField>().text = cost.ToString();
+                }
             }
         }
     }
 
     void OnClick(Vector2 pos)
     {
-        if (GameData3D.Instance.setGoals)
+        if (inputs.setGoals.isOn)
         {
             if (!GameData3D.Instance.goals.Contains(pos))
             {
@@ -113,7 +106,7 @@ public class CreateMap2D : CreateMap
 
     void OnCostChanged(Vector2 pos, string cost)
     {
-        if(!inputs.CalculatingValues)
+        if (!inputs.ShowValues)
             GameData3D.Instance.grid[(int)pos.x, (int)pos.y] = int.Parse(cost);
     }
     
@@ -127,22 +120,22 @@ public class CreateMap2D : CreateMap
                 tiles[pos].SetActive(true);
                 if (GameData3D.Instance.value[x, y] == GameData3D.Instance.MaxCost)
                 {
-                    tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
-                    tiles[pos].GetComponent<Button>().image.color = Color.black;
+                    tiles[pos].GetComponent<InputField>().image.color = Color.black;
+                    tiles[pos].GetComponent<InputField>().interactable = false;
                 }
                 else
                 {
-                    tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
+                    tiles[pos].GetComponent<InputField>().interactable = true;
                     if (GameData3D.Instance.goals.Contains(pos))
                     {
-                        tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.blue;
+                        tiles[pos].GetComponent<InputField>().image.color = Color.blue;
                     }
                     else
                     {
-                        tiles[pos].transform.GetChild(0).GetComponent<InputField>().image.color = Color.white;
+                        tiles[pos].GetComponent<InputField>().image.color = Color.white;
                     }
-                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().contentType = InputField.ContentType.Standard;
-                    tiles[pos].transform.GetChild(0).GetComponent<InputField>().text = GameData3D.Instance.policy[x, y].ToString();
+                    tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
+                    tiles[pos].GetComponent<InputField>().text = GameData3D.Instance.policy[x, y].ToString();
                 }
             }
         }

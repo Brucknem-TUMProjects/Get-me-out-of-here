@@ -8,19 +8,7 @@ public class CreateMap3D : CreateMap
 {
     [Header("GameObjects")]
     public GameObject tile;
-
- 
-    // Use this for initialization
-    void Start()
-    {
-        Init();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    
 
     public override void AdjustMap()
     {
@@ -45,6 +33,7 @@ public class CreateMap3D : CreateMap
                     tiles.Add(pos, Instantiate(tile));
                     tiles[pos].transform.SetParent(/*map.*/transform);
                     tiles[pos].GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[x, y]);
+                    //tiles[pos].transform.position = new Vector3(x, 0, y);
                 }
                 tiles[pos].SetActive(true);
                 tiles[pos].transform.position = new Vector3(x, 0, y);
