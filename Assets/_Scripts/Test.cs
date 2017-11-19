@@ -14,7 +14,7 @@ public class Test : MonoBehaviour
     public int costStep = 1;
     public GameObject cube;
     public Dictionary<Vector2, GameObject> board = new Dictionary<Vector2, GameObject>();
-    public GameObject camera;
+    //public GameObject camera;
 
     // Use this for initialization
     void Start()
@@ -132,7 +132,7 @@ public class Test : MonoBehaviour
 
     void DrawBoard<T>(T[,] toDraw)
     {
-        camera.transform.position = new Vector3(toDraw.GetLength(1) / 2, 10, -toDraw.GetLength(0) / 2);
+        //camera.transform.position = new Vector3(toDraw.GetLength(1) / 2, 10, -toDraw.GetLength(0) / 2);
         for (int x = 0; x < toDraw.GetLength(1); x++)
         {
             for (int y = 0; y < toDraw.GetLength(0); y++)

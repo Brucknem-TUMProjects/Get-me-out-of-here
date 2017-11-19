@@ -12,7 +12,7 @@ public class CubeClick : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         cost = transform.GetChild(2).transform.GetChild(0).GetComponent<InputField>();
-        int v = GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z];
+        int v = GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z];
         cost.text = v.ToString();
         cost.onValueChanged.AddListener(delegate { OnInputFieldChanged(); });
     }
@@ -24,34 +24,36 @@ public class CubeClick : MonoBehaviour {
 
     private void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1)) RightClick();
+
+        if (Input.GetMouseButtonDown(1)) clickStartTime = Time.time;
+        if (Input.GetMouseButtonUp(1) && Time.time - clickStartTime < 0.25f) RightClick();
         if (Input.GetMouseButtonDown(2)) MiddleClick();
     }
 
     private void RightClick()
     {
-        Vector2 position = new Vector2(transform.position.x, transform.position.z);
+        //Vector2 position = new Vector2(transform.position.x, transform.position.z);
         int x = (int)transform.position.x;
         int y = (int)transform.position.z;
         //if (!GameData3D.Instance.goals.Contains(position))
         {
             Color color;
         
-            if (GameData3D.Instance.grid[x, y] == GameData3D.Instance.MaxCost)
+            if (GameData.Instance.grid[x, y] == GameData.Instance.MaxCost)
             {
-                GameData3D.Instance.grid[x, y] = 1;
-                color = GameData3D.Instance.CostToColor(1);
+                GameData.Instance.grid[x, y] = 1;
+                color = GameData.Instance.CostToColor(1);
                 SetChildrenOff();
             }
             else
             {
-                GameData3D.Instance.grid[x, y] = GameData3D.Instance.MaxCost;
+                GameData.Instance.grid[x, y] = GameData.Instance.MaxCost;
                 color = Color.black;
                 ShowBush();
             }
 
             GetComponent<Renderer>().material.color = color;
-            GameData3D.Instance.Print2DArray<int>(GameData3D.Instance.grid);
+            GameData.Instance.Print2DArray<int>(GameData.Instance.grid);
 
         }
     }
@@ -76,19 +78,19 @@ public class CubeClick : MonoBehaviour {
     {
         Color color;
         Vector2 position = new Vector2(transform.position.x, transform.position.z);
-        if (!GameData3D.Instance.goals.Contains(position))
+        if (!GameData.Instance.goals.Contains(position))
         {
-            GameData3D.Instance.goals.Add(position);
+            GameData.Instance.goals.Add(position);
             color = Color.blue;
         }
         else
         {
-            GameData3D.Instance.goals.Remove(position);
+            GameData.Instance.goals.Remove(position);
             color = Color.white;
         }
 
         GetComponent<Renderer>().material.color = color;
-        foreach (Vector2 v in GameData3D.Instance.goals)
+        foreach (Vector2 v in GameData.Instance.goals)
             print(v);
     }
 
@@ -143,14 +145,14 @@ public class CubeClick : MonoBehaviour {
         //if (!GameData3D.Instance.calculateValues)
         //{
             int value = int.Parse(cost.text);
-            GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z] = value;
-            GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(value);
+            GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z] = value;
+            GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(value);
         //}
     }
 
     public void UpdateValue()
     {
-        string value = (GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z]).ToString();
+        string value = (GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z]).ToString();
         cost.text = value;
     }
 }

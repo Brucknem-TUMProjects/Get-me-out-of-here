@@ -13,10 +13,12 @@ public class Inputs : MonoBehaviour {
     //public Button setGoalsButton;
     //public Button costButton;
     public Button randomButton;
+    public Button resetButton;
     [Header("Toggles")]
     public Toggle showPolicy;
     public Toggle inputCosts;
     public Toggle setGoals;
+    public Toggle help;
     [Header("Dropdowns")]
     public Dropdown dimension;
 
@@ -39,49 +41,49 @@ public class Inputs : MonoBehaviour {
         heightSlider.onValueChanged.AddListener(delegate {
             SetMapDimensions();
             map.AdjustMap(); });
-        //setGoalsButton.onClick.AddListener(delegate { GameData3D.Instance.setGoals = !GameData3D.Instance.setGoals; ButtonColorChange(setGoalsButton, GameData3D.Instance.setGoals); });
-        //costButton.onClick.AddListener(delegate { setCosts = !setCosts; ButtonColorChange(costButton, setCosts); map.AdjustMap(); });
         randomButton.onClick.AddListener(delegate {
             GetComponent<ToggleGroup>().SetAllTogglesOff();
-            GameData3D.Instance.RandomGrid();
+            GameData.Instance.RandomGrid();
             map.AdjustMap(); });
-        //createButton.onClick.AddListener(delegate
-        //{
-        //    showValues = !showValues; if (showValues)
-        //    {
-        //        calculatingValues = true;
-        //        GameData3D.Instance.CalculateValue();
-        //        map.ShowCostTable();
-        //        calculatingValues = false;
-        //    } else
-        //        map.AdjustMap(); ButtonColorChange(createButton, showValues); });
 
         showPolicy.onValueChanged.AddListener(delegate {
             ToggleColorChange(showPolicy);
             if (showPolicy.isOn)
             {
-                GameData3D.Instance.calculateValues = true;
-                GameData3D.Instance.CalculateValue();
+                GameData.Instance.calculateValues = true;
+                GameData.Instance.CalculateValue();
                 map.ShowCostTable();
-                GameData3D.Instance.calculateValues = false;
+                GameData.Instance.calculateValues = false;
             }
             else
             {
                 map.AdjustMap();
             }
         });
-        setGoals.onValueChanged.AddListener(delegate {
-            ToggleColorChange(setGoals);
-            //GameData3D.Instance.setGoals = setGoals;
-        });
-        inputCosts.onValueChanged.AddListener(delegate { ToggleColorChange(inputCosts); });
-        dimension.onValueChanged.AddListener(delegate {
+        dimension.onValueChanged.AddListener(delegate
+        {
+            GameData.Instance.calculateValues = true;
             map.gameObject.SetActive(false);
             map = maps[dimension.value];
             map.gameObject.SetActive(true);
             map.AdjustMap();
             if (showPolicy.isOn)
+            {
+                GameData.Instance.calculateValues = true;
                 map.ShowCostTable();
+                GameData.Instance.calculateValues = false;
+            }
+        });
+        resetButton.onClick.AddListener(delegate {
+            showPolicy.isOn = false;
+            GameData.Instance.InitGrid<int>(ref GameData.Instance.grid, 1);
+            GameData.Instance.goals = new List<Vector2>();
+            map.AdjustMap();
+        });
+        help.onValueChanged.AddListener(delegate
+        {
+            ToggleColorChange(help);
+            help.transform.GetChild(1).gameObject.SetActive(help.isOn);
         });
     }
 
@@ -148,7 +150,7 @@ public class Inputs : MonoBehaviour {
         
     public void SetMapDimensions()
     {
-        GameData3D.Instance.currentWidth = CurrentWidth;
-        GameData3D.Instance.currentHeight = CurrentHeight;
+        GameData.Instance.currentWidth = CurrentWidth;
+        GameData.Instance.currentHeight = CurrentHeight;
     }
 }

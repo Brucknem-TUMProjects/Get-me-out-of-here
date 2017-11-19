@@ -18,15 +18,15 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
     {
         print("RightCLick");
         Color color;
-        if (GameData3D.Instance.grid[(int)position.x, (int)position.y] == GameData3D.Instance.MaxCost)
+        if (GameData.Instance.grid[(int)position.x, (int)position.y] == GameData.Instance.MaxCost)
         {
-            GameData3D.Instance.grid[(int)position.x, (int)position.y] = 1;
-            color = GameData3D.Instance.CostToColor(1);
+            GameData.Instance.grid[(int)position.x, (int)position.y] = 1;
+            color = GameData.Instance.CostToColor(1);
             GetComponent<InputField>().interactable = true;
         }
         else
         {
-            GameData3D.Instance.grid[(int)position.x, (int)position.y] = GameData3D.Instance.MaxCost;
+            GameData.Instance.grid[(int)position.x, (int)position.y] = GameData.Instance.MaxCost;
             color = Color.black;
             GetComponent<InputField>().interactable = false;
         }
@@ -35,26 +35,26 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
 
     void OnValueChanged()
     {
-        if (!GameData3D.Instance.calculateValues)
+        if (!GameData.Instance.calculateValues)
         {
             int value = int.Parse(GetComponent<InputField>().text);
-            GameData3D.Instance.grid[(int)position.x, (int)position.y] = value;
-            GetComponent<Image>().color = GameData3D.Instance.CostToColor(value);
+            GameData.Instance.grid[(int)position.x, (int)position.y] = value;
+            GetComponent<Image>().color = GameData.Instance.CostToColor(value);
         }
     }
 
     void MiddleClick()
     {
         Color color;
-        if (!GameData3D.Instance.goals.Contains(position))
+        if (!GameData.Instance.goals.Contains(position))
         {
-            GameData3D.Instance.goals.Add(position);
+            GameData.Instance.goals.Add(position);
             color = Color.blue;
         }
         else
         {
-            GameData3D.Instance.goals.Remove(position);
-            color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)position.x, (int)position.y]);
+            GameData.Instance.goals.Remove(position);
+            color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)position.x, (int)position.y]);
         }
 
         GetComponent<Image>().color = color;
@@ -72,7 +72,7 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
     public void SetPosition(Vector2 position)
     {
         this.position = position;
-        GetComponent<Image>().color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)position.x, (int)position.y]);
+        GetComponent<Image>().color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)position.x, (int)position.y]);
     }
 
     public Vector2 GetPosition()

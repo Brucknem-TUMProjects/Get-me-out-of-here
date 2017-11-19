@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameData3D {
+public class GameData {
 
-    private static GameData3D instance;
+    private static GameData instance;
 
-    private GameData3D()
+    private GameData()
     {
         if (instance != null)
             return;
         instance = this;
     }
 
-    public static GameData3D Instance
+    public static GameData Instance
     {
         get
         {
             if (instance == null)
-                instance = new GameData3D();
+                instance = new GameData();
             return instance;
         }
     }

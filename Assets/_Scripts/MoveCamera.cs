@@ -21,7 +21,7 @@ public class MoveCamera : MonoBehaviour {
 
     private int moveButton = 0;
     private int rotateButton = 1;
-    private int zoomButton = 2;
+    //private int zoomButton = 2;
 
     // Update is called once per frame
     void Update () {

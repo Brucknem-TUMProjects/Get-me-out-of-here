@@ -18,8 +18,8 @@ public abstract class CreateMap : MonoBehaviour {
     // Use this for initialization
     public void Init () {
         tiles = new Dictionary<Vector2, GameObject>();
-        GameData3D.Instance.SetGridSize(inputs.MaxWidth, inputs.MaxHeight);
-        GameData3D.Instance.InitGrid<int>(ref GameData3D.Instance.grid, 1);
+        GameData.Instance.SetGridSize(inputs.MaxWidth, inputs.MaxHeight);
+        GameData.Instance.InitGrid<int>(ref GameData.Instance.grid, 1);
     }
 	
 	// Update is called once per frame
