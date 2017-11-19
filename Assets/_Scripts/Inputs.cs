@@ -14,13 +14,15 @@ public class Inputs : MonoBehaviour {
     //public Button costButton;
     public Button randomButton;
     public Button resetButton;
+    public Button setStartButton;
     [Header("Toggles")]
     public Toggle showPolicy;
-    public Toggle inputCosts;
-    public Toggle setGoals;
+    //public Toggle inputCosts;
+    //public Toggle setGoals;
     public Toggle help;
     [Header("Dropdowns")]
     public Dropdown dimension;
+    public Dropdown mode;
 
     //private bool setCosts = false;
     //private bool showValues = false;
@@ -85,6 +87,25 @@ public class Inputs : MonoBehaviour {
             ToggleColorChange(help);
             help.transform.GetChild(1).gameObject.SetActive(help.isOn);
         });
+        setStartButton.onClick.AddListener(delegate
+        {
+            GameData.Instance.setStart = true;
+
+        });
+
+        mode.onValueChanged.AddListener(delegate
+        {
+            if(mode.value == 0)
+            {
+                setStartButton.gameObject.SetActive(false);
+                showPolicy.gameObject.SetActive(true);
+            }
+            else
+            {
+                setStartButton.gameObject.SetActive(true);
+                showPolicy.gameObject.SetActive(false);
+            }
+        });
     }
 
     void ToggleColorChange(Toggle t)
@@ -132,13 +153,13 @@ public class Inputs : MonoBehaviour {
         }
     }
 
-    public bool SetCosts
-    {
-        get
-        {
-            return inputCosts.isOn;
-        }
-    }
+    //public bool SetCosts
+    //{
+    //    get
+    //    {
+    //        return inputCosts.isOn;
+    //    }
+    //}
 
     public bool ShowValues
     {

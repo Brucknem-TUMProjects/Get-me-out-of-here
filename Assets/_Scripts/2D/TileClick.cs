@@ -14,6 +14,13 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
         GetComponent<InputField>().onValueChanged.AddListener(delegate { OnValueChanged(); });
     }
 
+    void LeftClick()
+    {
+        GameData.Instance.start = position;
+        GetComponent<Image>().color = Color.red;
+        GameData.Instance.CalculateAStern();
+    }
+
     void RightClick()
     {
         print("RightCLick");
@@ -67,6 +74,9 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
 
         if (eventData.button == PointerEventData.InputButton.Middle)
             MiddleClick();
+
+        if (eventData.button == PointerEventData.InputButton.Left && GameData.Instance.setStart)
+            LeftClick();
     }
 
     public void SetPosition(Vector2 position)

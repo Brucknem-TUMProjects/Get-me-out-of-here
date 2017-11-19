@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameData {
+public class GameData3D {
 
-    private static GameData instance;
+    private static GameData3D instance;
 
-    private GameData()
+    private GameData3D()
     {
         if (instance != null)
             return;
         instance = this;
     }
 
-    public static GameData Instance
+    public static GameData3D Instance
     {
         get
         {
             if (instance == null)
-                instance = new GameData();
+                instance = new GameData3D();
             return instance;
         }
     }
@@ -27,24 +27,16 @@ public class GameData {
     public int[,] grid;
     public int[,] value;
     public char[,] policy;
-    public int[,] astern;
-    public Vector2[,] predecessors;
 
     //List for holding goals, deltas...
     public List<Vector2> goals = new List<Vector2>();
-    public List<Vector2> deltas = new List<Vector2> { new Vector2(1, 0), new Vector2 ( 0, -1 ),  new Vector2(- 1, 0 ), new Vector2(0, 1) };
+    public List<Vector2> delta = new List<Vector2> { new Vector2(1, 0), new Vector2 ( 0, -1 ),  new Vector2(- 1, 0 ), new Vector2(0, 1) };
     public char[] deltaNames = new char[] { '>', 'v', '<', '^' };
 
     public int MaxCost { get { return 100000000; } }
 
     public int currentWidth, currentHeight;
     public bool calculateValues = false;
-    public bool setStart = false;
-
-    public Vector2 start;
-
-    List<Vector2> closedList = new List<Vector2>();
-    List<Vector2> openList = new List<Vector2>();
 
     public void SetGridSize(int x, int y)
     {
@@ -109,10 +101,10 @@ public class GameData {
 
                         else if (grid[x, y] < MaxCost)
                         {
-                            for (int a = 0; a < deltas.Count; a++)
+                            for (int a = 0; a < delta.Count; a++)
                             {
-                                int x2 = x + (int)deltas[a][0];
-                                int y2 = y + (int)deltas[a][1];
+                                int x2 = x + (int)delta[a][0];
+                                int y2 = y + (int)delta[a][1];
 
                                 if (x2 >= 0 && x2 < currentWidth && y2 >= 0 && y2 < currentHeight)
                                 {
@@ -139,62 +131,6 @@ public class GameData {
     public Color CostToColor(int cost)
     {
         return new Color(1, (255 - cost / 2) / 255.0f, (255 - cost) / 255.0f);
-    }
-
-    public bool CalculateAStern()
-    {
-        InitGrid<int>(ref astern, MaxCost);
-        InitGrid<Vector2>(ref predecessors, Vector2.zero);
-
-        openList.Add(start);
-        int x = (int)start.x;
-        int y = (int)start.y;
-        astern[x, y] = 0;
-        predecessors[x, y] = start;
-
-        while (openList.Count != 0)
-        {
-            Vector2 currentNode = openList[0];
-            openList.RemoveAt(0);
-
-            foreach (Vector2 goal in GameData.Instance.goals)
-            {
-                if (currentNode == goal)
-                    return true;
-
-                closedList.Add(currentNode);
-
-                ExpandNode(currentNode);
-            }
-        }
-        return false;
-    }
-
-    private void ExpandNode(Vector2 node)
-    {
-        int x = (int)node.x;
-        int y = (int)node.y;
-
-        foreach (Vector2 delta in deltas)
-        {
-            Vector2 successor = node + delta;
-            int dx = x + (int)delta.x;
-            int dy = y + (int)delta.y;
-
-            if (closedList.Contains(successor))
-                continue;
-
-            int tentative_g = astern[x, y] + grid[dx, dy];
-
-            if (openList.Contains(successor) && tentative_g >= grid[dx, dy])
-                continue;
-
-            predecessors[dx, dy] = node;
-            astern[dx, dy] = tentative_g;
-
-            if (!openList.Contains(successor))
-                openList.Add(successor);
-        }
     }
 
 
