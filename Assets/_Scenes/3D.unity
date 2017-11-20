@@ -2825,11 +2825,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 805112869}
---- !u!4 &841058184 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36,
-    type: 2}
-  m_PrefabInternal: {fileID: 1440761092}
 --- !u!1 &849484392
 GameObject:
   m_ObjectHideFlags: 0
@@ -3810,7 +3805,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1334300337
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3839,7 +3834,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1334300336}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 2109663825, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -3867,11 +3862,15 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 0}
-  m_OnClick:
+  toggleTransition: 1
+  graphic: {fileID: 0}
+  m_Group: {fileID: 1908130361}
+  onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
+    m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  m_IsOn: 0
 --- !u!1 &1353212936
 GameObject:
   m_ObjectHideFlags: 0
@@ -4132,57 +4131,6 @@ CanvasRenderer:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1432945545}
---- !u!1001 &1440761092
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 2071491246}
-    m_Modifications:
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4261560705286074, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114322598386417790, guid: 7157259e9e6b4e346ad20d10ccfd8c36,
-        type: 2}
-      propertyPath: inputs
-      value: 
-      objectReference: {fileID: 1908130360}
-    - target: {fileID: 1486480384351220, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 7157259e9e6b4e346ad20d10ccfd8c36, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &1440855776
 GameObject:
   m_ObjectHideFlags: 0
@@ -5256,9 +5204,9 @@ MonoBehaviour:
   heightSlider: {fileID: 200089782}
   randomButton: {fileID: 1360083338}
   resetButton: {fileID: 2062124999}
-  setStartButton: {fileID: 1334300338}
   showPolicy: {fileID: 211596315}
   help: {fileID: 778792618}
+  setStart: {fileID: 1334300338}
   dimension: {fileID: 649701082}
   mode: {fileID: 1440855778}
   maps:
@@ -5638,8 +5586,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 841058184}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

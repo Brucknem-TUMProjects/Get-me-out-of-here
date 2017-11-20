@@ -7,23 +7,38 @@ using UnityEngine.UI;
 public class TileClick : MonoBehaviour, IPointerClickHandler {
 
     private Vector2 position;
-    public Input inputs;
+    private Inputs inputs;
 
     // Use this for initialization
     void Start() {
         GetComponent<InputField>().onValueChanged.AddListener(delegate { OnValueChanged(); });
+        inputs = transform.parent.parent.GetChild(1).GetComponent<Inputs>();
     }
 
     void LeftClick()
     {
-        GameData.Instance.start = position;
-        GetComponent<Image>().color = Color.red;
-        GameData.Instance.CalculateAStern();
+        if (inputs.setStart.isOn)
+        {
+            if (GetComponent<Image>().color != Color.red && GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
+            {
+                GameData.Instance.start = position;
+                GetComponent<Image>().color = Color.red;
+                print(GameData.Instance.CalculateAStar());
+            }
+            else
+            {
+                GetComponent<Image>().color = Color.white;
+                GameData.Instance.shortestPath = new List<Vector2>();
+            }
+            inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
+            inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
+            //inputs.GetComponent<ToggleGroup>().SetAllTogglesOff();
+        }
     }
 
     void RightClick()
     {
-        print("RightCLick");
+        //print("RightCLick");
         Color color;
         if (GameData.Instance.grid[(int)position.x, (int)position.y] == GameData.Instance.MaxCost)
         {
@@ -75,7 +90,7 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
         if (eventData.button == PointerEventData.InputButton.Middle)
             MiddleClick();
 
-        if (eventData.button == PointerEventData.InputButton.Left && GameData.Instance.setStart)
+        if (eventData.button == PointerEventData.InputButton.Left && inputs.setStart)
             LeftClick();
     }
 

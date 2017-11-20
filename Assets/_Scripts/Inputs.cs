@@ -14,35 +14,42 @@ public class Inputs : MonoBehaviour {
     //public Button costButton;
     public Button randomButton;
     public Button resetButton;
-    public Button setStartButton;
     [Header("Toggles")]
     public Toggle showPolicy;
     //public Toggle inputCosts;
     //public Toggle setGoals;
     public Toggle help;
+    public Toggle setStart;
     [Header("Dropdowns")]
     public Dropdown dimension;
     public Dropdown mode;
 
-    //private bool setCosts = false;
-    //private bool showValues = false;
-    //private bool calculatingValues = false;
+    private ToggleGroup toggleGroup;
 
     public CreateMap[] maps;
     private CreateMap map;
-
+   
     // Use this for initialization
     void Start () {
+        toggleGroup = GetComponent<ToggleGroup>();
         map = maps[0];
         maps[1].gameObject.SetActive(false);
+
         foreach (CreateMap m in maps)
             m.Init();
+
         widthSlider.onValueChanged.AddListener(delegate {
             SetMapDimensions();
-            map.AdjustMap(); });
+            map.AdjustMap();
+            toggleGroup.SetAllTogglesOff();
+        });
+
         heightSlider.onValueChanged.AddListener(delegate {
             SetMapDimensions();
-            map.AdjustMap(); });
+            map.AdjustMap();
+            toggleGroup.SetAllTogglesOff();
+        });
+
         randomButton.onClick.AddListener(delegate {
             GetComponent<ToggleGroup>().SetAllTogglesOff();
             GameData.Instance.RandomGrid();
@@ -62,6 +69,7 @@ public class Inputs : MonoBehaviour {
                 map.AdjustMap();
             }
         });
+
         dimension.onValueChanged.AddListener(delegate
         {
             GameData.Instance.calculateValues = true;
@@ -76,34 +84,42 @@ public class Inputs : MonoBehaviour {
                 GameData.Instance.calculateValues = false;
             }
         });
+
         resetButton.onClick.AddListener(delegate {
-            showPolicy.isOn = false;
+            toggleGroup.SetAllTogglesOff();
+            mode.value = 0;
             GameData.Instance.InitGrid<int>(ref GameData.Instance.grid, 1);
             GameData.Instance.goals = new List<Vector2>();
+            GameData.Instance.shortestPath = new List<Vector2>();
             map.AdjustMap();
         });
+
         help.onValueChanged.AddListener(delegate
         {
             ToggleColorChange(help);
             help.transform.GetChild(1).gameObject.SetActive(help.isOn);
         });
-        setStartButton.onClick.AddListener(delegate
-        {
-            GameData.Instance.setStart = true;
 
+        setStart.onValueChanged.AddListener(delegate
+        {
+            //GameData.Instance.setStart = setStart.isOn;
+            ToggleColorChange(setStart);
         });
 
         mode.onValueChanged.AddListener(delegate
         {
-            if(mode.value == 0)
+            //toggleGroup.SetAllTogglesOff();
+
+            if (mode.value == 0)
             {
-                setStartButton.gameObject.SetActive(false);
+                setStart.gameObject.SetActive(false);
                 showPolicy.gameObject.SetActive(true);
             }
             else
             {
-                setStartButton.gameObject.SetActive(true);
+                setStart.gameObject.SetActive(true);
                 showPolicy.gameObject.SetActive(false);
+                setStart.isOn = true;
             }
         });
     }

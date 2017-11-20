@@ -55,37 +55,9 @@ public class CreateMap2D : CreateMap
                 }
             }
         }
+
+        ShowShortestPath();
     }
-
-    //void OnClick(Vector2 pos)
-    //{
-    //    if (inputs.setGoals.isOn)
-    //    {
-    //        if (!GameData3D.Instance.goals.Contains(pos))
-    //        {
-    //            if (!(GameData3D.Instance.grid[(int)pos.x, (int)pos.y] == GameData3D.Instance.MaxCost))
-    //            {
-    //                GameData3D.Instance.goals.Add(pos);
-    //            }
-    //        }
-    //        else
-    //            GameData3D.Instance.goals.Remove(pos);
-    //    }
-    //    else
-    //    {
-    //        if (GameData3D.Instance.grid[(int)pos.x, (int)pos.y] == GameData3D.Instance.MaxCost)
-    //            GameData3D.Instance.grid[(int)pos.x, (int)pos.y] = 0;
-    //        else
-    //            GameData3D.Instance.grid[(int)pos.x, (int)pos.y] = GameData3D.Instance.MaxCost;
-    //    }
-    //    AdjustMap();
-    //}
-
-    //void OnCostChanged(Vector2 pos, string cost)
-    //{
-    //    if (!inputs.ShowValues)
-    //        GameData3D.Instance.grid[(int)pos.x, (int)pos.y] = int.Parse(cost);
-    //}
     
     public override void ShowCostTable()
     {
@@ -99,7 +71,7 @@ public class CreateMap2D : CreateMap
                 {
                     tiles[pos].GetComponent<InputField>().image.color = Color.black;
                     tiles[pos].GetComponent<InputField>().interactable = false;
-                }
+                }                
                 else
                 {
                     tiles[pos].GetComponent<InputField>().interactable = true;
@@ -115,6 +87,23 @@ public class CreateMap2D : CreateMap
                     tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[x, y].ToString();
                 }
             }
+        }
+        ShowShortestPath();
+    }
+
+    public override void ShowShortestPath()
+    {
+        //print("Showing cost table");
+        foreach(Vector2 v in GameData.Instance.shortestPath)
+        {
+            Color color;
+            if (GameData.Instance.goals.Contains(v))
+                color = Color.blue;
+            else if (GameData.Instance.start == v)
+                color = Color.red;
+            else
+                color = Color.green;
+            tiles[v].GetComponent<InputField>().image.color = color;
         }
     }
 }

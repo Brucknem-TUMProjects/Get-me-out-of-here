@@ -92,4 +92,9 @@ public class CreateMap3D : CreateMap
             }
         }
     }
+
+    public override void ShowShortestPath()
+    {
+        throw new NotImplementedException();
+    }
 }

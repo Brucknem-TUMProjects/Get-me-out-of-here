@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ public class GameData {
     public int[,] grid;
     public int[,] value;
     public char[,] policy;
-    public int[,] astern;
+    public int[,] aStar;
     public Vector2[,] predecessors;
 
     //List for holding goals, deltas...
@@ -39,18 +40,22 @@ public class GameData {
 
     public int currentWidth, currentHeight;
     public bool calculateValues = false;
-    public bool setStart = false;
+    //public bool setStart = false;
 
     public Vector2 start;
 
     List<Vector2> closedList = new List<Vector2>();
     List<Vector2> openList = new List<Vector2>();
+    public List<Vector2> shortestPath = new List<Vector2>();
+    private Vector2 shortestPathGoal;
 
     public void SetGridSize(int x, int y)
     {
         grid = new int[x, y];
         value = new int[x, y];
         policy = new char[x, y];
+        aStar = new int[x, y];
+        predecessors = new Vector2[x, y];
     }
 
     public void InitGrid<T>(ref T[,] grid, T value)
@@ -66,6 +71,7 @@ public class GameData {
 
     public void RandomGrid()
     {
+        shortestPath = new List<Vector2>();
         goals = new List<Vector2>();
         for (int x = 0; x < currentWidth; x++)
         {
@@ -141,33 +147,63 @@ public class GameData {
         return new Color(1, (255 - cost / 2) / 255.0f, (255 - cost) / 255.0f);
     }
 
-    public bool CalculateAStern()
+    public string CalculateAStar()
     {
-        InitGrid<int>(ref astern, MaxCost);
+        closedList = new List<Vector2>();
+        openList = new List<Vector2>();
+        shortestPath = new List<Vector2>();
+        InitGrid<int>(ref aStar, MaxCost);
         InitGrid<Vector2>(ref predecessors, Vector2.zero);
 
         openList.Add(start);
         int x = (int)start.x;
         int y = (int)start.y;
-        astern[x, y] = 0;
+        aStar[x, y] = grid[x, y];
         predecessors[x, y] = start;
+
+        for (int i = 0; i < currentWidth; i++)
+        {
+            for (int j = 0; j < currentHeight; j++)
+            {
+                if (grid[i, j] == MaxCost)
+                {
+                    closedList.Add(new Vector2(x, y));
+                    aStar[x, y] = MaxCost;
+                }
+            }
+        }
 
         while (openList.Count != 0)
         {
-            Vector2 currentNode = openList[0];
-            openList.RemoveAt(0);
+            int lowest = 0;
+            for(int i = 0; i < openList.Count; i++)
+            {
+                if (aStar[(int)openList[i].x, (int)openList[i].y] < aStar[(int)openList[lowest].x, (int)openList[lowest].y])
+                    lowest = i;
+            }
+            Vector2 currentNode = openList[lowest];
+            openList.RemoveAt(lowest);
 
-            foreach (Vector2 goal in GameData.Instance.goals)
+            foreach (Vector2 goal in goals)
             {
                 if (currentNode == goal)
-                    return true;
+                {
+                    shortestPathGoal = currentNode;
+                    MakeShortestPath();
+                    string s = "";
+                    foreach (Vector2 v in shortestPath)
+                    {
+                        s += (v) + "\n";
+                    }
+                    return "Path found:\n" + s;
+                }
 
                 closedList.Add(currentNode);
 
                 ExpandNode(currentNode);
             }
         }
-        return false;
+        return "No path";
     }
 
     private void ExpandNode(Vector2 node)
@@ -181,23 +217,38 @@ public class GameData {
             int dx = x + (int)delta.x;
             int dy = y + (int)delta.y;
 
+            if (dx < 0 || dx >= currentWidth || dy < 0 || dy >= currentHeight)
+                continue;
+
             if (closedList.Contains(successor))
                 continue;
 
-            int tentative_g = astern[x, y] + grid[dx, dy];
+            //Maybe error
+            int tentative_g = aStar[x, y] + grid[dx, dy];
 
-            if (openList.Contains(successor) && tentative_g >= grid[dx, dy])
+            if (openList.Contains(successor) && tentative_g >= aStar[dx, dy])
                 continue;
 
             predecessors[dx, dy] = node;
-            astern[dx, dy] = tentative_g;
+            aStar[dx, dy] = tentative_g;
 
             if (!openList.Contains(successor))
                 openList.Add(successor);
         }
     }
 
+    private void MakeShortestPath()
+    {
+        int i = 0;
 
+        shortestPath.Add(shortestPathGoal);
+        while (!shortestPath.Contains(start) && i++ < 1000)
+        {
+            Vector2 t = predecessors[(int)shortestPath[shortestPath.Count-1].x, (int)shortestPath[shortestPath.Count - 1].y];
+            shortestPath.Add(t);
+        }
+    }
+    
     public string Print2DArray<T>(T[,] array)
     {
         string s = "";
