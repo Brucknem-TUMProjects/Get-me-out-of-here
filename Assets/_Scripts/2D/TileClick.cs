@@ -19,67 +19,75 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
     {
         if (inputs.setStart.isOn)
         {
-            if (GetComponent<Image>().color != Color.red && GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
+            if (GameData.Instance.start != position && GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
             {
                 GameData.Instance.start = position;
-                GetComponent<Image>().color = Color.red;
-                print(GameData.Instance.CalculateAStar());
+                CalculateAStar(true);
             }
             else
             {
-                GetComponent<Image>().color = Color.white;
-                GameData.Instance.shortestPath = new List<Vector2>();
+                CalculateAStar(false);
             }
-            inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
-            inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
-            //inputs.GetComponent<ToggleGroup>().SetAllTogglesOff();
         }
     }
 
     void RightClick()
     {
-        //print("RightCLick");
-        Color color;
-        if (GameData.Instance.grid[(int)position.x, (int)position.y] == GameData.Instance.MaxCost)
+        //print(!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position);
+        if (!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position)
         {
-            GameData.Instance.grid[(int)position.x, (int)position.y] = 1;
-            color = GameData.Instance.CostToColor(1);
-            GetComponent<InputField>().interactable = true;
+            //print("innen tile");
+            Color color;
+            if (GameData.Instance.grid[(int)position.x, (int)position.y] == GameData.Instance.MaxCost)
+            {
+                GameData.Instance.grid[(int)position.x, (int)position.y] = 1;
+                GameData.Instance.walls[(int)position.x, (int)position.y] = false;
+                color = GameData.Instance.CostToColor(1);
+                GetComponent<InputField>().interactable = true;
+            }
+            else
+            {
+                GameData.Instance.grid[(int)position.x, (int)position.y] = GameData.Instance.MaxCost;
+                GameData.Instance.walls[(int)position.x, (int)position.y] = true;
+                color = GameData.Instance.occupied;
+                GetComponent<InputField>().interactable = false;
+            }
+            GetComponent<Image>().color = color;
+            CalculateAStar(true);
         }
-        else
-        {
-            GameData.Instance.grid[(int)position.x, (int)position.y] = GameData.Instance.MaxCost;
-            color = Color.black;
-            GetComponent<InputField>().interactable = false;
-        }
-        GetComponent<Image>().color = color;
     }
 
     void OnValueChanged()
     {
-        if (!GameData.Instance.calculateValues)
+        if (!inputs.PreventInputChange)
         {
+            //print("Value changed");
             int value = int.Parse(GetComponent<InputField>().text);
             GameData.Instance.grid[(int)position.x, (int)position.y] = value;
             GetComponent<Image>().color = GameData.Instance.CostToColor(value);
+            CalculateAStar(true);
         }
     }
 
     void MiddleClick()
     {
-        Color color;
-        if (!GameData.Instance.goals.Contains(position))
+        if (GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
         {
-            GameData.Instance.goals.Add(position);
-            color = Color.blue;
-        }
-        else
-        {
-            GameData.Instance.goals.Remove(position);
-            color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)position.x, (int)position.y]);
-        }
+            Color color;
+            if (!GameData.Instance.goals.Contains(position))
+            {
+                GameData.Instance.goals.Add(position);
+                color = GameData.Instance.goal;
+            }
+            else
+            {
+                GameData.Instance.goals.Remove(position);
+                color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)position.x, (int)position.y]);
+            }
 
-        GetComponent<Image>().color = color;
+            GetComponent<Image>().color = color;
+            CalculateAStar(true);
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -103,5 +111,18 @@ public class TileClick : MonoBehaviour, IPointerClickHandler {
     public Vector2 GetPosition()
     {
         return position;
+    }
+
+    private void CalculateAStar(bool preventRemove)
+    {
+        if (!preventRemove)
+        {
+            GameData.Instance.start = new Vector2(-1, -1);
+            GameData.Instance.shortestPath = new List<Vector2>();
+        }
+        GameData.Instance.CalculateAStar();
+        //RedrawMap(preventRemove);
+        inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
+        inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
     }
 }

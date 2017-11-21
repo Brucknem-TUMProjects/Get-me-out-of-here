@@ -6,8 +6,9 @@ using UnityEngine.EventSystems;
 
 public class CubeClick : MonoBehaviour {
 
-    float clickStartTime;
-    InputField cost;
+    private float clickStartTime;
+    private InputField cost;
+    public static Inputs inputs;
 
 	// Use this for initialization
 	void Start () {
@@ -15,46 +16,68 @@ public class CubeClick : MonoBehaviour {
         int v = GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z];
         cost.text = v.ToString();
         cost.onValueChanged.AddListener(delegate { OnInputFieldChanged(); });
+        if (inputs == null)
+            inputs = GameObject.Find("Inputs").GetComponent<Inputs>();// transform.parent.parent.GetChild(3).GetChild(1).GetComponent<Inputs>();
     }
 	
-	// Update is called once per frame
-	void Update () {
-
-    }
-
     private void OnMouseOver()
     {
-
-        if (Input.GetMouseButtonDown(1)) clickStartTime = Time.time;
+        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0)) clickStartTime = Time.time;
+        if (Input.GetMouseButtonUp(0) && Time.time - clickStartTime < 0.25f) LeftClick();
         if (Input.GetMouseButtonUp(1) && Time.time - clickStartTime < 0.25f) RightClick();
         if (Input.GetMouseButtonDown(2)) MiddleClick();
     }
 
+    private void LeftClick()
+    {
+        if (inputs.setStart.isOn)
+        {
+            Vector2 position = new Vector2(transform.position.x, transform.position.z);
+            if (GameData.Instance.start != position && GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
+            {
+                GameData.Instance.start = position;
+                CalculateAStar(true);
+            }
+            else
+            {
+                CalculateAStar(false);
+            }
+        }
+    }
+
     private void RightClick()
     {
-        //Vector2 position = new Vector2(transform.position.x, transform.position.z);
+        //print("Right Click");
         int x = (int)transform.position.x;
         int y = (int)transform.position.z;
-        //if (!GameData3D.Instance.goals.Contains(position))
+        Vector2 position = new Vector2(x, y);
+        print(!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position);
+        if (!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position)
         {
+            //print("innen cube");
+
             Color color;
-        
+
+            //print(x + " - " + y);
+            //print(GameData.Instance.grid[x, y]);
             if (GameData.Instance.grid[x, y] == GameData.Instance.MaxCost)
             {
                 GameData.Instance.grid[x, y] = 1;
+                GameData.Instance.walls[x, y] = false;
                 color = GameData.Instance.CostToColor(1);
                 SetChildrenOff();
             }
             else
             {
                 GameData.Instance.grid[x, y] = GameData.Instance.MaxCost;
-                color = Color.black;
+                GameData.Instance.walls[x, y] = true;
+                color = GameData.Instance.occupied;
                 ShowBush();
             }
 
             GetComponent<Renderer>().material.color = color;
-            GameData.Instance.Print2DArray<int>(GameData.Instance.grid);
-
+            //GameData.Instance.Print2DArray<int>(GameData.Instance.grid);
+            CalculateAStar(true);
         }
     }
 
@@ -78,81 +101,51 @@ public class CubeClick : MonoBehaviour {
     {
         Color color;
         Vector2 position = new Vector2(transform.position.x, transform.position.z);
-        if (!GameData.Instance.goals.Contains(position))
+        if (GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
         {
-            GameData.Instance.goals.Add(position);
-            color = Color.blue;
-        }
-        else
-        {
-            GameData.Instance.goals.Remove(position);
-            color = Color.white;
-        }
+            if (!GameData.Instance.goals.Contains(position))
+            {
+                GameData.Instance.goals.Add(position);
+                color = GameData.Instance.goal;
+            }
+            else
+            {
+                GameData.Instance.goals.Remove(position);
+                color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)position.x, (int)position.y]);
+            }
 
-        GetComponent<Renderer>().material.color = color;
-        foreach (Vector2 v in GameData.Instance.goals)
-            print(v);
+            GetComponent<Renderer>().material.color = color;
+            CalculateAStar(true);
+        }
     }
-
-    //private void LeftClick()
-    //{
-    //    Color color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z]);
-
-    //    //GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z]);
-    //    if (GameData3D.Instance.setGoals)
-    //    {
-    //        if (!GameData3D.Instance.goals.Contains(new Vector2(transform.position.x, transform.position.z)))
-    //        {
-    //            GameData3D.Instance.goals.Add(new Vector2(transform.position.x, transform.position.z));
-    //            //GetComponent<Renderer>().material.color = Color.blue;
-    //            color = Color.blue;
-    //        }
-    //        else
-    //        {
-    //            GameData3D.Instance.goals.Remove(new Vector2(transform.position.x, transform.position.z));
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (GameData3D.Instance.goals.Contains(new Vector2(transform.position.x, transform.position.z)))
-    //        {
-    //            //GetComponent<Renderer>().material.color = Color.blue;
-    //            color = Color.blue;
-    //        }
-    //        else
-    //        {
-    //            if (!(GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z] == GameData3D.Instance.MaxCost))
-    //            {
-    //                //GetComponent<Renderer>().material.color = Color.black;
-    //                color = Color.black;
-    //                GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z] = GameData3D.Instance.MaxCost;
-    //                transform.GetChild(1).gameObject.SetActive(true);
-    //            }
-    //            else
-    //            {
-    //                GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z] = 1;
-    //                //GetComponent<Renderer>().material.color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z]);
-    //                color = GameData3D.Instance.CostToColor(GameData3D.Instance.grid[(int)transform.position.x, (int)transform.position.z]);
-    //                transform.GetChild(1).gameObject.SetActive(false);
-    //            }
-    //        }
-    //    }
-    //    GetComponent<Renderer>().material.color = color;
-    //}
 
     void OnInputFieldChanged()
     {
-        //if (!GameData3D.Instance.calculateValues)
-        //{
+        if (!inputs.PreventInputChange)
+        {
             int value = int.Parse(cost.text);
             GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z] = value;
             GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(value);
-        //}
+            CalculateAStar(true);
+        }
     }
 
     public void UpdateValue()
     {
         string value = (GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z]).ToString();
         cost.text = value;
+    }
+
+    private void CalculateAStar(bool preventRemove)
+    {
+        if (!preventRemove)
+        {
+            GameData.Instance.start = new Vector2(-1, -1);
+            GameData.Instance.shortestPath = new List<Vector2>();
+        }
+        GameData.Instance.CalculateAStar();
+        //RedrawMap(preventRemove);
+        inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
+        inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
     }
 }

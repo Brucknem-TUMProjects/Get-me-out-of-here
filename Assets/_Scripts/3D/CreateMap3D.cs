@@ -20,8 +20,10 @@ public class CreateMap3D : CreateMap
             
             tile.Value.transform.GetChild(0).gameObject.SetActive(false);
             tile.Value.transform.GetChild(1).gameObject.SetActive(false);
+            tile.Value.transform.GetChild(2).gameObject.SetActive(true);
+            tile.Value.transform.GetChild(3).gameObject.SetActive(false);
         }
-        
+
         for (int x = 0; x < GameData.Instance.currentWidth; x++)
         {
             for (int y = 0; y < GameData.Instance.currentHeight; y++)
@@ -40,11 +42,11 @@ public class CreateMap3D : CreateMap
 
                 if (GameData.Instance.goals.Contains(pos))
                 {
-                    tiles[pos].GetComponent<Renderer>().material.color = Color.blue;
+                    tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.goal;
                 }
                 else if (GameData.Instance.grid[x, y] == GameData.Instance.MaxCost)
                 {
-                    tiles[pos].GetComponent<Renderer>().material.color = Color.black;
+                    tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.occupied;
                     tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
                 }
                 else
@@ -54,8 +56,9 @@ public class CreateMap3D : CreateMap
                 }
             }
         }
+        ShowShortestPath();
     }
-    
+
     public override void ShowCostTable()
     {
         for (int x = 0; x < GameData.Instance.currentWidth; x++)
@@ -64,25 +67,37 @@ public class CreateMap3D : CreateMap
             {
                 Vector2 pos = new Vector2(x, y);
                 tiles[pos].SetActive(true);
+                tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
                 if (GameData.Instance.value[x, y] == GameData.Instance.MaxCost)
                 {
-                    tiles[pos].GetComponent<Renderer>().material.color = Color.black;
-                    tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
-                    tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
+                    if (GameData.Instance.walls[x, y])
+                    {
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.occupied;
+                        tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                        tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
+                        tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.unreachable;
+                        tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                        tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+                        tiles[pos].transform.GetChild(3).gameObject.SetActive(true);
+                    }
                 }
                 else
                 {
                     tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
                     if (GameData.Instance.policy[x, y] == '*')
                     {
-                        tiles[pos].GetComponent<Renderer>().material.color = Color.blue;
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.goal;
                         tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(0, 0, -90);
                         tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(2, .4f, .4f);
                         tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 2.5f, 0);
                     }
                     else
                     {
-                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[x,y]);
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[x, y]);
                         int rotation = Array.IndexOf(GameData.Instance.deltaNames, GameData.Instance.policy[x, y]);
                         tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
                         tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
@@ -91,10 +106,22 @@ public class CreateMap3D : CreateMap
                 }
             }
         }
+        ShowShortestPath();
     }
 
     public override void ShowShortestPath()
     {
-        throw new NotImplementedException();
+        //print("Showing cost table");
+        foreach (Vector2 v in GameData.Instance.shortestPath)
+        {
+            Color color;
+            if (GameData.Instance.goals.Contains(v))
+                color = GameData.Instance.goal;
+            else if (GameData.Instance.start == v)
+                color = GameData.Instance.begin;
+            else
+                color = GameData.Instance.onPath;
+            tiles[v].GetComponent<Renderer>().material.color = color;
+        }
     }
 }

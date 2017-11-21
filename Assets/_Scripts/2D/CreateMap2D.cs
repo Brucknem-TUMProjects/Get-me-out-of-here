@@ -43,10 +43,10 @@ public class CreateMap2D : CreateMap
                 {
                     int cost = GameData.Instance.grid[x, y];
                     tiles[pos].GetComponent<InputField>().text = cost.ToString();
-                    tiles[pos].GetComponent<Image>().color = Color.blue;
+                    tiles[pos].GetComponent<Image>().color = GameData.Instance.goal;
                 }
                 else if (GameData.Instance.grid[x, y] == GameData.Instance.MaxCost)
-                    tiles[pos].GetComponent<Image>().color = Color.black;
+                    tiles[pos].GetComponent<Image>().color = GameData.Instance.occupied;
                 else
                 {
                     int cost = GameData.Instance.grid[x, y];
@@ -67,9 +67,17 @@ public class CreateMap2D : CreateMap
             {
                 Vector2 pos = new Vector2(x, y);
                 tiles[pos].SetActive(true);
+                tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
+
                 if (GameData.Instance.value[x, y] == GameData.Instance.MaxCost)
                 {
-                    tiles[pos].GetComponent<InputField>().image.color = Color.black;
+                    tiles[pos].GetComponent<InputField>().text = "";
+
+                    if (GameData.Instance.walls[x, y])
+                        tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.occupied;
+                    else
+                        tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.unreachable;
+
                     tiles[pos].GetComponent<InputField>().interactable = false;
                 }                
                 else
@@ -77,13 +85,12 @@ public class CreateMap2D : CreateMap
                     tiles[pos].GetComponent<InputField>().interactable = true;
                     if (GameData.Instance.goals.Contains(pos))
                     {
-                        tiles[pos].GetComponent<InputField>().image.color = Color.blue;
+                        tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.goal;
                     }
                     else
                     {
-                        tiles[pos].GetComponent<InputField>().image.color = Color.white;
+                        tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.CostToColor(GameData.Instance.grid[x,y]);
                     }
-                    tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
                     tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[x, y].ToString();
                 }
             }
@@ -98,11 +105,11 @@ public class CreateMap2D : CreateMap
         {
             Color color;
             if (GameData.Instance.goals.Contains(v))
-                color = Color.blue;
+                color = GameData.Instance.goal;
             else if (GameData.Instance.start == v)
-                color = Color.red;
+                color = GameData.Instance.begin;
             else
-                color = Color.green;
+                color = GameData.Instance.onPath;
             tiles[v].GetComponent<InputField>().image.color = color;
         }
     }

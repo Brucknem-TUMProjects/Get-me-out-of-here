@@ -23,12 +23,22 @@ public class Inputs : MonoBehaviour {
     [Header("Dropdowns")]
     public Dropdown dimension;
     public Dropdown mode;
+    [Header("Camera")]
+    public MoveCamera Viewer;
 
     private ToggleGroup toggleGroup;
 
     public CreateMap[] maps;
     private CreateMap map;
-   
+    private bool preventInputChange;
+    public bool PreventInputChange
+    {
+        get
+        {
+            return preventInputChange;
+        }
+    }
+
     // Use this for initialization
     void Start () {
         toggleGroup = GetComponent<ToggleGroup>();
@@ -40,55 +50,58 @@ public class Inputs : MonoBehaviour {
 
         widthSlider.onValueChanged.AddListener(delegate {
             SetMapDimensions();
-            map.AdjustMap();
             toggleGroup.SetAllTogglesOff();
+            map.AdjustMap();
         });
 
         heightSlider.onValueChanged.AddListener(delegate {
             SetMapDimensions();
-            map.AdjustMap();
             toggleGroup.SetAllTogglesOff();
+            map.AdjustMap();
         });
 
         randomButton.onClick.AddListener(delegate {
             GetComponent<ToggleGroup>().SetAllTogglesOff();
             GameData.Instance.RandomGrid();
-            map.AdjustMap(); });
+            map.AdjustMap();
+        });
 
         showPolicy.onValueChanged.AddListener(delegate {
             ToggleColorChange(showPolicy);
+            preventInputChange = true;
             if (showPolicy.isOn)
             {
-                GameData.Instance.calculateValues = true;
                 GameData.Instance.CalculateValue();
                 map.ShowCostTable();
-                GameData.Instance.calculateValues = false;
             }
             else
             {
                 map.AdjustMap();
             }
+            preventInputChange = false;
         });
 
         dimension.onValueChanged.AddListener(delegate
         {
-            GameData.Instance.calculateValues = true;
+            preventInputChange = true;
             map.gameObject.SetActive(false);
             map = maps[dimension.value];
             map.gameObject.SetActive(true);
             map.AdjustMap();
             if (showPolicy.isOn)
             {
-                GameData.Instance.calculateValues = true;
+                preventInputChange = true;
                 map.ShowCostTable();
-                GameData.Instance.calculateValues = false;
+                preventInputChange = false;
             }
+            Viewer.isEnabled = dimension.value == 1;
         });
 
         resetButton.onClick.AddListener(delegate {
             toggleGroup.SetAllTogglesOff();
             mode.value = 0;
             GameData.Instance.InitGrid<int>(ref GameData.Instance.grid, 1);
+            GameData.Instance.InitGrid<bool>(ref GameData.Instance.walls, false);
             GameData.Instance.goals = new List<Vector2>();
             GameData.Instance.shortestPath = new List<Vector2>();
             map.AdjustMap();
@@ -109,7 +122,7 @@ public class Inputs : MonoBehaviour {
         mode.onValueChanged.AddListener(delegate
         {
             //toggleGroup.SetAllTogglesOff();
-
+            
             if (mode.value == 0)
             {
                 setStart.gameObject.SetActive(false);

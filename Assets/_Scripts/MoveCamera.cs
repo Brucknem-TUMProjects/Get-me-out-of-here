@@ -11,12 +11,16 @@ public class MoveCamera : MonoBehaviour {
     public int moveSpeed;
     [Range(0, 50)]
     public int zoomSpeed;
+    [Range(0, 50)]
+    public int maxDistance;
+
+    public bool isEnabled;
 
     Vector3 oldMousePosition;
 
     private bool isMoving;
     private bool isRotating;
-    private float zoomFactor;
+    private float isZooming;
     private bool mouseHeld;
 
     private int moveButton = 0;
@@ -27,30 +31,57 @@ public class MoveCamera : MonoBehaviour {
     void Update () {
         //print("Old: " + oldMousePosition + " - New: " + Input.mousePosition);
 
+        if (!isEnabled)
+            return;
+
         isMoving = Input.GetMouseButton(moveButton);
         isRotating = Input.GetMouseButton(rotateButton);
-        zoomFactor = Input.GetAxis("Mouse ScrollWheel");
+        isZooming = Input.GetAxis("Mouse ScrollWheel");
 
-        Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - oldMousePosition);
+        Vector3 mousePosition = Camera.main.ScreenToViewportPoint(Input.mousePosition - oldMousePosition);
 
         if (isMoving)
         {
-            Vector3 move = new Vector3(-pos.x * moveSpeed, -pos.y * moveSpeed, 0);
+            float x = -mousePosition.x * moveSpeed;
+            float y = -mousePosition.y * moveSpeed;
+
+            Vector3 move = new Vector3(x, y, 0);
             transform.Translate(move, Space.Self);
+
+            Clamp();
         }
 
         if (isRotating)
         {
-            transform.RotateAround(transform.position, transform.right, -pos.y * turnSpeed);
-            transform.RotateAround(transform.position, Vector3.up, pos.x * turnSpeed);
+            transform.RotateAround(transform.position, transform.right, -mousePosition.y * turnSpeed);
+            transform.RotateAround(transform.position, Vector3.up, mousePosition.x * turnSpeed);
+
+            Clamp();
         }
 
-        if(zoomFactor != 0)
+        if(isZooming != 0)
         {
-            Vector3 move = transform.forward * zoomSpeed * zoomFactor;
+            Vector3 move = transform.forward * zoomSpeed * isZooming;
             transform.Translate(move, Space.World);
+
+            Clamp();
         }
 
         oldMousePosition = Input.mousePosition;
+    }
+
+    private void Clamp()
+    {
+        float x = Mathf.Clamp(transform.position.x, -maxDistance, GameData.Instance.currentWidth + maxDistance);
+        float y = Mathf.Clamp(transform.position.y, 0, Mathf.Max(GameData.Instance.currentWidth, GameData.Instance.currentHeight) + 10);
+        float z = Mathf.Clamp(transform.position.z, -maxDistance, GameData.Instance.currentHeight + maxDistance);
+        transform.position = new Vector3(x, y, z);
+
+        x = transform.rotation.eulerAngles.x;
+        if (x > 225)
+            x = 0;
+        else if (x > 85)
+            x = 85;
+        transform.rotation = Quaternion.Euler(x, transform.rotation.eulerAngles.y, 0/*transform.rotation.eulerAngles.z*/);
     }
 }

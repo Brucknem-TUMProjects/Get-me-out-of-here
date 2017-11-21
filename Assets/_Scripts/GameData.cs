@@ -26,6 +26,7 @@ public class GameData {
 
     //Tables for holding the map
     public int[,] grid;
+    public bool[,] walls;
     public int[,] value;
     public char[,] policy;
     public int[,] aStar;
@@ -39,19 +40,27 @@ public class GameData {
     public int MaxCost { get { return 100000000; } }
 
     public int currentWidth, currentHeight;
-    public bool calculateValues = false;
+    //public bool calculateValues = false;
     //public bool setStart = false;
 
-    public Vector2 start;
+    public Vector2 start = new Vector2(-1, -1);
 
     List<Vector2> closedList = new List<Vector2>();
     List<Vector2> openList = new List<Vector2>();
     public List<Vector2> shortestPath = new List<Vector2>();
     private Vector2 shortestPathGoal;
 
+    public Color occupied = Color.black;
+    public Color goal = Color.blue;
+    public Color begin = Color.red;
+    public Color onPath = Color.green;
+    public Color unreachable = Color.grey;
+
+
     public void SetGridSize(int x, int y)
     {
         grid = new int[x, y];
+        walls = new bool[x, y];
         value = new int[x, y];
         policy = new char[x, y];
         aStar = new int[x, y];
@@ -73,6 +82,7 @@ public class GameData {
     {
         shortestPath = new List<Vector2>();
         goals = new List<Vector2>();
+        start = new Vector2(-1, -1);
         for (int x = 0; x < currentWidth; x++)
         {
             for (int y = 0; y < currentHeight; y++)
@@ -80,7 +90,16 @@ public class GameData {
                 int randomCost = UnityEngine.Random.Range(0, 255);
                 if (randomCost <= 200 && UnityEngine.Random.Range(0, 100) < 3)
                     goals.Add(new Vector2( x, y ));
-                grid[x, y] = randomCost > 200 ? MaxCost : randomCost;
+                if (randomCost > 200)
+                {
+                    grid[x, y] = MaxCost;
+                    walls[x, y] = true;
+                }
+                else
+                {
+                    grid[x, y] = randomCost;
+                    walls[x, y] = false;
+                }
             }
         }
     }
@@ -149,61 +168,68 @@ public class GameData {
 
     public string CalculateAStar()
     {
-        closedList = new List<Vector2>();
-        openList = new List<Vector2>();
-        shortestPath = new List<Vector2>();
-        InitGrid<int>(ref aStar, MaxCost);
-        InitGrid<Vector2>(ref predecessors, Vector2.zero);
-
-        openList.Add(start);
-        int x = (int)start.x;
-        int y = (int)start.y;
-        aStar[x, y] = grid[x, y];
-        predecessors[x, y] = start;
-
-        for (int i = 0; i < currentWidth; i++)
+        if (start.x != -1)
         {
-            for (int j = 0; j < currentHeight; j++)
-            {
-                if (grid[i, j] == MaxCost)
-                {
-                    closedList.Add(new Vector2(x, y));
-                    aStar[x, y] = MaxCost;
-                }
-            }
-        }
+            closedList = new List<Vector2>();
+            openList = new List<Vector2>();
+            shortestPath = new List<Vector2>();
+            InitGrid<int>(ref aStar, MaxCost);
+            InitGrid<Vector2>(ref predecessors, Vector2.zero);
 
-        while (openList.Count != 0)
-        {
-            int lowest = 0;
-            for(int i = 0; i < openList.Count; i++)
-            {
-                if (aStar[(int)openList[i].x, (int)openList[i].y] < aStar[(int)openList[lowest].x, (int)openList[lowest].y])
-                    lowest = i;
-            }
-            Vector2 currentNode = openList[lowest];
-            openList.RemoveAt(lowest);
+            openList.Add(start);
+            int x = (int)start.x;
+            int y = (int)start.y;
+            aStar[x, y] = grid[x, y];
+            predecessors[x, y] = start;
 
-            foreach (Vector2 goal in goals)
+            string s = "Walls:\n";
+            for (int i = 0; i < currentWidth; i++)
             {
-                if (currentNode == goal)
+                for (int j = 0; j < currentHeight; j++)
                 {
-                    shortestPathGoal = currentNode;
-                    MakeShortestPath();
-                    string s = "";
-                    foreach (Vector2 v in shortestPath)
+                    if (grid[i, j] == MaxCost)
                     {
-                        s += (v) + "\n";
+                        closedList.Add(new Vector2(i, j));
+                        aStar[i, j] = MaxCost;
                     }
-                    return "Path found:\n" + s;
                 }
-
-                closedList.Add(currentNode);
-
-                ExpandNode(currentNode);
             }
+            s += "---------------------------------\n\n";
+
+            while (openList.Count != 0)
+            {
+                int lowest = 0;
+                for (int i = 0; i < openList.Count; i++)
+                {
+                    if (aStar[(int)openList[i].x, (int)openList[i].y] < aStar[(int)openList[lowest].x, (int)openList[lowest].y])
+                        lowest = i;
+                }
+                Vector2 currentNode = openList[lowest];
+                openList.RemoveAt(lowest);
+
+                foreach (Vector2 goal in goals)
+                {
+                    if (currentNode == goal)
+                    {
+                        shortestPathGoal = currentNode;
+                        MakeShortestPath();
+                        //string s = "";
+                        foreach (Vector2 v in shortestPath)
+                        {
+                            s += (v) + "\n";
+                        }
+                        return "Path found:\n" + s;
+                    }
+
+                    closedList.Add(currentNode);
+
+                    ExpandNode(currentNode);
+                }
+            }
+            shortestPath.Add(start);
+            return "No path";
         }
-        return "No path";
+        return "No start set";
     }
 
     private void ExpandNode(Vector2 node)
