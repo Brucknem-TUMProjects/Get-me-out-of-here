@@ -51,7 +51,7 @@ public class CubeClick : MonoBehaviour {
         int x = (int)transform.position.x;
         int y = (int)transform.position.z;
         Vector2 position = new Vector2(x, y);
-        print(!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position);
+        //print(!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position);
         if (!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position)
         {
             //print("innen cube");

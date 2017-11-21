@@ -50,13 +50,16 @@ public class Inputs : MonoBehaviour {
 
         widthSlider.onValueChanged.AddListener(delegate {
             SetMapDimensions();
+            showPolicy.isOn = false;
+            setStart.isOn = false;
             toggleGroup.SetAllTogglesOff();
             map.AdjustMap();
         });
 
         heightSlider.onValueChanged.AddListener(delegate {
             SetMapDimensions();
-            toggleGroup.SetAllTogglesOff();
+            showPolicy.isOn = false;
+            setStart.isOn = false;
             map.AdjustMap();
         });
 
