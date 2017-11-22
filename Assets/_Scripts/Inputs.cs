@@ -1,6 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class Inputs : MonoBehaviour {
@@ -30,17 +30,31 @@ public class Inputs : MonoBehaviour {
 
     public CreateMap[] maps;
     private CreateMap map;
-    //private bool preventInputChange;
-    //public bool PreventInputChange
-    //{
-    //    get
-    //    {
-    //        return preventInputChange;
-    //    }
-    //}
+
+    private class PreventCameraMove : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    {
+        MoveCamera cam;
+        public void SetCamera(MoveCamera c)
+        {
+            cam = c;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            cam.isEnabled = false;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            cam.isEnabled = true;
+        }
+    }
 
     // Use this for initialization
     void Start () {
+        PreventCameraMove pcm = gameObject.AddComponent<PreventCameraMove>();
+        pcm.SetCamera(Viewer);
+
         toggleGroup = GetComponent<ToggleGroup>();
         map = maps[0];
         maps[1].gameObject.SetActive(false);
@@ -49,22 +63,13 @@ public class Inputs : MonoBehaviour {
             m.Init();
 
         widthSlider.onValueChanged.AddListener(delegate {
-            SetMapDimensions();
-            showPolicy.isOn = false;
-            setStart.isOn = false;
-            GameData.Instance.RemoveShortestPath();
-            toggleGroup.SetAllTogglesOff();
-            map.AdjustMap();
+            OnSliderValueChange();
         });
 
         heightSlider.onValueChanged.AddListener(delegate {
-            SetMapDimensions();
-            showPolicy.isOn = false;
-            setStart.isOn = false;
-            GameData.Instance.RemoveShortestPath();
-            map.AdjustMap();
+            OnSliderValueChange();
         });
-
+        
         randomButton.onClick.AddListener(delegate {
             //preventInputChange = true;
             GetComponent<ToggleGroup>().SetAllTogglesOff();
@@ -143,6 +148,21 @@ public class Inputs : MonoBehaviour {
                 setStart.isOn = true;
             }
         });
+    }
+
+    private void OnSliderHover()
+    {
+        print("hoveeeeeer");
+    }
+
+    private void OnSliderValueChange()
+    {
+        SetMapDimensions();
+        showPolicy.isOn = false;
+        //setStart.isOn = false;
+        GameData.Instance.RemoveShortestPath();
+        toggleGroup.SetAllTogglesOff();
+        map.AdjustMap();
     }
 
     void ToggleColorChange(Toggle t)
