@@ -38,6 +38,8 @@ public class GameData {
     public char[] deltaNames = new char[] { '>', 'v', '<', '^' };
 
     public int MaxCost { get { return 100000000; } }
+    public int MaxWidth { get { return grid.GetLength(0); } }
+    public int MaxHeight { get { return grid.GetLength(1); } }
 
     public int currentWidth, currentHeight;
     //public bool calculateValues = false;
@@ -106,6 +108,7 @@ public class GameData {
 
     public void CalculateValue()
     {
+        Debug.Log("Calculating optimal policy");
         value = new int[currentWidth, currentHeight];
 
         InitGrid<int>(ref value, MaxCost);
@@ -168,8 +171,10 @@ public class GameData {
 
     public string CalculateAStar()
     {
+        Debug.Log("Calculating A*");
         if (start.x != -1)
         {
+            Debug.Log("start is set");
             closedList = new List<Vector2>();
             openList = new List<Vector2>();
             shortestPath = new List<Vector2>();
@@ -273,6 +278,13 @@ public class GameData {
             Vector2 t = predecessors[(int)shortestPath[shortestPath.Count-1].x, (int)shortestPath[shortestPath.Count - 1].y];
             shortestPath.Add(t);
         }
+    }
+
+    public void RemoveShortestPath()
+    {
+        start = new Vector2(-1, -1);
+        shortestPath = new List<Vector2>();
+        shortestPathGoal = new Vector2(-1, -1);
     }
     
     public string Print2DArray<T>(T[,] array)

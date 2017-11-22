@@ -30,14 +30,14 @@ public class Inputs : MonoBehaviour {
 
     public CreateMap[] maps;
     private CreateMap map;
-    private bool preventInputChange;
-    public bool PreventInputChange
-    {
-        get
-        {
-            return preventInputChange;
-        }
-    }
+    //private bool preventInputChange;
+    //public bool PreventInputChange
+    //{
+    //    get
+    //    {
+    //        return preventInputChange;
+    //    }
+    //}
 
     // Use this for initialization
     void Start () {
@@ -52,6 +52,7 @@ public class Inputs : MonoBehaviour {
             SetMapDimensions();
             showPolicy.isOn = false;
             setStart.isOn = false;
+            GameData.Instance.RemoveShortestPath();
             toggleGroup.SetAllTogglesOff();
             map.AdjustMap();
         });
@@ -60,18 +61,21 @@ public class Inputs : MonoBehaviour {
             SetMapDimensions();
             showPolicy.isOn = false;
             setStart.isOn = false;
+            GameData.Instance.RemoveShortestPath();
             map.AdjustMap();
         });
 
         randomButton.onClick.AddListener(delegate {
+            //preventInputChange = true;
             GetComponent<ToggleGroup>().SetAllTogglesOff();
             GameData.Instance.RandomGrid();
             map.AdjustMap();
+            //preventInputChange = false;
         });
 
         showPolicy.onValueChanged.AddListener(delegate {
             ToggleColorChange(showPolicy);
-            preventInputChange = true;
+            //preventInputChange = true;
             if (showPolicy.isOn)
             {
                 GameData.Instance.CalculateValue();
@@ -81,21 +85,21 @@ public class Inputs : MonoBehaviour {
             {
                 map.AdjustMap();
             }
-            preventInputChange = false;
+            //preventInputChange = false;
         });
 
         dimension.onValueChanged.AddListener(delegate
         {
-            preventInputChange = true;
+            //preventInputChange = true;
             map.gameObject.SetActive(false);
             map = maps[dimension.value];
             map.gameObject.SetActive(true);
             map.AdjustMap();
             if (showPolicy.isOn)
             {
-                preventInputChange = true;
+                //preventInputChange = true;
                 map.ShowCostTable();
-                preventInputChange = false;
+                //preventInputChange = false;
             }
             Viewer.isEnabled = dimension.value == 1;
         });
@@ -130,6 +134,7 @@ public class Inputs : MonoBehaviour {
             {
                 setStart.gameObject.SetActive(false);
                 showPolicy.gameObject.SetActive(true);
+                setStart.isOn = false;
             }
             else
             {

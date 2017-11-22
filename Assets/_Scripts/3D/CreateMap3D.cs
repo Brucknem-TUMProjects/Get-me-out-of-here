@@ -6,53 +6,65 @@ using UnityEngine.UI;
 
 public class CreateMap3D : CreateMap
 {
-    [Header("GameObjects")]
-    public GameObject tile;
-    
-
     public override void AdjustMap()
     {
         //float tileDim = Mathf.Min(1.0f * mapHeight / GameData3D.Instance.currentHeight, 1.0f * mapWidth / GameData3D.Instance.currentWidth, 30);
 
-        foreach (KeyValuePair<Vector2, GameObject> tile in tiles)
-        {
-            tile.Value.SetActive(false);
+        //foreach (KeyValuePair<Vector2, GameObject> tile in tiles)
+        //{
+        //    tile.Value.SetActive(false);
             
-            tile.Value.transform.GetChild(0).gameObject.SetActive(false);
-            tile.Value.transform.GetChild(1).gameObject.SetActive(false);
-            tile.Value.transform.GetChild(2).gameObject.SetActive(true);
-            tile.Value.transform.GetChild(3).gameObject.SetActive(false);
-        }
+        //    tile.Value.transform.GetChild(0).gameObject.SetActive(false);
+        //    tile.Value.transform.GetChild(1).gameObject.SetActive(false);
+        //    tile.Value.transform.GetChild(2).gameObject.SetActive(true);
+        //    tile.Value.transform.GetChild(3).gameObject.SetActive(false);
+        //}
 
-        for (int x = 0; x < GameData.Instance.currentWidth; x++)
+        for (int x = 0; x < GameData.Instance.MaxWidth; x++)
         {
-            for (int y = 0; y < GameData.Instance.currentHeight; y++)
+            for (int y = 0; y < GameData.Instance.MaxHeight; y++)
             {
                 Vector2 pos = new Vector2(x, y);
-                
-                if (!tiles.ContainsKey(pos))
-                {
-                    tiles.Add(pos, Instantiate(tile));
-                    tiles[pos].transform.SetParent(/*map.*/transform);
-                    tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[x, y]);
-                    //tiles[pos].transform.position = new Vector3(x, 0, y);
-                }
-                tiles[pos].SetActive(true);
-                tiles[pos].transform.position = new Vector3(x, 0, y);
 
-                if (GameData.Instance.goals.Contains(pos))
+                if (x < GameData.Instance.currentWidth && y < GameData.Instance.currentHeight)
                 {
-                    tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.goal;
-                }
-                else if (GameData.Instance.grid[x, y] == GameData.Instance.MaxCost)
-                {
-                    tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.occupied;
-                    tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
+                    if (!tiles.ContainsKey(pos))
+                    {
+                        tiles.Add(pos, Instantiate(tile));
+                        tiles[pos].transform.SetParent(/*map.*/transform);
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[x, y]);
+                        //tiles[pos].transform.position = new Vector3(x, 0, y);
+                    }
+
+                    tiles[pos].SetActive(true);
+
+                    tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                    tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+                    tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
+                    tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+                    tiles[pos].transform.position = new Vector3(x, 0, y);
+
+                    if (GameData.Instance.goals.Contains(pos))
+                    {
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.goal;
+                    }
+                    else if (GameData.Instance.grid[x, y] == GameData.Instance.MaxCost)
+                    {
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.occupied;
+                        tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
+                        tiles[pos].transform.GetChild(2).transform.GetChild(0).GetComponent<InputField>().text = GameData.Instance.grid[(int)pos.x, (int)pos.y].ToString();
+                    }
                 }
                 else
                 {
-                    tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
-                    tiles[pos].transform.GetChild(2).transform.GetChild(0).GetComponent<InputField>().text = GameData.Instance.grid[(int)pos.x, (int)pos.y].ToString();
+                    if (tiles.ContainsKey(pos))
+                    {
+                        tiles[pos].SetActive(false);
+                    }
                 }
             }
         }
@@ -88,6 +100,8 @@ public class CreateMap3D : CreateMap
                 else
                 {
                     tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
+                    tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+                    tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
                     if (GameData.Instance.policy[x, y] == '*')
                     {
                         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.goal;

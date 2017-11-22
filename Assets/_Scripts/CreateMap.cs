@@ -13,6 +13,9 @@ public abstract class CreateMap : MonoBehaviour {
     [Header("Buttons and Sliders")]
     public Inputs inputs;
 
+    [Header("GameObjects")]
+    public GameObject tile;
+
     public readonly float mapWidth = 800;
     public readonly float mapHeight = 555;
 

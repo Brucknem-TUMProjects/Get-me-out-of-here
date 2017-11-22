@@ -4,20 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class CubeClick : MonoBehaviour {
+public class CubeClick : Click {
 
-    private float clickStartTime;
     private InputField cost;
-    public static Inputs inputs;
 
 	// Use this for initialization
 	void Start () {
         cost = transform.GetChild(2).transform.GetChild(0).GetComponent<InputField>();
         int v = GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z];
         cost.text = v.ToString();
-        cost.onValueChanged.AddListener(delegate { OnInputFieldChanged(); });
+        cost.onEndEdit.AddListener(delegate { OnInputFieldChanged(); });
         if (inputs == null)
-            inputs = GameObject.Find("Inputs").GetComponent<Inputs>();// transform.parent.parent.GetChild(3).GetChild(1).GetComponent<Inputs>();
+            inputs = GameObject.Find("Inputs").GetComponent<Inputs>();
+        map = transform.parent.GetComponent<CreateMap>();
     }
 	
     private void OnMouseOver()
@@ -36,11 +35,11 @@ public class CubeClick : MonoBehaviour {
             if (GameData.Instance.start != position && GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
             {
                 GameData.Instance.start = position;
-                CalculateAStar(true);
+                CalculateAStar();
             }
             else
             {
-                CalculateAStar(false);
+                RemoveAStar();
             }
         }
     }
@@ -77,7 +76,7 @@ public class CubeClick : MonoBehaviour {
 
             GetComponent<Renderer>().material.color = color;
             //GameData.Instance.Print2DArray<int>(GameData.Instance.grid);
-            CalculateAStar(true);
+            CalculateAStar();
         }
     }
 
@@ -115,19 +114,23 @@ public class CubeClick : MonoBehaviour {
             }
 
             GetComponent<Renderer>().material.color = color;
-            CalculateAStar(true);
+            CalculateAStar();
         }
     }
 
     void OnInputFieldChanged()
     {
-        if (!inputs.PreventInputChange)
-        {
-            int value = int.Parse(cost.text);
+        //if (!inputs.PreventInputChange)
+        //{
+            int value = 0;
+            bool success = int.TryParse(cost.text, out value);
+
+            if (!success)
+                value = GameData.Instance.grid[(int)transform.position.x, (int)transform.position.y];
             GameData.Instance.grid[(int)transform.position.x, (int)transform.position.z] = value;
             GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(value);
-            CalculateAStar(true);
-        }
+            CalculateAStar();
+        //}
     }
 
     public void UpdateValue()
@@ -136,16 +139,5 @@ public class CubeClick : MonoBehaviour {
         cost.text = value;
     }
 
-    private void CalculateAStar(bool preventRemove)
-    {
-        if (!preventRemove)
-        {
-            GameData.Instance.start = new Vector2(-1, -1);
-            GameData.Instance.shortestPath = new List<Vector2>();
-        }
-        GameData.Instance.CalculateAStar();
-        //RedrawMap(preventRemove);
-        inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
-        inputs.showPolicy.isOn = !inputs.showPolicy.isOn;
-    }
+    
 }
