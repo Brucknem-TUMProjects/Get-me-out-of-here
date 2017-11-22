@@ -18,7 +18,7 @@ public abstract class Click : MonoBehaviour {
     public void CalculatePolicy()
     {
         if(inputs.showPolicy.isOn)
-            GameData.Instance.CalculateValue();
+            GameData.Instance.CalculatePolicy();
     }
 
     public void RemoveAStar()

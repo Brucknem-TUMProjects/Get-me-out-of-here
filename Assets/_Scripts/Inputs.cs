@@ -83,7 +83,7 @@ public class Inputs : MonoBehaviour {
             //preventInputChange = true;
             if (showPolicy.isOn)
             {
-                GameData.Instance.CalculateValue();
+                GameData.Instance.CalculatePolicy();
                 map.ShowCostTable();
             }
             else
@@ -149,12 +149,7 @@ public class Inputs : MonoBehaviour {
             }
         });
     }
-
-    private void OnSliderHover()
-    {
-        print("hoveeeeeer");
-    }
-
+    
     private void OnSliderValueChange()
     {
         SetMapDimensions();
@@ -209,14 +204,7 @@ public class Inputs : MonoBehaviour {
             return (int)heightSlider.value;
         }
     }
-
-    //public bool SetCosts
-    //{
-    //    get
-    //    {
-    //        return inputCosts.isOn;
-    //    }
-    //}
+    
 
     public bool ShowValues
     {
