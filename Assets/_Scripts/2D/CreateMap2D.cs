@@ -195,7 +195,11 @@ public class CreateMap2D : CreateMap
 
     public override void ShowCostTable_Reachable(Vector2 pos)
     {
-        tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[(int)pos.x, (int)pos.y].ToString();
+        if(inputs.allOrStep.value == 0)
+            tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[(int)pos.x, (int)pos.y].ToString();
+        else
+            tiles[pos].GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
+
         tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
     }
 
@@ -204,16 +208,60 @@ public class CreateMap2D : CreateMap
         tiles[pos].GetComponent<InputField>().image.color = color;
     }
 
-    public override void ShowCostTable_Highlight()
+    public override void ShowCostTable_DynamicProgrammingHighlight()
     {
+        int x = (int)HighlightedPosition.x;
+        int y = (int)HighlightedPosition.y;
+
+        if (x == -1)
+            return;
+
         tiles[HighlightedPosition].GetComponent<InputField>().image.color = Color.yellow;
+        tiles[HighlightedPosition].GetComponent<InputField>().text = GameData.Instance.value[x,y].ToString();
         if (HighlightedLookingAt != new Vector2(-1, -1))
+        {
+            x = (int)HighlightedLookingAt.x;
+            y = (int)HighlightedLookingAt.y;
             tiles[HighlightedLookingAt].GetComponent<InputField>().image.color = Color.cyan;
+            tiles[HighlightedLookingAt].GetComponent<InputField>().text = GameData.Instance.value[x, y].ToString();
+        }
 
         //tiles[HighlightedAll[0]].GetComponent<InputField>().image.color = Color.yellow;
 
         //for(int i = 1; i < HighlightedAll.Count; i++)
         //    if (HighlightedAll[i] != new Vector2(-1, -1))
         //        tiles[HighlightedAll[i]].GetComponent<InputField>().image.color = Color.cyan;
+    }
+
+    public override void AStarHighlight()
+    {
+        int x, y;
+        foreach(Vector2 pos in GameData.Instance.ClosedList)
+        {
+            x = (int)pos.x;
+            y = (int)pos.y;
+            tiles[pos].GetComponent<InputField>().image.color = Color.yellow;
+            tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+        }
+        foreach(Vector2 pos in GameData.Instance.OpenList)
+        {
+            x = (int)pos.x;
+            y = (int)pos.y;
+            if(GameData.Instance.grid[x,y] == Algorithm.MaxCost)
+                tiles[pos].GetComponent<InputField>().image.color = Color.black;
+            else
+                tiles[pos].GetComponent<InputField>().image.color = Color.cyan;
+            tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+        }
+
+        x = (int)GameData.Instance.LastExpanded.x;
+        if (x != -1)
+        {
+            y = (int)GameData.Instance.LastExpanded.y;
+            tiles[GameData.Instance.LastExpanded].GetComponent<InputField>().image.color = Color.magenta;
+            tiles[GameData.Instance.LastExpanded].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+        }
+
+        ShowShortestPath();
     }
 }

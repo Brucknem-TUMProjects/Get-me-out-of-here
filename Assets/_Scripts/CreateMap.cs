@@ -19,7 +19,9 @@ public abstract class CreateMap : MonoBehaviour {
     public abstract void ShowCostTable_Unreachable(Vector2 pos);
     public abstract void ShowCostTable_Goal(Vector2 pos);
     public abstract void ShowCostTable_Reachable(Vector2 pos);
-    public abstract void ShowCostTable_Highlight();
+
+    public abstract void ShowCostTable_DynamicProgrammingHighlight();
+    public abstract void AStarHighlight();
 
     public abstract void ShortestPathColor(Vector2 pos, Color color);
 
@@ -38,7 +40,6 @@ public abstract class CreateMap : MonoBehaviour {
     // Use this for initialization
     public void Init () {
         tiles = new Dictionary<Vector2, GameObject>();
-        GameData.Instance.Initialize(inputs.Width, inputs.Height);
         inputs.widthSlider.value = GameData.Instance.currentWidth = 6;
         inputs.heightSlider.value = GameData.Instance.currentHeight = 6;
         AdjustMap();
@@ -108,7 +109,10 @@ public abstract class CreateMap : MonoBehaviour {
             }
         }
 
-        ShowShortestPath();
+        if (inputs.allOrStep.value == 0)
+            ShowShortestPath();
+        else if(inputs.mode.value == 1)
+            AStarHighlight();
     }
 
     public void ShowCostTable()
@@ -151,11 +155,14 @@ public abstract class CreateMap : MonoBehaviour {
 
                 if(inputs.allOrStep.value == 1)
                 {
-                    ShowCostTable_Highlight();
+                    ShowCostTable_DynamicProgrammingHighlight();
                 }
             }
         }
-        ShowShortestPath();
+        if (inputs.allOrStep.value == 0)
+            ShowShortestPath();
+        else if (inputs.mode.value == 1)
+            AStarHighlight();
     }
 
     public Vector2 HighlightedPosition

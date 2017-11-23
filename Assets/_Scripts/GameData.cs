@@ -117,16 +117,47 @@ public class GameData {
         policy = DynamicProgramming.Policy;
     }
 
+    public void InitAStarSingleStep()
+    {
+        AStar.InitForSingleStep(grid, goals, start);
+    }
+
+    public bool AStarSingleStep()
+    {
+        bool finished = AStar.SingleStep();
+        shortestPath = AStar.ShortestPath;
+        return finished;
+    }
+
+    public void ResetAStar()
+    {
+        start = new Vector2(-1, -1);
+        AStar.Reset();
+        shortestPath = AStar.ShortestPath;
+    }
+
+    public List<Vector2> OpenList { get { return AStar.OpenList; } }
+    public List<Vector2> ClosedList { get { return AStar.ClosedList; } }
+    public Vector2 LastExpanded { get { return AStar.LastExpanded; } }
+    public int[,] AStarLengths { get { return AStar.value; } }
+
+
+    public void ResetDynamicProgramming()
+    {
+        DynamicProgramming.Reset();
+    }
+
     public void InitDynamicProgrammingSingleStep()
     {
         DynamicProgramming.InitForSingleStep(grid, goals);
     }
 
-    public void DynamicProgrammingSingleStep()
+    public bool DynamicProgrammingSingleStep()
     {
-        DynamicProgramming.RunSingleStep();
+        bool finished = DynamicProgramming.RunSingleStep();
         value = DynamicProgramming.Value;
         policy = DynamicProgramming.Policy;
+        return finished;
     }
 
     public Vector3 DynamicProgrammingHighlighted
@@ -145,7 +176,7 @@ public class GameData {
     public void CalculateAStar()
     {
         if (start.x != -1)
-            shortestPath = AStar.CalculateAStar(grid, currentWidth, currentHeight, GameData.Instance.goals, Algorithm.deltas, start, Algorithm.MaxCost);
+            shortestPath = AStar.CalculateAStar(grid, GameData.Instance.goals, start);
         else
             shortestPath = new List<Vector2>();
     }
@@ -261,12 +292,12 @@ public class GameData {
     //    }
     //}
 
-    public void RemoveShortestPath()
-    {
-        start = new Vector2(-1, -1);
-        shortestPath = new List<Vector2>();
-        //shortestPathGoal = new Vector2(-1, -1);
-    }
+    //public void RemoveShortestPath()
+    //{
+    //    start = new Vector2(-1, -1);
+    //    shortestPath = new List<Vector2>();
+    //    //shortestPathGoal = new Vector2(-1, -1);
+    //}
     
     public string Print2DArray<T>(T[,] array)
     {

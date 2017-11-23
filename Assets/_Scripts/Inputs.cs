@@ -58,7 +58,7 @@ public class Inputs : MonoBehaviour {
     private class HoldStepButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         Inputs inputs;
-        bool holding = false;
+        public bool holding = false;
         float lastStep = 0;
         float stepTime = 0.05f;
 
@@ -99,6 +99,9 @@ public class Inputs : MonoBehaviour {
         map = maps[0];
         maps[1].gameObject.SetActive(false);
 
+        GameData.Instance.Initialize(Width, Height);
+        GameData.Instance.InitDynamicProgrammingSingleStep();
+
         foreach (CreateMap m in maps)
             m.Init();
 
@@ -115,6 +118,8 @@ public class Inputs : MonoBehaviour {
             GetComponent<ToggleGroup>().SetAllTogglesOff();
             GameData.Instance.RandomGrid();
             GameData.Instance.InitDynamicProgrammingSingleStep();
+            GameData.Instance.InitAStarSingleStep();
+            AllOrStepChange();
             map.AdjustMap();
             //preventInputChange = false;
         });
@@ -155,11 +160,13 @@ public class Inputs : MonoBehaviour {
             mode.value = 0;
             GameData.Instance.Initialize(Width, Height);
             GameData.Instance.InitDynamicProgrammingSingleStep();
+            GameData.Instance.InitAStarSingleStep();
+            AllOrStepChange();
             GameData.Instance.goals = new List<Vector2>();
             GameData.Instance.shortestPath = new List<Vector2>();
             map.AdjustMap();
         });
-
+        
         help.onValueChanged.AddListener(delegate
         {
             ToggleColorChange(help);
@@ -198,15 +205,24 @@ public class Inputs : MonoBehaviour {
         //In Dynamic programming mode
         if(mode.value == 0)
         {
-            GameData.Instance.DynamicProgrammingSingleStep();
+            if (GameData.Instance.DynamicProgrammingSingleStep())
+                allOrStep.value = 0;
             map.ShowCostTable();
+        }
+        else
+        {
+            if (GameData.Instance.AStarSingleStep())
+                allOrStep.value = 0;
+            map.Redraw();
         }
     }
 
     private void AllOrStepChange()
     {
+        GameData.Instance.ResetDynamicProgramming();
         if(allOrStep.value == 0)
         {
+            stepButton.GetComponent<HoldStepButton>().holding = false;
             OnModeChange();
         }
         else
@@ -217,12 +233,15 @@ public class Inputs : MonoBehaviour {
                 showPolicy.gameObject.SetActive(false);
                 setStart.gameObject.SetActive(false);
                 //showPolicy.isOn = true;
+                map.Redraw();
+
                 setStart.isOn = false;
                 GameData.Instance.InitDynamicProgrammingSingleStep();
             }
             else
             {
-                GameData.Instance.RemoveShortestPath();
+                //GameData.Instance.RemoveShortestPath();
+                GameData.Instance.ResetAStar();
                 map.Redraw();
                 stepButton.gameObject.SetActive(false);
                 showPolicy.gameObject.SetActive(false);
@@ -235,6 +254,13 @@ public class Inputs : MonoBehaviour {
     private void OnModeChange()
     {
         allOrStep.value = 0;
+        if (showPolicy.isOn)
+        {
+            GameData.Instance.CalculatePolicy();
+        }
+        map.Redraw();
+
+
         if (mode.value == 0)
         {
             setStart.gameObject.SetActive(false);
@@ -262,7 +288,8 @@ public class Inputs : MonoBehaviour {
         GameData.Instance.Initialize(Width, Height);
         showPolicy.isOn = false;
         //setStart.isOn = false;
-        GameData.Instance.RemoveShortestPath();
+        //GameData.Instance.RemoveShortestPath();
+        GameData.Instance.ResetAStar();
         toggleGroup.SetAllTogglesOff();
         map.AdjustMap();
     }

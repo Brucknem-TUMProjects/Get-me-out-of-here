@@ -7,22 +7,26 @@ public class DynamicProgramming : Algorithm {
     private static int[,] value;
     private static char[,] policy;
 
-    private static int currentPosition;
+    private static int currentPosition = -1;
     private static int currentDelta = 0;
 
-    private static int Width { get { return grid.GetLength(0); } }
-    private static int Height { get { return grid.GetLength(1); } }
-
+    private static bool change = true;
+    
     public static int[,] Value { get { return value; } }
     public static char[,] Policy { get { return policy; } }
     public static Vector2 CurrentPosition { get { return new Vector2(currentPosition % Width, Mathf.Floor(currentPosition / Width)); } }
     public static int CurrentDelta { get { return currentDelta; } }
 
 
+    public static void Reset()
+    {
+        currentPosition = -1;
+    }
+
     public static void InitForSingleStep(int[,] grid, List<Vector2> goals)
     {
         Init(grid, goals);
-        print(Width + " - " + Height);
+        //print(Width + " - " + Height);
         currentPosition = 0;
         currentDelta = 0;
 
@@ -52,7 +56,7 @@ public class DynamicProgramming : Algorithm {
                 {
                     value[x, y] = 0;
                     policy[x, y] = '*';
-                    //change = true;
+                    change = true;
                 }
                 isGoal = true;
             }
@@ -72,17 +76,19 @@ public class DynamicProgramming : Algorithm {
                     v2 = value[x2, y2] + grid[x2, y2];
                 if (v2 < value[x, y])
                 {
-                    //change = true;
+                    change = true;
                     value[x, y] = v2;
                     policy[x, y] = deltaNames[delta];
                 }
             }
         }
-        Print2DArray<int>(value);
+        //Print2DArray<int>(value);
     }
 
-    public static void RunSingleStep()
+    public static bool RunSingleStep()
     {
+        if (currentPosition == 0)
+            change = false;
         //for (int i = 0; i < 4; i++)
         //{
             SingleStep(currentPosition % Width, Mathf.FloorToInt(currentPosition / Width), currentDelta);
@@ -96,6 +102,8 @@ public class DynamicProgramming : Algorithm {
 
         if (currentPosition == Width * Height)
             currentPosition = 0;
+
+        return !change && currentPosition == Width * Height - 1 && currentDelta == 3;
     }
 
     public static void CalculateValue(int[,] grid, List<Vector2> goals)

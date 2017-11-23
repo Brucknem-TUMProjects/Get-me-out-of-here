@@ -13,7 +13,10 @@ public abstract class Algorithm : MonoBehaviour
     public static List<Vector2> deltas = new List<Vector2> { new Vector2(1, 0), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 1) };
     public static char[] deltaNames = new char[] { '>', 'v', '<', '^' };
 
-    public static int MaxCost { get { return 100000000; } }
+    public static int Width { get { return grid.GetLength(0); } }
+    public static int Height { get { return grid.GetLength(1); } }
+
+    public static int MaxCost { get { return 999999999; } }
 
     public static void Init(int[,] grid, List<Vector2> goals)
     {
@@ -31,6 +34,16 @@ public abstract class Algorithm : MonoBehaviour
                 s += (array[i, j] + " ");
             }
             s += ("\n");
+        }
+        print(s);
+    }
+
+    public static void PrintList<T>(List<T> list)
+    {
+        string s = "";
+        foreach(T t in list)
+        {
+            s += t + "\n";
         }
         print(s);
     }

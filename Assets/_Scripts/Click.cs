@@ -41,7 +41,15 @@ public abstract class Click : MonoBehaviour {
             if (GameData.Instance.start != position)
             {
                 GameData.Instance.start = position;
-                CalculateAStar();
+                if (inputs.allOrStep.value == 0)
+                    CalculateAStar();
+                else
+                {
+                    inputs.setStart.gameObject.SetActive(false);
+                    inputs.setStart.isOn = false;
+                    inputs.stepButton.gameObject.SetActive(true);
+                    GameData.Instance.InitAStarSingleStep();
+                }
             }
             else
             {
@@ -66,7 +74,10 @@ public abstract class Click : MonoBehaviour {
                 GameData.Instance.walls[(int)position.x, (int)position.y] = true;
             }
             GameData.Instance.InitDynamicProgrammingSingleStep();
-            CalculateAStar();
+            if (inputs.allOrStep.value == 0)
+                CalculateAStar();
+            else
+                GameData.Instance.InitAStarSingleStep();
             CalculatePolicy();
             RedrawMap();
         }
@@ -85,7 +96,10 @@ public abstract class Click : MonoBehaviour {
                 GameData.Instance.goals.Remove(position);
             }
             GameData.Instance.InitDynamicProgrammingSingleStep();
-            CalculateAStar();
+            if (inputs.allOrStep.value == 0)
+                CalculateAStar();
+            else
+                GameData.Instance.InitAStarSingleStep();
             CalculatePolicy();
             RedrawMap();
         }
@@ -102,7 +116,8 @@ public abstract class Click : MonoBehaviour {
         //int value = int.Parse(GetComponent<InputField>().text);
         //int value = int.Parse(GetComponent<InputField>().text);
         GameData.Instance.grid[(int)position.x, (int)position.y] = value;
-        CalculateAStar();
+        if(inputs.allOrStep.value == 0)
+            CalculateAStar();
         CalculatePolicy();
         RedrawMap();
     }

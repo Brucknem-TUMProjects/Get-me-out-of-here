@@ -226,11 +226,43 @@ public class CreateMap3D : CreateMap
         tiles[pos].GetComponent<Renderer>().material.color = color;
     }
 
-    public override void ShowCostTable_Highlight()
+    public override void ShowCostTable_DynamicProgrammingHighlight()
     {
         tiles[HighlightedPosition].GetComponent<Renderer>().material.color = Color.yellow;
         if (HighlightedLookingAt != new Vector2(-1, -1))
             tiles[HighlightedLookingAt].GetComponent<Renderer>().material.color = Color.cyan;
 
+    }
+
+    public override void AStarHighlight()
+    {
+        int x, y;
+        foreach (Vector2 pos in GameData.Instance.ClosedList)
+        {
+            x = (int)pos.x;
+            y = (int)pos.y;
+            tiles[pos].GetComponent<Renderer>().material.color = Color.yellow;
+            //tiles[pos].GetComponent<CubeClick>().cost.text = GameData.Instance.AStarLengths[x, y].ToString();
+        }
+        foreach (Vector2 pos in GameData.Instance.OpenList)
+        {
+            x = (int)pos.x;
+            y = (int)pos.y;
+            if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
+                tiles[pos].GetComponent<Renderer>().material.color = Color.black;
+            else
+                tiles[pos].GetComponent<Renderer>().material.color = Color.cyan;
+            //tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+        }
+
+        x = (int)GameData.Instance.LastExpanded.x;
+        if (x != -1)
+        {
+            y = (int)GameData.Instance.LastExpanded.y;
+            tiles[GameData.Instance.LastExpanded].GetComponent<Renderer>().material.color = Color.magenta;
+            //tiles[GameData.Instance.LastExpanded].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+        }
+
+        ShowShortestPath();
     }
 }
