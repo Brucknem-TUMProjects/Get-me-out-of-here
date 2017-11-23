@@ -31,19 +31,12 @@ public abstract class Click : MonoBehaviour {
 
     public void RedrawMap()
     {
-        if (inputs.showPolicy.isOn)
-        {
-            map.ShowCostTable();
-        }
-        else
-        {
-            map.AdjustMap();
-        }
+        map.Redraw();
     }
 
     public void LeftClick(Vector2 position)
     {
-        if (inputs.setStart.isOn && GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
+        if (inputs.setStart.isOn && GameData.Instance.grid[(int)position.x, (int)position.y] != Algorithm.MaxCost)
         {
             if (GameData.Instance.start != position)
             {
@@ -62,16 +55,17 @@ public abstract class Click : MonoBehaviour {
     {
         if (!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position)
         {
-            if (GameData.Instance.grid[(int)position.x, (int)position.y] == GameData.Instance.MaxCost)
+            if (GameData.Instance.grid[(int)position.x, (int)position.y] == Algorithm.MaxCost)
             {
                 GameData.Instance.grid[(int)position.x, (int)position.y] = 1;
                 GameData.Instance.walls[(int)position.x, (int)position.y] = false;
             }
             else
             {
-                GameData.Instance.grid[(int)position.x, (int)position.y] = GameData.Instance.MaxCost;
+                GameData.Instance.grid[(int)position.x, (int)position.y] = Algorithm.MaxCost;
                 GameData.Instance.walls[(int)position.x, (int)position.y] = true;
             }
+            GameData.Instance.InitDynamicProgrammingSingleStep();
             CalculateAStar();
             CalculatePolicy();
             RedrawMap();
@@ -80,7 +74,7 @@ public abstract class Click : MonoBehaviour {
 
     public void MiddleClick(Vector2 position)
     {
-        if (GameData.Instance.grid[(int)position.x, (int)position.y] != GameData.Instance.MaxCost)
+        if (GameData.Instance.grid[(int)position.x, (int)position.y] != Algorithm.MaxCost)
         {
             if (!GameData.Instance.goals.Contains(position))
             {
@@ -90,7 +84,7 @@ public abstract class Click : MonoBehaviour {
             {
                 GameData.Instance.goals.Remove(position);
             }
-
+            GameData.Instance.InitDynamicProgrammingSingleStep();
             CalculateAStar();
             CalculatePolicy();
             RedrawMap();

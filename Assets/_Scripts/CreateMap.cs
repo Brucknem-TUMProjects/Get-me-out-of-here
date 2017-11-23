@@ -19,6 +19,7 @@ public abstract class CreateMap : MonoBehaviour {
     public abstract void ShowCostTable_Unreachable(Vector2 pos);
     public abstract void ShowCostTable_Goal(Vector2 pos);
     public abstract void ShowCostTable_Reachable(Vector2 pos);
+    public abstract void ShowCostTable_Highlight();
 
     public abstract void ShortestPathColor(Vector2 pos, Color color);
 
@@ -37,8 +38,7 @@ public abstract class CreateMap : MonoBehaviour {
     // Use this for initialization
     public void Init () {
         tiles = new Dictionary<Vector2, GameObject>();
-        GameData.Instance.SetGridSize(inputs.MaxWidth, inputs.MaxHeight);
-        GameData.Instance.InitGrid<int>(ref GameData.Instance.grid, 1);
+        GameData.Instance.Initialize(inputs.Width, inputs.Height);
         inputs.widthSlider.value = GameData.Instance.currentWidth = 6;
         inputs.heightSlider.value = GameData.Instance.currentHeight = 6;
         AdjustMap();
@@ -84,7 +84,7 @@ public abstract class CreateMap : MonoBehaviour {
                         //tiles[pos].GetComponent<InputField>().text = cost.ToString();
                         //tiles[pos].GetComponent<Image>().color = GameData.Instance.goal;
                     }
-                    else if (GameData.Instance.grid[x, y] == GameData.Instance.MaxCost)
+                    else if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
                     {
                         AdjustMap_Occupied(pos);
                         //tiles[pos].GetComponent<Image>().color = GameData.Instance.occupied;
@@ -123,7 +123,7 @@ public abstract class CreateMap : MonoBehaviour {
                 //tiles[pos].GetComponent<InputField>().interactable = false;
                 ShowCostTable_Begin(pos);
 
-                if (GameData.Instance.value[x, y] == GameData.Instance.MaxCost)
+                if (GameData.Instance.value[x, y] == Algorithm.MaxCost)
                 {
                     //tiles[pos].GetComponent<InputField>().text = "";
 
@@ -148,10 +148,49 @@ public abstract class CreateMap : MonoBehaviour {
                     }
                     //tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[x, y].ToString();
                 }
+
+                if(inputs.allOrStep.value == 1)
+                {
+                    ShowCostTable_Highlight();
+                }
             }
         }
         ShowShortestPath();
     }
+
+    public Vector2 HighlightedPosition
+    {
+        get
+        {
+            return GameData.Instance.DynamicProgrammingHighlighted;
+        }
+    }
+
+    public Vector2 HighlightedLookingAt
+    {
+        get
+        {
+            int delta = (int)GameData.Instance.DynamicProgrammingHighlighted.z;
+            Vector2 hla = HighlightedPosition + Algorithm.deltas[delta];
+            if (hla.x < 0 || hla.y < 0 || hla.x >= inputs.Width || hla.y >= inputs.Height)
+                return new Vector2(-1, -1);
+            return hla;
+        }
+    }
+
+    //public List<Vector2> HighlightedAll
+    //{
+    //    get
+    //    {
+    //        List<Vector2> l = GameData.Instance.HighlightedAll;
+
+    //        for(int i = 0; i < l.Count; i++)
+    //            if (l[i].x < 0 || l[i].y < 0 || l[i].x >= inputs.Width || l[i].y >= inputs.Height)
+    //                l[i] = new Vector2(-1, -1);
+
+    //        return l;
+    //    }
+    //}
 
     public void ShowShortestPath()
     {
@@ -167,6 +206,18 @@ public abstract class CreateMap : MonoBehaviour {
                 color = GameData.Instance.onPath;
 
             ShortestPathColor(v, color);
+        }
+    }
+
+    public void Redraw()
+    {
+        if (inputs.showPolicy.isOn)
+        {
+            ShowCostTable();
+        }
+        else
+        {
+            AdjustMap();
         }
     }
 }

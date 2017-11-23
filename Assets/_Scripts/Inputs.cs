@@ -14,6 +14,7 @@ public class Inputs : MonoBehaviour {
     //public Button costButton;
     public Button randomButton;
     public Button resetButton;
+    public Button stepButton;
     [Header("Toggles")]
     public Toggle showPolicy;
     //public Toggle inputCosts;
@@ -23,6 +24,7 @@ public class Inputs : MonoBehaviour {
     [Header("Dropdowns")]
     public Dropdown dimension;
     public Dropdown mode;
+    public Dropdown allOrStep;
     [Header("Camera")]
     public MoveCamera Viewer;
 
@@ -30,6 +32,9 @@ public class Inputs : MonoBehaviour {
 
     public CreateMap[] maps;
     private CreateMap map;
+
+    public int Width { get { return (int)widthSlider.value; } }
+    public int Height { get { return (int)heightSlider.value; } }
 
     private class PreventCameraMove : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
@@ -50,10 +55,45 @@ public class Inputs : MonoBehaviour {
         }
     }
 
+    private class HoldStepButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    {
+        Inputs inputs;
+        bool holding = false;
+        float lastStep = 0;
+        float stepTime = 0.05f;
+
+        public void SetInputs(Inputs i)
+        {
+            inputs = i;
+        }
+
+        private void Update()
+        {
+            if (holding && Time.time - lastStep > stepTime)
+            {
+                inputs.OnStepButton();
+                lastStep = Time.time;
+            }
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            holding = true;
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            holding = false;
+        }
+    }
+
     // Use this for initialization
     void Start () {
         PreventCameraMove pcm = gameObject.AddComponent<PreventCameraMove>();
         pcm.SetCamera(Viewer);
+
+        GameData.Instance.MaxWidth = (int)widthSlider.maxValue;
+        GameData.Instance.MaxHeight = (int)heightSlider.maxValue;
 
         toggleGroup = GetComponent<ToggleGroup>();
         map = maps[0];
@@ -74,6 +114,7 @@ public class Inputs : MonoBehaviour {
             //preventInputChange = true;
             GetComponent<ToggleGroup>().SetAllTogglesOff();
             GameData.Instance.RandomGrid();
+            GameData.Instance.InitDynamicProgrammingSingleStep();
             map.AdjustMap();
             //preventInputChange = false;
         });
@@ -112,8 +153,8 @@ public class Inputs : MonoBehaviour {
         resetButton.onClick.AddListener(delegate {
             toggleGroup.SetAllTogglesOff();
             mode.value = 0;
-            GameData.Instance.InitGrid<int>(ref GameData.Instance.grid, 1);
-            GameData.Instance.InitGrid<bool>(ref GameData.Instance.walls, false);
+            GameData.Instance.Initialize(Width, Height);
+            GameData.Instance.InitDynamicProgrammingSingleStep();
             GameData.Instance.goals = new List<Vector2>();
             GameData.Instance.shortestPath = new List<Vector2>();
             map.AdjustMap();
@@ -134,25 +175,91 @@ public class Inputs : MonoBehaviour {
         mode.onValueChanged.AddListener(delegate
         {
             //toggleGroup.SetAllTogglesOff();
-            
-            if (mode.value == 0)
+
+            OnModeChange();
+        });
+
+        allOrStep.onValueChanged.AddListener(delegate
+        {
+            AllOrStepChange();
+        });
+
+        HoldStepButton hsb = stepButton.gameObject.AddComponent<HoldStepButton>();
+        hsb.SetInputs(GetComponent<Inputs>());
+
+        //stepButton.onClick.AddListener(delegate
+        //{
+        //    OnStepButton();
+        //});
+    }
+
+    private void OnStepButton()
+    {
+        //In Dynamic programming mode
+        if(mode.value == 0)
+        {
+            GameData.Instance.DynamicProgrammingSingleStep();
+            map.ShowCostTable();
+        }
+    }
+
+    private void AllOrStepChange()
+    {
+        if(allOrStep.value == 0)
+        {
+            OnModeChange();
+        }
+        else
+        {
+            if(mode.value == 0)
             {
+                stepButton.gameObject.SetActive(true);
+                showPolicy.gameObject.SetActive(false);
                 setStart.gameObject.SetActive(false);
-                showPolicy.gameObject.SetActive(true);
+                //showPolicy.isOn = true;
                 setStart.isOn = false;
+                GameData.Instance.InitDynamicProgrammingSingleStep();
             }
             else
             {
-                setStart.gameObject.SetActive(true);
+                GameData.Instance.RemoveShortestPath();
+                map.Redraw();
+                stepButton.gameObject.SetActive(false);
                 showPolicy.gameObject.SetActive(false);
+                setStart.gameObject.SetActive(true);
                 setStart.isOn = true;
             }
-        });
+        }
+    }
+
+    private void OnModeChange()
+    {
+        allOrStep.value = 0;
+        if (mode.value == 0)
+        {
+            setStart.gameObject.SetActive(false);
+            showPolicy.gameObject.SetActive(true);
+            stepButton.gameObject.SetActive(false);
+            setStart.isOn = false;
+        }
+        else
+        {
+            //GameData.Instance.RemoveShortestPath();
+            //if (showPolicy.isOn)
+            //    map.ShowCostTable();
+            //else
+            //    map.AdjustMap();
+            setStart.gameObject.SetActive(true);
+            showPolicy.gameObject.SetActive(false);
+            stepButton.gameObject.SetActive(false);
+            setStart.isOn = true;
+        }
     }
     
     private void OnSliderValueChange()
     {
         SetMapDimensions();
+        GameData.Instance.Initialize(Width, Height);
         showPolicy.isOn = false;
         //setStart.isOn = false;
         GameData.Instance.RemoveShortestPath();
@@ -189,23 +296,6 @@ public class Inputs : MonoBehaviour {
         }
     }
 
-    public int CurrentWidth
-    {
-        get
-        {
-            return (int)widthSlider.value;
-        }
-    }
-
-    public int CurrentHeight
-    {
-        get
-        {
-            return (int)heightSlider.value;
-        }
-    }
-    
-
     public bool ShowValues
     {
         get
@@ -216,7 +306,7 @@ public class Inputs : MonoBehaviour {
         
     public void SetMapDimensions()
     {
-        GameData.Instance.currentWidth = CurrentWidth;
-        GameData.Instance.currentHeight = CurrentHeight;
+        GameData.Instance.currentWidth = Width;
+        GameData.Instance.currentHeight = Height;
     }
 }

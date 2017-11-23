@@ -215,7 +215,7 @@ public class CreateMap3D : CreateMap
         tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
 
         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
-        int rotation = Array.IndexOf(GameData.Instance.deltaNames, GameData.Instance.policy[(int)pos.x, (int)pos.y]);
+        int rotation = Array.IndexOf(Algorithm.deltaNames, GameData.Instance.policy[(int)pos.x, (int)pos.y]);
         tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
         tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
         tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 1, 0);
@@ -224,5 +224,13 @@ public class CreateMap3D : CreateMap
     public override void ShortestPathColor(Vector2 pos, Color color)
     {
         tiles[pos].GetComponent<Renderer>().material.color = color;
+    }
+
+    public override void ShowCostTable_Highlight()
+    {
+        tiles[HighlightedPosition].GetComponent<Renderer>().material.color = Color.yellow;
+        if (HighlightedLookingAt != new Vector2(-1, -1))
+            tiles[HighlightedLookingAt].GetComponent<Renderer>().material.color = Color.cyan;
+
     }
 }

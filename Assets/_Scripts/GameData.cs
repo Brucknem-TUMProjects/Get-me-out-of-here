@@ -34,12 +34,12 @@ public class GameData {
 
     //List for holding goals, deltas...
     public List<Vector2> goals = new List<Vector2>();
-    public List<Vector2> deltas = new List<Vector2> { new Vector2(1, 0), new Vector2 ( 0, -1 ),  new Vector2(- 1, 0 ), new Vector2(0, 1) };
-    public char[] deltaNames = new char[] { '>', 'v', '<', '^' };
+    //public List<Vector2> deltas = new List<Vector2> { new Vector2(1, 0), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 1) };
+    //public char[] deltaNames = new char[] { '>', 'v', '<', '^' };
 
-    public int MaxCost { get { return 100000000; } }
-    public int MaxWidth { get { return grid.GetLength(0); } }
-    public int MaxHeight { get { return grid.GetLength(1); } }
+    //public int MaxCost { get { return 100000000; } }
+    public int MaxWidth;
+    public int MaxHeight;
 
     public int currentWidth, currentHeight;
     //public bool calculateValues = false;
@@ -57,23 +57,27 @@ public class GameData {
     public Color begin = Color.red;
     public Color onPath = Color.green;
     public Color unreachable = Color.grey;
+    
 
-
-    public void SetGridSize(int x, int y)
+    public void Initialize(int x, int y)
     {
-        grid = new int[x, y];
-        walls = new bool[x, y];
-        value = new int[x, y];
-        policy = new char[x, y];
-        aStar = new int[x, y];
-        predecessors = new Vector2[x, y];
+        InitGrid<int>(ref grid, 1, x, y);
+        InitGrid<bool>(ref walls, false, x, y);
+        InitGrid<int>(ref value, Algorithm.MaxCost, x, y);
+        InitGrid<char>(ref policy, ' ', x, y);
+        InitGrid<int>(ref aStar, Algorithm.MaxCost, x, y);
+        InitGrid<Vector2>(ref predecessors, Vector2.zero, x, y);
+        GameData.Instance.goals = new List<Vector2>();
+        start = new Vector2(-1, -1);
+        shortestPath = new List<Vector2>();
     }
 
-    public void InitGrid<T>(ref T[,] grid, T value)
+    public void InitGrid<T>(ref T[,] grid, T value, int width, int height)
     {
-        for (int x = 0; x < grid.GetLength(0); x++)
+        grid = new T[width, height];
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < grid.GetLength(1); y++)
+            for (int y = 0; y < height; y++)
             {
                 grid[x, y] = value;
             }
@@ -83,7 +87,7 @@ public class GameData {
     public void RandomGrid()
     {
         shortestPath = new List<Vector2>();
-        goals = new List<Vector2>();
+        GameData.Instance.goals = new List<Vector2>();
         start = new Vector2(-1, -1);
         for (int x = 0; x < currentWidth; x++)
         {
@@ -91,10 +95,10 @@ public class GameData {
             {
                 int randomCost = UnityEngine.Random.Range(0, 255);
                 if (randomCost <= 200 && UnityEngine.Random.Range(0, 100) < 3)
-                    goals.Add(new Vector2( x, y ));
+                    GameData.Instance.goals.Add(new Vector2( x, y ));
                 if (randomCost > 200)
                 {
-                    grid[x, y] = MaxCost;
+                    grid[x, y] = Algorithm.MaxCost;
                     walls[x, y] = true;
                 }
                 else
@@ -108,66 +112,30 @@ public class GameData {
 
     public void CalculatePolicy()
     {
-        DynamicProgramming.CalculateValue(grid, ref value, ref policy, currentWidth, currentHeight, goals, deltas, deltaNames, MaxCost);
+        DynamicProgramming.CalculateValue(grid, goals);
+        value = DynamicProgramming.Value;
+        policy = DynamicProgramming.Policy;
     }
 
-    //public void CalculatePolicy()
-    //{
-    //    Debug.Log("Calculating optimal policy");
-    //    value = new int[currentWidth, currentHeight];
+    public void InitDynamicProgrammingSingleStep()
+    {
+        DynamicProgramming.InitForSingleStep(grid, goals);
+    }
 
-    //    InitGrid<int>(ref value, MaxCost);
+    public void DynamicProgrammingSingleStep()
+    {
+        DynamicProgramming.RunSingleStep();
+        value = DynamicProgramming.Value;
+        policy = DynamicProgramming.Policy;
+    }
 
-    //    bool change = true;
-
-    //    while (change)
-    //    {
-    //        change = false;
-
-    //        for (int x = 0; x < currentWidth; x++)
-    //        {
-    //            for (int y = 0; y < currentHeight; y++)
-    //            {
-    //                for (int i = 0; i < goals.Count; i++)
-    //                {
-    //                    if (goals[i][0] == x && goals[i][1] == y)
-    //                    {
-    //                        if (value[x, y] > 0)
-    //                        {
-    //                            value[x, y] = 0;
-    //                            policy[x, y] = '*';
-    //                            change = true;
-    //                        }
-    //                    }
-
-    //                    else if (grid[x, y] < MaxCost)
-    //                    {
-    //                        for (int a = 0; a < deltas.Count; a++)
-    //                        {
-    //                            int x2 = x + (int)deltas[a][0];
-    //                            int y2 = y + (int)deltas[a][1];
-
-    //                            if (x2 >= 0 && x2 < currentWidth && y2 >= 0 && y2 < currentHeight)
-    //                            {
-    //                                int v2;
-    //                                if (grid[x2, y2] == MaxCost)
-    //                                    v2 = MaxCost;
-    //                                else
-    //                                    v2 = value[x2, y2] + grid[x2, y2];
-    //                                if (v2 < value[x, y])
-    //                                {
-    //                                    change = true;
-    //                                    value[x, y] = v2;
-    //                                    policy[x, y] = deltaNames[a];
-    //                                }
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
+    public Vector3 DynamicProgrammingHighlighted
+    {
+        get
+        {
+            return new Vector3(DynamicProgramming.CurrentPosition.x, DynamicProgramming.CurrentPosition.y, DynamicProgramming.CurrentDelta);
+        }
+    }
 
     public Color CostToColor(int cost)
     {
@@ -177,7 +145,7 @@ public class GameData {
     public void CalculateAStar()
     {
         if (start.x != -1)
-            shortestPath = AStar.CalculateAStar(grid, currentWidth, currentHeight, goals, deltas, start, MaxCost);
+            shortestPath = AStar.CalculateAStar(grid, currentWidth, currentHeight, GameData.Instance.goals, Algorithm.deltas, start, Algorithm.MaxCost);
         else
             shortestPath = new List<Vector2>();
     }
@@ -313,4 +281,86 @@ public class GameData {
         }
         return (s);
     }
+
+    //public List<Vector2> HighlightedAll
+    //{
+    //    get
+    //    {
+    //        List<Vector2> l = new List<Vector2>();
+    //        l.Add(DynamicProgramming.CurrentPosition);
+    //        foreach(Vector2 delta in Algorithm.deltas)
+    //        {
+    //            l.Add(DynamicProgramming.CurrentPosition + delta);
+    //        }
+    //        return l;
+    //    }
+    //}
+
+    //public void AddGoal(Vector2 pos)
+    //{
+    //    Algorithm.AddGoal(pos);
+    //}
+
+    //public void AddWall(Vector2 pos)
+    //{
+    //    Algorithm.AddWall(pos);
+    //}
+
+    //public void CalculatePolicy()
+    //{
+    //    Debug.Log("Calculating optimal policy");
+    //    value = new int[currentWidth, currentHeight];
+
+    //    InitGrid<int>(ref value, MaxCost);
+
+    //    bool change = true;
+
+    //    while (change)
+    //    {
+    //        change = false;
+
+    //        for (int x = 0; x < currentWidth; x++)
+    //        {
+    //            for (int y = 0; y < currentHeight; y++)
+    //            {
+    //                for (int i = 0; i < goals.Count; i++)
+    //                {
+    //                    if (goals[i][0] == x && goals[i][1] == y)
+    //                    {
+    //                        if (value[x, y] > 0)
+    //                        {
+    //                            value[x, y] = 0;
+    //                            policy[x, y] = '*';
+    //                            change = true;
+    //                        }
+    //                    }
+
+    //                    else if (grid[x, y] < MaxCost)
+    //                    {
+    //                        for (int a = 0; a < deltas.Count; a++)
+    //                        {
+    //                            int x2 = x + (int)deltas[a][0];
+    //                            int y2 = y + (int)deltas[a][1];
+
+    //                            if (x2 >= 0 && x2 < currentWidth && y2 >= 0 && y2 < currentHeight)
+    //                            {
+    //                                int v2;
+    //                                if (grid[x2, y2] == MaxCost)
+    //                                    v2 = MaxCost;
+    //                                else
+    //                                    v2 = value[x2, y2] + grid[x2, y2];
+    //                                if (v2 < value[x, y])
+    //                                {
+    //                                    change = true;
+    //                                    value[x, y] = v2;
+    //                                    policy[x, y] = deltaNames[a];
+    //                                }
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 }

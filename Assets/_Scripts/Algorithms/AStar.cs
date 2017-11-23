@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AStar : MonoBehaviour {
+public class AStar : Algorithm {
 
-    private static int[,] grid;
+    //private static int[,] grid;
     private static int[,] aStar;
     private static Vector2[,] predecessors;
 

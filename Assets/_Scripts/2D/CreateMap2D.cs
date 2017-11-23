@@ -77,6 +77,7 @@ public class CreateMap2D : CreateMap
         float tileDim = Mathf.Min(1.0f * mapHeight / GameData.Instance.currentHeight, 1.0f * mapWidth / GameData.Instance.currentWidth, 30);
         tiles[pos].GetComponent<TileClick>().SetPosition(pos);
         tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.IntegerNumber;
+
         tiles[pos].GetComponent<InputField>().interactable = true;
 
         tiles[pos].GetComponent<RectTransform>().localPosition = new Vector3(
@@ -171,6 +172,7 @@ public class CreateMap2D : CreateMap
     {
         tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
         tiles[pos].GetComponent<InputField>().interactable = false;
+        //print("Interactable False");
     }
 
     public override void ShowCostTable_Occupied(Vector2 pos)
@@ -200,5 +202,18 @@ public class CreateMap2D : CreateMap
     public override void ShortestPathColor(Vector2 pos, Color color)
     {
         tiles[pos].GetComponent<InputField>().image.color = color;
+    }
+
+    public override void ShowCostTable_Highlight()
+    {
+        tiles[HighlightedPosition].GetComponent<InputField>().image.color = Color.yellow;
+        if (HighlightedLookingAt != new Vector2(-1, -1))
+            tiles[HighlightedLookingAt].GetComponent<InputField>().image.color = Color.cyan;
+
+        //tiles[HighlightedAll[0]].GetComponent<InputField>().image.color = Color.yellow;
+
+        //for(int i = 1; i < HighlightedAll.Count; i++)
+        //    if (HighlightedAll[i] != new Vector2(-1, -1))
+        //        tiles[HighlightedAll[i]].GetComponent<InputField>().image.color = Color.cyan;
     }
 }
