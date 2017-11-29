@@ -177,15 +177,29 @@ public class CreateMap3D : CreateMap
 
     public override void ShowCostTable_Begin(Vector2 pos)
     {
-        tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
+        if (inputs.allOrStep.value == 0)
+        {
+            tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
+            tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+            tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+            tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
+        }
+        else
+        {
+            tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+            tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+            //tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
+            tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+        }
     }
 
     public override void ShowCostTable_Occupied(Vector2 pos)
     {
         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.occupied;
-        tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
-        tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
-        tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+
+            tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+            tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
+            tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
     }
 
     public override void ShowCostTable_Unreachable(Vector2 pos)
@@ -193,6 +207,7 @@ public class CreateMap3D : CreateMap
         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.unreachable;
         tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
         tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+        tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
         tiles[pos].transform.GetChild(3).gameObject.SetActive(true);
     }
 
@@ -210,9 +225,12 @@ public class CreateMap3D : CreateMap
 
     public override void ShowCostTable_Reachable(Vector2 pos)
     {
-        tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
-        tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
-        tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+        if(inputs.allOrStep.value == 1)
+            tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
+        else
+            tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
+
+        tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int) pos.y].ToString();
 
         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
         int rotation = Array.IndexOf(Algorithm.deltaNames, GameData.Instance.policy[(int)pos.x, (int)pos.y]);
@@ -228,6 +246,13 @@ public class CreateMap3D : CreateMap
 
     public override void ShowCostTable_DynamicProgrammingHighlight()
     {
+        int x = (int)HighlightedPosition.x;
+        int y = (int)HighlightedPosition.y;
+
+        if (x == -1)
+            return;
+
+        //print("Highlightet Position: " + HighlightedPosition);
         tiles[HighlightedPosition].GetComponent<Renderer>().material.color = Color.yellow;
         if (HighlightedLookingAt != new Vector2(-1, -1))
             tiles[HighlightedLookingAt].GetComponent<Renderer>().material.color = Color.cyan;
@@ -241,18 +266,45 @@ public class CreateMap3D : CreateMap
         {
             x = (int)pos.x;
             y = (int)pos.y;
-            tiles[pos].GetComponent<Renderer>().material.color = Color.yellow;
-            //tiles[pos].GetComponent<CubeClick>().cost.text = GameData.Instance.AStarLengths[x, y].ToString();
+            if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
+            {
+                tiles[pos].GetComponent<Renderer>().material.color = Color.black;
+                tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
+                //tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
+                tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+            }
+            else
+            {
+                tiles[pos].GetComponent<Renderer>().material.color = Color.yellow;
+                tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+                tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+                //tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
+                tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+            }
         }
         foreach (Vector2 pos in GameData.Instance.OpenList)
         {
             x = (int)pos.x;
             y = (int)pos.y;
             if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
+            {
                 tiles[pos].GetComponent<Renderer>().material.color = Color.black;
+                tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                tiles[pos].transform.GetChild(1).gameObject.SetActive(true);
+                //tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
+                tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+            }
             else
+            {
                 tiles[pos].GetComponent<Renderer>().material.color = Color.cyan;
-            //tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+                tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
+                tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+                //tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
+                tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+                tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+            }
         }
 
         x = (int)GameData.Instance.LastExpanded.x;
@@ -260,7 +312,11 @@ public class CreateMap3D : CreateMap
         {
             y = (int)GameData.Instance.LastExpanded.y;
             tiles[GameData.Instance.LastExpanded].GetComponent<Renderer>().material.color = Color.magenta;
-            //tiles[GameData.Instance.LastExpanded].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+            tiles[GameData.Instance.LastExpanded].transform.GetChild(0).gameObject.SetActive(false);
+            tiles[GameData.Instance.LastExpanded].transform.GetChild(1).gameObject.SetActive(false);
+            tiles[GameData.Instance.LastExpanded].transform.GetChild(2).gameObject.SetActive(true);
+            tiles[GameData.Instance.LastExpanded].transform.GetChild(3).gameObject.SetActive(false);
+            tiles[GameData.Instance.LastExpanded].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
         }
 
         ShowShortestPath();

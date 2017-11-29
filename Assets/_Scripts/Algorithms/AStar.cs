@@ -21,7 +21,7 @@ public class AStar : Algorithm
     public static List<Vector2> OpenList { get { return openList; } }
     public static List<Vector2> ShortestPath { get { return shortestPath; } }
     public static Vector2 LastExpanded { get { return lastExpanded; } }
-    public static int[,] value { get { return aStar; } }
+    public static int[,] Value { get { return aStar; } }
 
     public static void Reset()
     {
@@ -30,6 +30,7 @@ public class AStar : Algorithm
         openList = new List<Vector2>();
         shortestPath = new List<Vector2>();
         lastExpanded = new Vector2(-1, -1);
+        aStar = new int[Width, Height];
     }
 
     public static void InitForSingleStep(int[,] grid, List<Vector2> goals, Vector2 start)
@@ -42,7 +43,6 @@ public class AStar : Algorithm
             return;
         Init(grid, goals);
 
-        aStar = new int[Width, Height];
         Algorithm.grid = grid;
         predecessors = new Vector2[Width, Height];
 
@@ -52,6 +52,10 @@ public class AStar : Algorithm
             {
                 aStar[i, j] = MaxCost;
                 predecessors[i, j] = Vector2.zero;
+                if (grid[i, j] == MaxCost)
+                {
+                    closedList.Add(new Vector2(i, j));
+                }
             }
         }
 
@@ -62,24 +66,38 @@ public class AStar : Algorithm
         aStar[x, y] = l;
         predecessors[x, y] = start;
 
-        print("OpenList");
-        PrintList<Vector2>(OpenList);
-        print("ClosedList");
-        PrintList<Vector2>(ClosedList);
+
+        //print("OpenList");
+        //PrintList<Vector2>(OpenList);
+        //print("ClosedList");
+        //PrintList<Vector2>(ClosedList);
+    }
+
+    public static List<Vector2> RunSingleStep()
+    {
+        bool finished = SingleStep();
+        if (finished && shortestPath.Count == 0)
+            shortestPath.Add(start);
+        return shortestPath;
     }
 
     public static bool SingleStep()
     {
         if (start.x == -1)
             return false;
-        print("Shortestpath length: " + shortestPath.Count);
+        //print("Shortestpath length: " + shortestPath.Count);
         //print("OpenList: (" + OpenList.Count + ")");
         //PrintList<Vector2>(OpenList);
         //print("ClosedList: (" + closedList.Count + ")");
         //PrintList<Vector2>(ClosedList);
+        if(openList.Count == 0)
+        {
+            return true;
+        }
+
         if (openList.Count != 0 && shortestPath.Count == 0)
         {
-            print("Innen");
+            //print("Innen");
             int lowest = 0;
             for (int i = 0; i < openList.Count; i++)
             {
@@ -126,6 +144,10 @@ public class AStar : Algorithm
             {
                 aStar[i, j] = MaxCost;
                 predecessors[i, j] = Vector2.zero;
+                if (grid[i, j] == MaxCost)
+                {
+                    closedList.Add(new Vector2(i, j));
+                }
             }
         }
 
@@ -135,21 +157,7 @@ public class AStar : Algorithm
         int l = grid[x, y];
         aStar[x, y] = l;
         predecessors[x, y] = start;
-
-        string s = "Walls:\n";
-        for (int i = 0; i < Width; i++)
-        {
-            for (int j = 0; j < Height; j++)
-            {
-                if (grid[i, j] == MaxCost)
-                {
-                    closedList.Add(new Vector2(i, j));
-                    aStar[i, j] = MaxCost;
-                }
-            }
-        }
-        s += "---------------------------------\n\n";
-
+        
         while (openList.Count != 0)
         {
             int lowest = 0;

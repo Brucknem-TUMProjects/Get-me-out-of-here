@@ -124,9 +124,11 @@ public class GameData {
 
     public bool AStarSingleStep()
     {
-        bool finished = AStar.SingleStep();
-        shortestPath = AStar.ShortestPath;
-        return finished;
+        shortestPath = AStar.RunSingleStep();
+        return shortestPath.Count != 0;
+        //bool finished = AStar.SingleStep();
+        //shortestPath = AStar.ShortestPath;
+        //return finished;
     }
 
     public void ResetAStar()
@@ -139,7 +141,7 @@ public class GameData {
     public List<Vector2> OpenList { get { return AStar.OpenList; } }
     public List<Vector2> ClosedList { get { return AStar.ClosedList; } }
     public Vector2 LastExpanded { get { return AStar.LastExpanded; } }
-    public int[,] AStarLengths { get { return AStar.value; } }
+    public int[,] AStarLengths { get { return AStar.Value; } }
 
 
     public void ResetDynamicProgramming()
@@ -181,124 +183,6 @@ public class GameData {
             shortestPath = new List<Vector2>();
     }
 
-    //public string CalculateAStar()
-    //{
-    //    Debug.Log("Calculating A*");
-    //    if (start.x != -1)
-    //    {
-    //        Debug.Log("start is set");
-    //        closedList = new List<Vector2>();
-    //        openList = new List<Vector2>();
-    //        shortestPath = new List<Vector2>();
-    //        InitGrid<int>(ref aStar, MaxCost);
-    //        InitGrid<Vector2>(ref predecessors, Vector2.zero);
-
-    //        openList.Add(start);
-    //        int x = (int)start.x;
-    //        int y = (int)start.y;
-    //        aStar[x, y] = grid[x, y];
-    //        predecessors[x, y] = start;
-
-    //        string s = "Walls:\n";
-    //        for (int i = 0; i < currentWidth; i++)
-    //        {
-    //            for (int j = 0; j < currentHeight; j++)
-    //            {
-    //                if (grid[i, j] == MaxCost)
-    //                {
-    //                    closedList.Add(new Vector2(i, j));
-    //                    aStar[i, j] = MaxCost;
-    //                }
-    //            }
-    //        }
-    //        s += "---------------------------------\n\n";
-
-    //        while (openList.Count != 0)
-    //        {
-    //            int lowest = 0;
-    //            for (int i = 0; i < openList.Count; i++)
-    //            {
-    //                if (aStar[(int)openList[i].x, (int)openList[i].y] < aStar[(int)openList[lowest].x, (int)openList[lowest].y])
-    //                    lowest = i;
-    //            }
-    //            Vector2 currentNode = openList[lowest];
-    //            openList.RemoveAt(lowest);
-
-    //            foreach (Vector2 goal in goals)
-    //            {
-    //                if (currentNode == goal)
-    //                {
-    //                    shortestPathGoal = currentNode;
-    //                    MakeShortestPath();
-    //                    //string s = "";
-    //                    foreach (Vector2 v in shortestPath)
-    //                    {
-    //                        s += (v) + "\n";
-    //                    }
-    //                    return "Path found:\n" + s;
-    //                }
-
-    //                closedList.Add(currentNode);
-
-    //                ExpandNode(currentNode);
-    //            }
-    //        }
-    //        shortestPath.Add(start);
-    //        return "No path";
-    //    }
-    //    return "No start set";
-    //}
-
-    //private void ExpandNode(Vector2 node)
-    //{
-    //    int x = (int)node.x;
-    //    int y = (int)node.y;
-
-    //    foreach (Vector2 delta in deltas)
-    //    {
-    //        Vector2 successor = node + delta;
-    //        int dx = x + (int)delta.x;
-    //        int dy = y + (int)delta.y;
-
-    //        if (dx < 0 || dx >= currentWidth || dy < 0 || dy >= currentHeight)
-    //            continue;
-
-    //        if (closedList.Contains(successor))
-    //            continue;
-
-    //        //Maybe error
-    //        int tentative_g = aStar[x, y] + grid[dx, dy];
-
-    //        if (openList.Contains(successor) && tentative_g >= aStar[dx, dy])
-    //            continue;
-
-    //        predecessors[dx, dy] = node;
-    //        aStar[dx, dy] = tentative_g;
-
-    //        if (!openList.Contains(successor))
-    //            openList.Add(successor);
-    //    }
-    //}
-
-    //private void MakeShortestPath()
-    //{
-    //    int i = 0;
-
-    //    shortestPath.Add(shortestPathGoal);
-    //    while (!shortestPath.Contains(start) && i++ < 1000)
-    //    {
-    //        Vector2 t = predecessors[(int)shortestPath[shortestPath.Count-1].x, (int)shortestPath[shortestPath.Count - 1].y];
-    //        shortestPath.Add(t);
-    //    }
-    //}
-
-    //public void RemoveShortestPath()
-    //{
-    //    start = new Vector2(-1, -1);
-    //    shortestPath = new List<Vector2>();
-    //    //shortestPathGoal = new Vector2(-1, -1);
-    //}
-    
     public string Print2DArray<T>(T[,] array)
     {
         string s = "";
@@ -312,86 +196,4 @@ public class GameData {
         }
         return (s);
     }
-
-    //public List<Vector2> HighlightedAll
-    //{
-    //    get
-    //    {
-    //        List<Vector2> l = new List<Vector2>();
-    //        l.Add(DynamicProgramming.CurrentPosition);
-    //        foreach(Vector2 delta in Algorithm.deltas)
-    //        {
-    //            l.Add(DynamicProgramming.CurrentPosition + delta);
-    //        }
-    //        return l;
-    //    }
-    //}
-
-    //public void AddGoal(Vector2 pos)
-    //{
-    //    Algorithm.AddGoal(pos);
-    //}
-
-    //public void AddWall(Vector2 pos)
-    //{
-    //    Algorithm.AddWall(pos);
-    //}
-
-    //public void CalculatePolicy()
-    //{
-    //    Debug.Log("Calculating optimal policy");
-    //    value = new int[currentWidth, currentHeight];
-
-    //    InitGrid<int>(ref value, MaxCost);
-
-    //    bool change = true;
-
-    //    while (change)
-    //    {
-    //        change = false;
-
-    //        for (int x = 0; x < currentWidth; x++)
-    //        {
-    //            for (int y = 0; y < currentHeight; y++)
-    //            {
-    //                for (int i = 0; i < goals.Count; i++)
-    //                {
-    //                    if (goals[i][0] == x && goals[i][1] == y)
-    //                    {
-    //                        if (value[x, y] > 0)
-    //                        {
-    //                            value[x, y] = 0;
-    //                            policy[x, y] = '*';
-    //                            change = true;
-    //                        }
-    //                    }
-
-    //                    else if (grid[x, y] < MaxCost)
-    //                    {
-    //                        for (int a = 0; a < deltas.Count; a++)
-    //                        {
-    //                            int x2 = x + (int)deltas[a][0];
-    //                            int y2 = y + (int)deltas[a][1];
-
-    //                            if (x2 >= 0 && x2 < currentWidth && y2 >= 0 && y2 < currentHeight)
-    //                            {
-    //                                int v2;
-    //                                if (grid[x2, y2] == MaxCost)
-    //                                    v2 = MaxCost;
-    //                                else
-    //                                    v2 = value[x2, y2] + grid[x2, y2];
-    //                                if (v2 < value[x, y])
-    //                                {
-    //                                    change = true;
-    //                                    value[x, y] = v2;
-    //                                    policy[x, y] = deltaNames[a];
-    //                                }
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
 }

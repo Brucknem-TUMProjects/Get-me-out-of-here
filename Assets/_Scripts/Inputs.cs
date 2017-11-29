@@ -206,8 +206,14 @@ public class Inputs : MonoBehaviour {
         if(mode.value == 0)
         {
             if (GameData.Instance.DynamicProgrammingSingleStep())
+            {
                 allOrStep.value = 0;
-            map.ShowCostTable();
+                showPolicy.isOn = true;
+            }
+            else
+            {
+                map.ShowCostTable();
+            }
         }
         else
         {
@@ -220,7 +226,9 @@ public class Inputs : MonoBehaviour {
     private void AllOrStepChange()
     {
         GameData.Instance.ResetDynamicProgramming();
-        if(allOrStep.value == 0)
+        GameData.Instance.ResetAStar();
+
+        if (allOrStep.value == 0)
         {
             stepButton.GetComponent<HoldStepButton>().holding = false;
             OnModeChange();
@@ -241,7 +249,7 @@ public class Inputs : MonoBehaviour {
             else
             {
                 //GameData.Instance.RemoveShortestPath();
-                GameData.Instance.ResetAStar();
+                //GameData.Instance.ResetAStar();
                 map.Redraw();
                 stepButton.gameObject.SetActive(false);
                 showPolicy.gameObject.SetActive(false);

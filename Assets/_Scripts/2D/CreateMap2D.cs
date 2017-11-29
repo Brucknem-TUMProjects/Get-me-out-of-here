@@ -195,11 +195,19 @@ public class CreateMap2D : CreateMap
 
     public override void ShowCostTable_Reachable(Vector2 pos)
     {
-        if(inputs.allOrStep.value == 0)
+        if (inputs.allOrStep.value == 0)
             tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[(int)pos.x, (int)pos.y].ToString();
         else
-            tiles[pos].GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
-
+        {
+            if (inputs.mode.value == 0)
+            {
+                tiles[pos].GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
+            }
+            else
+            {
+                tiles[pos].GetComponent<InputField>().text = GameData.Instance.grid[(int)pos.x, (int)pos.y].ToString();
+            }
+        }
         tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
     }
 
@@ -240,9 +248,13 @@ public class CreateMap2D : CreateMap
         {
             x = (int)pos.x;
             y = (int)pos.y;
-            tiles[pos].GetComponent<InputField>().image.color = Color.yellow;
+            if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
+                tiles[pos].GetComponent<InputField>().image.color = Color.black;
+            else
+                tiles[pos].GetComponent<InputField>().image.color = Color.yellow;
             tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
         }
+
         foreach(Vector2 pos in GameData.Instance.OpenList)
         {
             x = (int)pos.x;
