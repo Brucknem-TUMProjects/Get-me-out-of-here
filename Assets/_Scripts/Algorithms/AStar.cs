@@ -77,7 +77,12 @@ public class AStar : Algorithm
     {
         bool finished = SingleStep();
         if (finished && shortestPath.Count == 0)
+        {
+            print("Finished");
+
             shortestPath.Add(start);
+        }
+        
         return shortestPath;
     }
 
@@ -112,6 +117,7 @@ public class AStar : Algorithm
             {
                 if (currentNode == goal)
                 {
+                    print("make sp");
                     shortestPathGoal = currentNode;
                     MakeShortestPath();
                     return true;

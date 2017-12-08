@@ -112,10 +112,15 @@ public class GameData {
 
     public void CalculatePolicy()
     {
-        DynamicProgramming.CalculateValue(grid, goals);
+        //DynamicProgramming.CalculateValue(grid, goals);
+        //value = DynamicProgramming.Value;
+        //policy = DynamicProgramming.Policy;
+        DynamicProgramming.Recursive(grid, goals);
         value = DynamicProgramming.Value;
         policy = DynamicProgramming.Policy;
     }
+
+    public int DynamicProgrammingIterations { get { return DynamicProgramming.Iterations; } }
 
     public void InitAStarSingleStep()
     {

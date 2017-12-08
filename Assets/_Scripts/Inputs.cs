@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Inputs : MonoBehaviour {
+public class Inputs : MonoBehaviour
+{
 
     [Header("Sliders")]
     public Slider widthSlider;
@@ -25,8 +26,11 @@ public class Inputs : MonoBehaviour {
     public Dropdown dimension;
     public Dropdown mode;
     public Dropdown allOrStep;
+    [Header("Labels")]
+    public GameObject iterations;
     [Header("Camera")]
     public MoveCamera Viewer;
+
 
     private ToggleGroup toggleGroup;
 
@@ -88,7 +92,8 @@ public class Inputs : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         PreventCameraMove pcm = gameObject.AddComponent<PreventCameraMove>();
         pcm.SetCamera(Viewer);
 
@@ -105,37 +110,45 @@ public class Inputs : MonoBehaviour {
         foreach (CreateMap m in maps)
             m.Init();
 
-        widthSlider.onValueChanged.AddListener(delegate {
+        widthSlider.onValueChanged.AddListener(delegate
+        {
             OnSliderValueChange();
         });
 
-        heightSlider.onValueChanged.AddListener(delegate {
+        heightSlider.onValueChanged.AddListener(delegate
+        {
             OnSliderValueChange();
         });
-        
-        randomButton.onClick.AddListener(delegate {
+
+        randomButton.onClick.AddListener(delegate
+        {
             //preventInputChange = true;
             GetComponent<ToggleGroup>().SetAllTogglesOff();
             GameData.Instance.RandomGrid();
-            GameData.Instance.InitDynamicProgrammingSingleStep();
-            GameData.Instance.InitAStarSingleStep();
-            AllOrStepChange();
+            //GameData.Instance.InitDynamicProgrammingSingleStep();
+            //GameData.Instance.InitAStarSingleStep();
+            mode.value = 0;
+            allOrStep.value = 0;
+            showPolicy.isOn = false;
             map.AdjustMap();
             //preventInputChange = false;
         });
 
-        showPolicy.onValueChanged.AddListener(delegate {
+        showPolicy.onValueChanged.AddListener(delegate
+        {
             ToggleColorChange(showPolicy);
             //preventInputChange = true;
             if (showPolicy.isOn)
             {
                 GameData.Instance.CalculatePolicy();
                 map.ShowCostTable();
+                //StartCoroutine(ShowIterations());
             }
             else
             {
                 map.AdjustMap();
             }
+            ShowIterations();
             //preventInputChange = false;
         });
 
@@ -155,18 +168,22 @@ public class Inputs : MonoBehaviour {
             Viewer.isEnabled = dimension.value == 1;
         });
 
-        resetButton.onClick.AddListener(delegate {
+        resetButton.onClick.AddListener(delegate
+        {
             toggleGroup.SetAllTogglesOff();
             mode.value = 0;
+            allOrStep.value = 0;
+            showPolicy.isOn = false;
+
             GameData.Instance.Initialize(Width, Height);
-            GameData.Instance.InitDynamicProgrammingSingleStep();
-            GameData.Instance.InitAStarSingleStep();
-            AllOrStepChange();
+            //GameData.Instance.InitDynamicProgrammingSingleStep();
+            //GameData.Instance.InitAStarSingleStep();
+            //AllOrStepChange();
             GameData.Instance.goals = new List<Vector2>();
             GameData.Instance.shortestPath = new List<Vector2>();
             map.AdjustMap();
         });
-        
+
         help.onValueChanged.AddListener(delegate
         {
             ToggleColorChange(help);
@@ -203,12 +220,14 @@ public class Inputs : MonoBehaviour {
     private void OnStepButton()
     {
         //In Dynamic programming mode
-        if(mode.value == 0)
+        if (mode.value == 0)
         {
             if (GameData.Instance.DynamicProgrammingSingleStep())
             {
                 allOrStep.value = 0;
                 showPolicy.isOn = true;
+                //StartCoroutine(ShowIterations());
+                ShowIterations();
             }
             else
             {
@@ -226,7 +245,6 @@ public class Inputs : MonoBehaviour {
     private void AllOrStepChange()
     {
         GameData.Instance.ResetDynamicProgramming();
-        GameData.Instance.ResetAStar();
 
         if (allOrStep.value == 0)
         {
@@ -235,7 +253,7 @@ public class Inputs : MonoBehaviour {
         }
         else
         {
-            if(mode.value == 0)
+            if (mode.value == 0)
             {
                 stepButton.gameObject.SetActive(true);
                 showPolicy.gameObject.SetActive(false);
@@ -249,7 +267,7 @@ public class Inputs : MonoBehaviour {
             else
             {
                 //GameData.Instance.RemoveShortestPath();
-                //GameData.Instance.ResetAStar();
+                GameData.Instance.ResetAStar();
                 map.Redraw();
                 stepButton.gameObject.SetActive(false);
                 showPolicy.gameObject.SetActive(false);
@@ -289,7 +307,7 @@ public class Inputs : MonoBehaviour {
             setStart.isOn = true;
         }
     }
-    
+
     private void OnSliderValueChange()
     {
         SetMapDimensions();
@@ -338,10 +356,57 @@ public class Inputs : MonoBehaviour {
             return showPolicy.isOn;
         }
     }
-        
+
     public void SetMapDimensions()
     {
         GameData.Instance.currentWidth = Width;
         GameData.Instance.currentHeight = Height;
+    }
+
+    //IEnumerator<WaitForSeconds> ShowIterations()
+    //{
+    //    showPolicy.GetComponentInChildren<Text>().text = "Iterations: " + GameData.Instance.DynamicProgrammingIterations;
+
+    //    //Image i = iterations.GetComponent<Image>();
+    //    //Text t = iterations.transform.GetChild(0).GetComponent<Text>();
+
+    //    //t.text = "Iterations: " + GameData.Instance.DynamicProgrammingIterations;
+    //    //iterations.SetActive(true);
+
+    //    //Color ci = i.color;
+    //    //Color ct = t.color;
+
+    //    //for (float f = 0; f <= 1.0; f += 0.1f)
+    //    //{
+    //    //    ci.a = f;
+    //    //    ct.a = f;
+    //    //    i.color = ci;
+    //    //    t.color = ct;
+    //    //    yield return new WaitForSeconds(0.01f);
+    //    //}
+
+    //    yield return new WaitForSeconds(2);
+
+    //    //for (float f = 1.0f; f >= 0; f -= 0.1f)
+    //    //{
+    //    //    ci.a = f;
+    //    //    ct.a = f;
+    //    //    i.color = ci;
+    //    //    t.color = ct;
+    //    //    yield return new WaitForSeconds(0.01f);
+    //    //}
+
+    //    //iterations.SetActive(false);
+
+    //    showPolicy.GetComponentInChildren<Text>().text = "Show Policy";
+
+    //}
+
+    void ShowIterations()
+    {
+        if (showPolicy.isOn)
+            showPolicy.GetComponentInChildren<Text>().text = "Iterations: " + GameData.Instance.DynamicProgrammingIterations;
+        else
+            showPolicy.GetComponentInChildren<Text>().text = "Show Policy";
     }
 }

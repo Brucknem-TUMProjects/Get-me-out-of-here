@@ -247,7 +247,7 @@ public class CreateMap3D : CreateMap
     public override void ShowCostTable_DynamicProgrammingHighlight()
     {
         int x = (int)HighlightedPosition.x;
-        int y = (int)HighlightedPosition.y;
+        //int y = (int)HighlightedPosition.y;
 
         if (x == -1)
             return;

@@ -197,6 +197,7 @@ public class CreateMap2D : CreateMap
     {
         if (inputs.allOrStep.value == 0)
             tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[(int)pos.x, (int)pos.y].ToString();
+        //tiles[pos].GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
         else
         {
             if (inputs.mode.value == 0)

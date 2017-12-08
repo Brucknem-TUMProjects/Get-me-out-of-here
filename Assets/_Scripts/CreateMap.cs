@@ -40,8 +40,8 @@ public abstract class CreateMap : MonoBehaviour {
     // Use this for initialization
     public void Init () {
         tiles = new Dictionary<Vector2, GameObject>();
-        inputs.widthSlider.value = GameData.Instance.currentWidth = 6;
-        inputs.heightSlider.value = GameData.Instance.currentHeight = 6;
+        inputs.widthSlider.value = GameData.Instance.currentWidth = 3;
+        inputs.heightSlider.value = GameData.Instance.currentHeight = 3;
         AdjustMap();
     }
 
