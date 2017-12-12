@@ -37,6 +37,7 @@ public abstract class CreateMap : MonoBehaviour {
     public readonly float mapWidth = 795;
     public readonly float mapHeight = 555;
 
+    public static List<Vector2> LastHighlighted = new List<Vector2>();
 
     // Use this for initialization
     public void Init () {
@@ -118,47 +119,50 @@ public abstract class CreateMap : MonoBehaviour {
 
     public void ShowCostTable()
     {
+        LastHighlighted = new List<Vector2>();
         for (int x = 0; x < GameData.Instance.currentWidth; x++)
         {
             for (int y = 0; y < GameData.Instance.currentHeight; y++)
             {
                 Vector2 pos = new Vector2(x, y);
-                tiles[pos].SetActive(true);
-                //tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
-                //tiles[pos].GetComponent<InputField>().interactable = false;
-                ShowCostTable_Begin(pos);
+                ProcessPosition(pos);
 
-                if (GameData.Instance.value[x, y] == Algorithm.MaxCost)
-                {
-                    //tiles[pos].GetComponent<InputField>().text = "";
+                //tiles[pos].SetActive(true);
+                ////tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
+                ////tiles[pos].GetComponent<InputField>().interactable = false;
+                //ShowCostTable_Begin(pos);
 
-                    if (GameData.Instance.walls[x, y])
-                        ShowCostTable_Occupied(pos);
-                    //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.occupied;
-                    else
-                        ShowCostTable_Unreachable(pos);
-                    //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.unreachable;
-                }
-                else
-                {
-                    if (GameData.Instance.goals.Contains(pos))
-                    {
-                        ShowCostTable_Goal(pos);
-                        //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.goal;
-                    }
-                    else
-                    {
-                        ShowCostTable_Reachable(pos);
-                        //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.CostToColor(GameData.Instance.grid[x,y]);
-                    }
-                    //tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[x, y].ToString();
-                }
+                //if (GameData.Instance.value[x, y] == Algorithm.MaxCost)
+                //{
+                //    //tiles[pos].GetComponent<InputField>().text = "";
 
-                if(inputs.allOrStep.value == 1)
+                //    if (GameData.Instance.walls[x, y])
+                //        ShowCostTable_Occupied(pos);
+                //    //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.occupied;
+                //    else
+                //        ShowCostTable_Unreachable(pos);
+                //    //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.unreachable;
+                //}
+                //else
+                //{
+                //    if (GameData.Instance.goals.Contains(pos))
+                //    {
+                //        ShowCostTable_Goal(pos);
+                //        //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.goal;
+                //    }
+                //    else
+                //    {
+                //        ShowCostTable_Reachable(pos);
+                //        //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.CostToColor(GameData.Instance.grid[x,y]);
+                //    }
+                //    //tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[x, y].ToString();
+                //}
+
+                if (inputs.allOrStep.value == 1)
                 {
                     if (inputs.mode.value == 0)
                         ShowCostTable_DynamicProgrammingHighlight();
-                    else if(inputs.mode.value == 2)
+                    else if (inputs.mode.value == 2)
                         ShowCostTable_MyOwnImplementationHighlight();
 
                 }
@@ -168,6 +172,53 @@ public abstract class CreateMap : MonoBehaviour {
             ShowShortestPath();
         else if (inputs.mode.value == 1)
             AStarHighlight();
+    }
+
+    public void ProcessPosition(Vector2 pos)
+    {
+        int x = (int)pos.x;
+        int y = (int)pos.y;
+        tiles[pos].SetActive(true);
+        //tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
+        //tiles[pos].GetComponent<InputField>().interactable = false;
+        ShowCostTable_Begin(pos);
+
+        if (GameData.Instance.value[x, y] == Algorithm.MaxCost)
+        {
+            //tiles[pos].GetComponent<InputField>().text = "";
+
+            if (GameData.Instance.walls[x, y])
+                ShowCostTable_Occupied(pos);
+            //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.occupied;
+            else
+                ShowCostTable_Unreachable(pos);
+            //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.unreachable;
+        }
+        else
+        {
+            if (GameData.Instance.goals.Contains(pos))
+            {
+                ShowCostTable_Goal(pos);
+                //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.goal;
+            }
+            else
+            {
+                ShowCostTable_Reachable(pos);
+                //tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.CostToColor(GameData.Instance.grid[x,y]);
+            }
+            //tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[x, y].ToString();
+        }
+    }
+
+    public void ResetForSingleSteps()
+    {
+        foreach(Vector2 v in tiles.Keys)
+        {
+            if (GameData.Instance.grid[(int)v.x, (int)v.y] == Algorithm.MaxCost)
+                ShowCostTable_Occupied(v);
+            else
+                ShowCostTable_Unreachable(v);
+        }
     }
 
     public Vector2 DynamicProgramming_HighlightedPosition
@@ -192,7 +243,7 @@ public abstract class CreateMap : MonoBehaviour {
 
     public Vector2 MyOwnImplementation_CurrentOpen { get { return GameData.Instance.MyOwnImplementationCurrentOpen; } }
     public List<Vector2> MyOwnImplementation_OpenList { get { return GameData.Instance.MyOwnImplementationOpenList; } }
-    public Vector2 MyOwnImplementation_ProcessingGoal { get { return GameData.Instance.MyOwnImplementationProcessingGoal; } }
+    //public Vector2 MyOwnImplementation_ProcessingGoal { get { return GameData.Instance.MyOwnImplementationProcessingGoal; } }
 
 
     //public List<Vector2> HighlightedAll
@@ -235,6 +286,14 @@ public abstract class CreateMap : MonoBehaviour {
         else
         {
             AdjustMap();
+        }
+    }
+
+    public void SetInteractable(bool interactable)
+    {
+        foreach(GameObject o in tiles.Values)
+        {
+            o.GetComponent<Click>().SetInteractable(interactable);
         }
     }
 }

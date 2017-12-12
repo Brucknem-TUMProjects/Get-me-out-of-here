@@ -202,8 +202,9 @@ public class AStar : Algorithm
         int x = (int)node.x;
         int y = (int)node.y;
 
-        foreach (Vector2 delta in deltas)
+        for(int i = deltas.Count - 1; i >= 0; i--)
         {
+            Vector2 delta = deltas[i];
             Vector2 successor = node + delta;
             int dx = x + (int)delta.x;
             int dy = y + (int)delta.y;

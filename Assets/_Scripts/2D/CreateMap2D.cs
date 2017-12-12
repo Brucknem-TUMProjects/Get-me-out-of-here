@@ -76,7 +76,7 @@ public class CreateMap2D : CreateMap
     {
         float tileDim = Mathf.Min(1.0f * mapHeight / GameData.Instance.currentHeight, 1.0f * mapWidth / GameData.Instance.currentWidth, 30);
         tiles[pos].GetComponent<TileClick>().SetPosition(pos);
-        tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.IntegerNumber;
+        tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Custom;
 
         tiles[pos].GetComponent<InputField>().interactable = true;
 
@@ -218,6 +218,7 @@ public class CreateMap2D : CreateMap
         tiles[pos].GetComponent<InputField>().image.color = color;
     }
 
+
     public override void ShowCostTable_DynamicProgrammingHighlight()
     {
         int x = (int)DynamicProgramming_HighlightedPosition.x;
@@ -226,33 +227,49 @@ public class CreateMap2D : CreateMap
         if (x == -1)
             return;
 
+        foreach(Vector2 last in LastHighlighted)
+        {
+            ProcessPosition(last);
+        }
+
+        LastHighlighted = new List<Vector2>();
+
         tiles[DynamicProgramming_HighlightedPosition].GetComponent<InputField>().image.color = Color.yellow;
         tiles[DynamicProgramming_HighlightedPosition].GetComponent<InputField>().text = GameData.Instance.value[x, y].ToString();
+        LastHighlighted.Add(DynamicProgramming_HighlightedPosition);
+
         if (DynamicProgramming_HighlightedLookingAt != new Vector2(-1, -1))
         {
             x = (int)DynamicProgramming_HighlightedLookingAt.x;
             y = (int)DynamicProgramming_HighlightedLookingAt.y;
             tiles[DynamicProgramming_HighlightedLookingAt].GetComponent<InputField>().image.color = Color.cyan;
             tiles[DynamicProgramming_HighlightedLookingAt].GetComponent<InputField>().text = GameData.Instance.value[x, y].ToString();
+            LastHighlighted.Add(DynamicProgramming_HighlightedLookingAt);
+
         }
 
-        //tiles[HighlightedAll[0]].GetComponent<InputField>().image.color = Color.yellow;
-
-        //for(int i = 1; i < HighlightedAll.Count; i++)
-        //    if (HighlightedAll[i] != new Vector2(-1, -1))
-        //        tiles[HighlightedAll[i]].GetComponent<InputField>().image.color = Color.cyan;
     }
 
     public override void ShowCostTable_MyOwnImplementationHighlight()
     {
+        foreach (Vector2 last in LastHighlighted)
+        {
+            ProcessPosition(last);
+        }
+
+        LastHighlighted = new List<Vector2>();
+
         tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().image.color = Color.magenta;
 
         tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().text = (GameData.Instance.value[(int)MyOwnImplementation_CurrentOpen.x, (int)MyOwnImplementation_CurrentOpen.y]).ToString();
+
+        LastHighlighted.Add(MyOwnImplementation_CurrentOpen);
 
         foreach (Vector2 v in MyOwnImplementation_OpenList)
         {
             tiles[v].GetComponent<InputField>().image.color = Color.cyan;
             tiles[v].GetComponent<InputField>().text = (GameData.Instance.value[(int)v.x, (int)v.y]).ToString();
+            LastHighlighted.Add(v);
         }
     }
 

@@ -42,4 +42,9 @@ public class CubeClick : Click {
         transform.GetChild(0).gameObject.SetActive(false);
         transform.GetChild(1).gameObject.SetActive(false);
     }
+
+    public override void SetInteractable(bool interactable)
+    {
+        transform.GetChild(2).GetChild(0).GetComponent<InputField>().interactable = interactable;
+    }
 }

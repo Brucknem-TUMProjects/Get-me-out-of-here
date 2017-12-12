@@ -78,6 +78,7 @@ public class CreateMap3D : CreateMap
         tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
         tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
         tiles[pos].transform.GetChild(0).GetComponent<Renderer>().material.color = Color.white;
+        tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().interactable = true;
 
         tiles[pos].transform.position = new Vector3((int)pos.x, 0, (int)pos.y);
     }
@@ -181,6 +182,7 @@ public class CreateMap3D : CreateMap
     {
         tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
         tiles[pos].transform.GetChild(0).GetComponent<Renderer>().material.color = Color.white;
+        tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().interactable = false;
 
         if (inputs.allOrStep.value == 0)
         {
@@ -219,6 +221,7 @@ public class CreateMap3D : CreateMap
     {
         tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
         tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+        tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
         tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
 
         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.goal;
@@ -246,17 +249,15 @@ public class CreateMap3D : CreateMap
             }
             else
             {
+                //print("--------------------");
+                //print(GameData.Instance.value[(int)pos.x, (int)pos.y].ToString());
                 tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
+                //print(tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text);
             }
         }
     
-        //tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int) pos.y].ToString();
 
         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
-        //int rotation = Array.IndexOf(Algorithm.deltaNames, GameData.Instance.policy[(int)pos.x, (int)pos.y]);
-        //tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
-        //tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
-        //tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 1, 0);
     }
 
     public override void ShortestPathColor(Vector2 pos, Color color)
@@ -276,23 +277,41 @@ public class CreateMap3D : CreateMap
         if (x == -1)
             return;
 
+        foreach (Vector2 last in LastHighlighted)
+        {
+            ProcessPosition(last);
+        }
+
         //print("Highlightet Position: " + HighlightedPosition);
         tiles[DynamicProgramming_HighlightedPosition].GetComponent<Renderer>().material.color = Color.yellow;
+        LastHighlighted.Add(DynamicProgramming_HighlightedPosition);
         if (DynamicProgramming_HighlightedLookingAt != new Vector2(-1, -1))
+        {
             tiles[DynamicProgramming_HighlightedLookingAt].GetComponent<Renderer>().material.color = Color.cyan;
-
+            LastHighlighted.Add(DynamicProgramming_HighlightedLookingAt);
+        }
     }
 
     public override void ShowCostTable_MyOwnImplementationHighlight()
     {
+        foreach (Vector2 last in LastHighlighted)
+        {
+            ProcessPosition(last);
+        }
+
+        //ProcessPosition(MyOwnImplementation_CurrentOpen);
         tiles[MyOwnImplementation_CurrentOpen].GetComponent<Renderer>().material.color = Color.magenta;
 
         tiles[MyOwnImplementation_CurrentOpen].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = (GameData.Instance.value[(int)MyOwnImplementation_CurrentOpen.x, (int)MyOwnImplementation_CurrentOpen.y]).ToString();
 
+        LastHighlighted.Add(MyOwnImplementation_CurrentOpen);
+
         foreach (Vector2 v in MyOwnImplementation_OpenList)
         {
+            //ProcessPosition(v);
             tiles[v].GetComponent<Renderer>().material.color = Color.cyan;
             tiles[v].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = (GameData.Instance.value[(int)v.x, (int)v.y]).ToString();
+            LastHighlighted.Add(v);
         }
     }
 

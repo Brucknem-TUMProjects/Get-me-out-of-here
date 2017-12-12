@@ -17,7 +17,7 @@ public class TileClick : Click, IPointerClickHandler {
             inputs = transform.parent.parent.GetChild(1).GetComponent<Inputs>();
         map = transform.parent.gameObject.GetComponent<CreateMap>();
         GetComponent<InputField>().lineType = InputField.LineType.MultiLineNewline;
-        transform.GetChild(1).GetComponent<Text>().resizeTextForBestFit = true;
+        //transform.GetChild(1).GetComponent<Text>().resizeTextForBestFit = true;
     }
 
   
@@ -41,5 +41,10 @@ public class TileClick : Click, IPointerClickHandler {
     public Vector2 GetPosition()
     {
         return position;
+    }
+
+    public override void SetInteractable(bool interactable)
+    {
+        GetComponent<InputField>().interactable = interactable;
     }
 }

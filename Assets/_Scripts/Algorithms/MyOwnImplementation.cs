@@ -44,7 +44,7 @@ public class MyOwnImplementation : Algorithm {
         Iterations++;
         open.Remove(pos);
 
-        for (int i = deltas.Count - 1; i >= 0; i--)
+        for (int i = 0; i < deltas.Count; i++)
         {
             Vector2 prev = pos - deltas[i];
             if (prev.x >= 0 && prev.x < Width && prev.y >= 0 && prev.y < Height)
@@ -127,7 +127,7 @@ public class MyOwnImplementation : Algorithm {
         lastExpanded = currentOpen;
         openList.Remove(currentOpen);
 
-        for (int i = deltas.Count - 1; i >= 0; i--)
+        for (int i = 0; i < deltas.Count; i++)
         {
             Vector2 prev = currentOpen - deltas[i];
             //print(prev);

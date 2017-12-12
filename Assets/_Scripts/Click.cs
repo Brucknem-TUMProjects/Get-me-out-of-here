@@ -8,6 +8,8 @@ public abstract class Click : MonoBehaviour {
     public CreateMap map;
     public static Inputs inputs;
 
+    public abstract void SetInteractable(bool interactable);
+
     public void CalculateAStar()
     {
         GameData.Instance.CalculateAStar();
@@ -138,4 +140,5 @@ public abstract class Click : MonoBehaviour {
         CalculatePolicy();
         RedrawMap();
     }
+
 }

@@ -47,6 +47,8 @@ public class Inputs : MonoBehaviour
 
     public bool threading = false;
 
+    //private bool firstOn3D = true;
+
     private class PreventCameraMove : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         MoveCamera cam;
@@ -160,7 +162,7 @@ public class Inputs : MonoBehaviour
             GameData.Instance.RandomGrid();
             //GameData.Instance.InitDynamicProgrammingSingleStep();
             //GameData.Instance.InitAStarSingleStep();
-            mode.value = 0;
+            //mode.value = 0;
             allOrStep.value = 0;
             showPolicy.isOn = false;
             map.AdjustMap();
@@ -190,17 +192,14 @@ public class Inputs : MonoBehaviour
         dimension.onValueChanged.AddListener(delegate
         {
             //preventInputChange = true;
-            map.gameObject.SetActive(false);
-            map = maps[dimension.value];
-            map.gameObject.SetActive(true);
-            map.AdjustMap();
-            if (showPolicy.isOn || (allOrStep.value == 1 && mode.value != 1))
-            {
-                //preventInputChange = true;
-                map.ShowCostTable();
-                //preventInputChange = false;
-            }
-            Viewer.isEnabled = dimension.value == 1;
+            DimensionSwitch();
+
+            //if (firstOn3D)
+            //{
+            //    firstOn3D = false;
+            //    dimension.value = 0;
+            //    dimension.value = 1;
+            //}
         });
 
         resetButton.onClick.AddListener(delegate
@@ -252,6 +251,22 @@ public class Inputs : MonoBehaviour
         //});
     }
 
+    private void DimensionSwitch()
+    {
+        map.gameObject.SetActive(false);
+        map = maps[dimension.value];
+        map.gameObject.SetActive(true);
+        map.AdjustMap();
+        if (showPolicy.isOn || (allOrStep.value == 1 && mode.value != 1))
+        {
+            print("Show Cost Table");
+            //preventInputChange = true;
+            map.ShowCostTable();
+            //preventInputChange = false;
+        }
+        Viewer.isEnabled = dimension.value == 1;
+    }
+
     public void CalculateThreaded(Action algorithm)
     {
         StartCoroutine(CalculationThread(algorithm));
@@ -264,6 +279,7 @@ public class Inputs : MonoBehaviour
         });
         showPolicy.GetComponentInChildren<Text>().text = "Calculating..";
         SetButtonsInteractive(false);
+        map.SetInteractable(false);
         threading = true;
         t.Start();
         while (t.IsAlive)
@@ -272,6 +288,8 @@ public class Inputs : MonoBehaviour
         map.ShowCostTable();
         ShowIterations();
         SetButtonsInteractive(true);
+        map.SetInteractable(true);
+
         threading = false;
     }
 
@@ -309,7 +327,8 @@ public class Inputs : MonoBehaviour
                 }
                 else
                 {
-                    map.ShowCostTable();
+                    map.ShowCostTable_DynamicProgrammingHighlight();
+                    //map.ShowCostTable();
                 }
             }
             else
@@ -323,7 +342,8 @@ public class Inputs : MonoBehaviour
                 }
                 else
                 {
-                    map.ShowCostTable();
+                    map.ShowCostTable_MyOwnImplementationHighlight();
+                    //map.ShowCostTable();
                 }
             }
         }
@@ -358,10 +378,17 @@ public class Inputs : MonoBehaviour
                 //showPolicy.isOn = true;
 
                 setStart.isOn = false;
-                GameData.Instance.InitDynamicProgrammingSingleStep();
-                GameData.Instance.InitMyOwnImplementationSingleStep();
-                map.Redraw();
+                
+                if(mode.value == 0)
+                    GameData.Instance.InitDynamicProgrammingSingleStep();
+                else if(mode.value == 2)
+                    GameData.Instance.InitMyOwnImplementationSingleStep();
 
+                map.ShowCostTable();
+                //if (mode.value == 0)
+                //    map.ResetForSingleSteps();
+                //else if (mode.value == 2)
+                //    map.ShowCostTable();
             }
         }
     }
@@ -377,7 +404,6 @@ public class Inputs : MonoBehaviour
                 CalculateThreaded(GameData.Instance.CalculateMyOwnImplementation);
 
             ShowIterations();
-
         }
         map.Redraw();
 

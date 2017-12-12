@@ -66,9 +66,12 @@ public class DynamicProgramming : Algorithm {
 
         if (grid[x, y] == MaxCost)
         {
-            currentPosition++;
-            currentDelta = -1;
-            return;
+            if (!(x == Width - 1 && y == Height - 1))
+            {
+                currentPosition++;
+                currentDelta = -1;
+                return;
+            }
         }
         
         if (!isGoal && grid[x, y] < MaxCost)
@@ -117,7 +120,7 @@ public class DynamicProgramming : Algorithm {
             //print(++Iterations);
         }
 
-            return !change && currentPosition == Width * Height - 1 && currentDelta == 3;
+            return !change && currentPosition >= Width * Height - 1 && currentDelta == 3;
     }
 
     public static void CalculateValue(int[,] grid, List<Vector2> goals)
@@ -168,7 +171,7 @@ public class DynamicProgramming : Algorithm {
                     
                     if (!isGoal && grid[x, y] < MaxCost)
                     {
-                        for (int i = 0; i < deltas.Count; i++)
+                        for (int i = deltas.Count - 1; i >= 0; i--)
                         {
                             Vector2 next = new Vector2(x, y) + deltas[i];
                             if (next.x >= 0 && next.x < Width && next.y >= 0 && next.y < Height)
