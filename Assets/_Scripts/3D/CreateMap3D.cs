@@ -229,18 +229,34 @@ public class CreateMap3D : CreateMap
 
     public override void ShowCostTable_Reachable(Vector2 pos)
     {
-        if(inputs.allOrStep.value == 1)
-            tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
-        else
+        if(inputs.allOrStep.value == 0)
+        {
             tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
-
-        tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int) pos.y].ToString();
+            int rotation = Array.IndexOf(Algorithm.deltaNames, GameData.Instance.policy[(int)pos.x, (int)pos.y]);
+            tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
+            tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
+            tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 1, 0);
+        }
+        else
+        {
+            tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
+            if (inputs.mode.value == 1)
+            {
+                tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.grid[(int)pos.x, (int)pos.y].ToString();
+            }
+            else
+            {
+                tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
+            }
+        }
+    
+        //tiles[pos].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int) pos.y].ToString();
 
         tiles[pos].GetComponent<Renderer>().material.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
-        int rotation = Array.IndexOf(Algorithm.deltaNames, GameData.Instance.policy[(int)pos.x, (int)pos.y]);
-        tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
-        tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
-        tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 1, 0);
+        //int rotation = Array.IndexOf(Algorithm.deltaNames, GameData.Instance.policy[(int)pos.x, (int)pos.y]);
+        //tiles[pos].transform.GetChild(0).transform.rotation = Quaternion.Euler(-90, 90 * rotation, 0);
+        //tiles[pos].transform.GetChild(0).transform.localScale = new Vector3(.4f, .4f, 1);
+        //tiles[pos].transform.GetChild(0).transform.localPosition = new Vector3(0, 1, 0);
     }
 
     public override void ShortestPathColor(Vector2 pos, Color color)

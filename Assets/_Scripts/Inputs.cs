@@ -194,7 +194,7 @@ public class Inputs : MonoBehaviour
             map = maps[dimension.value];
             map.gameObject.SetActive(true);
             map.AdjustMap();
-            if (showPolicy.isOn)
+            if (showPolicy.isOn || (allOrStep.value == 1 && mode.value != 1))
             {
                 //preventInputChange = true;
                 map.ShowCostTable();

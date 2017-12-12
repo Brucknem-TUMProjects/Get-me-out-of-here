@@ -158,7 +158,7 @@ public abstract class CreateMap : MonoBehaviour {
                 {
                     if (inputs.mode.value == 0)
                         ShowCostTable_DynamicProgrammingHighlight();
-                    else
+                    else if(inputs.mode.value == 2)
                         ShowCostTable_MyOwnImplementationHighlight();
 
                 }

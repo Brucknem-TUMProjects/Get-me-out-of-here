@@ -37,11 +37,10 @@ public class AStar : Algorithm
     {
         AStar.start = start;
 
-        Reset();
-
         if (start.x == -1)
             return;
         Init(grid, goals);
+        Reset();
 
         Algorithm.grid = grid;
         predecessors = new Vector2[Width, Height];
