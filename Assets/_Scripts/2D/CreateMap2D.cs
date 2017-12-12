@@ -200,13 +200,14 @@ public class CreateMap2D : CreateMap
         //tiles[pos].GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
         else
         {
-            if (inputs.mode.value == 0)
+            if (inputs.mode.value == 1)
             {
-                tiles[pos].GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
+                tiles[pos].GetComponent<InputField>().text = GameData.Instance.grid[(int)pos.x, (int)pos.y].ToString();
             }
             else
             {
-                tiles[pos].GetComponent<InputField>().text = GameData.Instance.grid[(int)pos.x, (int)pos.y].ToString();
+                tiles[pos].GetComponent<InputField>().text = GameData.Instance.value[(int)pos.x, (int)pos.y].ToString();
+                //tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[(int)pos.x, (int)pos.y].ToString();
             }
         }
         tiles[pos].GetComponent<InputField>().image.color = GameData.Instance.CostToColor(GameData.Instance.grid[(int)pos.x, (int)pos.y]);
@@ -219,20 +220,20 @@ public class CreateMap2D : CreateMap
 
     public override void ShowCostTable_DynamicProgrammingHighlight()
     {
-        int x = (int)HighlightedPosition.x;
-        int y = (int)HighlightedPosition.y;
+        int x = (int)DynamicProgramming_HighlightedPosition.x;
+        int y = (int)DynamicProgramming_HighlightedPosition.y;
 
         if (x == -1)
             return;
 
-        tiles[HighlightedPosition].GetComponent<InputField>().image.color = Color.yellow;
-        tiles[HighlightedPosition].GetComponent<InputField>().text = GameData.Instance.value[x,y].ToString();
-        if (HighlightedLookingAt != new Vector2(-1, -1))
+        tiles[DynamicProgramming_HighlightedPosition].GetComponent<InputField>().image.color = Color.yellow;
+        tiles[DynamicProgramming_HighlightedPosition].GetComponent<InputField>().text = GameData.Instance.value[x, y].ToString();
+        if (DynamicProgramming_HighlightedLookingAt != new Vector2(-1, -1))
         {
-            x = (int)HighlightedLookingAt.x;
-            y = (int)HighlightedLookingAt.y;
-            tiles[HighlightedLookingAt].GetComponent<InputField>().image.color = Color.cyan;
-            tiles[HighlightedLookingAt].GetComponent<InputField>().text = GameData.Instance.value[x, y].ToString();
+            x = (int)DynamicProgramming_HighlightedLookingAt.x;
+            y = (int)DynamicProgramming_HighlightedLookingAt.y;
+            tiles[DynamicProgramming_HighlightedLookingAt].GetComponent<InputField>().image.color = Color.cyan;
+            tiles[DynamicProgramming_HighlightedLookingAt].GetComponent<InputField>().text = GameData.Instance.value[x, y].ToString();
         }
 
         //tiles[HighlightedAll[0]].GetComponent<InputField>().image.color = Color.yellow;
@@ -240,6 +241,19 @@ public class CreateMap2D : CreateMap
         //for(int i = 1; i < HighlightedAll.Count; i++)
         //    if (HighlightedAll[i] != new Vector2(-1, -1))
         //        tiles[HighlightedAll[i]].GetComponent<InputField>().image.color = Color.cyan;
+    }
+
+    public override void ShowCostTable_MyOwnImplementationHighlight()
+    {
+        tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().image.color = Color.magenta;
+
+        tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().text = (GameData.Instance.value[(int)MyOwnImplementation_CurrentOpen.x, (int)MyOwnImplementation_CurrentOpen.y]).ToString();
+
+        foreach (Vector2 v in MyOwnImplementation_OpenList)
+        {
+            tiles[v].GetComponent<InputField>().image.color = Color.cyan;
+            tiles[v].GetComponent<InputField>().text = (GameData.Instance.value[(int)v.x, (int)v.y]).ToString();
+        }
     }
 
     public override void AStarHighlight()
@@ -276,5 +290,10 @@ public class CreateMap2D : CreateMap
         }
 
         ShowShortestPath();
+    }
+
+    public override string ToString()
+    {
+        return base.ToString();
     }
 }

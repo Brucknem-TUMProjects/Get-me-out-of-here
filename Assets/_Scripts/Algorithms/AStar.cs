@@ -78,7 +78,7 @@ public class AStar : Algorithm
         bool finished = SingleStep();
         if (finished && shortestPath.Count == 0)
         {
-            print("Finished");
+            //print("Finished");
 
             shortestPath.Add(start);
         }
@@ -117,7 +117,7 @@ public class AStar : Algorithm
             {
                 if (currentNode == goal)
                 {
-                    print("make sp");
+                    //print("make sp");
                     shortestPathGoal = currentNode;
                     MakeShortestPath();
                     return true;
@@ -136,7 +136,7 @@ public class AStar : Algorithm
     public static List<Vector2> CalculateAStar(int[,] grid, List<Vector2> goals, Vector2 start)
     {
 
-        Debug.Log("Calculating A*");
+        //Debug.Log("Calculating A*");
         Reset();
         Init(grid, goals);
         aStar = new int[Width, Height];
@@ -169,8 +169,8 @@ public class AStar : Algorithm
             int lowest = 0;
             for (int i = 0; i < openList.Count; i++)
             {
-                if (aStar[(int)openList[i].x, (int)openList[i].y] < aStar[(int)openList[lowest].x, (int)openList[lowest].y])
-                    lowest = i;
+                if (aStar[(int)openList[i].x, (int)openList[i].y] < aStar[(int)openList[lowest].x, (int)openList[lowest].y])   lowest = i;
+
             }
             Vector2 currentNode = openList[lowest];
             openList.RemoveAt(lowest);

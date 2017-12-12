@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameData {
+public class GameData
+{
 
     private static GameData instance;
 
@@ -57,7 +58,7 @@ public class GameData {
     public Color begin = Color.red;
     public Color onPath = Color.green;
     public Color unreachable = Color.grey;
-    
+
 
     public void Initialize(int x, int y)
     {
@@ -95,7 +96,7 @@ public class GameData {
             {
                 int randomCost = UnityEngine.Random.Range(0, 255);
                 if (randomCost <= 200 && UnityEngine.Random.Range(0, 100) < 3)
-                    GameData.Instance.goals.Add(new Vector2( x, y ));
+                    GameData.Instance.goals.Add(new Vector2(x, y));
                 if (randomCost > 200)
                 {
                     grid[x, y] = Algorithm.MaxCost;
@@ -110,17 +111,73 @@ public class GameData {
         }
     }
 
-    public void CalculatePolicy()
+    public Color CostToColor(int cost)
     {
-        //DynamicProgramming.CalculateValue(grid, goals);
-        //value = DynamicProgramming.Value;
-        //policy = DynamicProgramming.Policy;
-        DynamicProgramming.Recursive(grid, goals);
+        return new Color(1, (255 - cost / 2) / 255.0f, (255 - cost) / 255.0f);
+    }
+
+
+    public string Print2DArray<T>(T[,] array)
+    {
+        string s = "";
+        for (int i = 0; i < array.GetLength(0); i++)
+        {
+            for (int j = 0; j < array.GetLength(1); j++)
+            {
+                s += (array[i, j] + " ");
+            }
+            s += ("\n");
+        }
+        return (s);
+    }
+
+    #region DynamicProgramming
+    public void CalculateDynamicProgramming()
+    {
+        DynamicProgramming.CalculateValue(grid, goals);
         value = DynamicProgramming.Value;
         policy = DynamicProgramming.Policy;
     }
 
-    public int DynamicProgrammingIterations { get { return DynamicProgramming.Iterations; } }
+    public int AlgorithmIterations { get { return Algorithm.Iterations; } }
+
+    public void ResetDynamicProgramming()
+    {
+        DynamicProgramming.Reset();
+    }
+
+    public void InitDynamicProgrammingSingleStep()
+    {
+        DynamicProgramming.InitForSingleStep(grid, goals);
+        value = DynamicProgramming.Value;
+        policy = DynamicProgramming.Policy;
+    }
+
+    public bool DynamicProgrammingSingleStep()
+    {
+        bool finished = DynamicProgramming.RunSingleStep();
+        value = DynamicProgramming.Value;
+        policy = DynamicProgramming.Policy;
+        return finished;
+    }
+
+    public Vector3 DynamicProgrammingHighlighted
+    {
+        get
+        {
+            return new Vector3(DynamicProgramming.CurrentPosition.x, DynamicProgramming.CurrentPosition.y, DynamicProgramming.CurrentDelta);
+        }
+    }
+    #endregion
+
+    #region Astar
+    public void CalculateAStar()
+    {
+        if (start.x != -1)
+            shortestPath = AStar.CalculateAStar(grid, GameData.Instance.goals, start);
+        else
+            shortestPath = new List<Vector2>();
+    }
 
     public void InitAStarSingleStep()
     {
@@ -148,57 +205,33 @@ public class GameData {
     public Vector2 LastExpanded { get { return AStar.LastExpanded; } }
     public int[,] AStarLengths { get { return AStar.Value; } }
 
+    #endregion
 
-    public void ResetDynamicProgramming()
+    #region MyOwnImplementation
+    public void CalculateMyOwnImplementation()
     {
-        DynamicProgramming.Reset();
+        MyOwnImplementation.Recursive(grid, goals);
+        value = MyOwnImplementation.Value;
+        policy = MyOwnImplementation.Policy;
     }
 
-    public void InitDynamicProgrammingSingleStep()
+    public void InitMyOwnImplementationSingleStep()
     {
-        DynamicProgramming.InitForSingleStep(grid, goals);
+        MyOwnImplementation.InitForSingleStep(grid, goals);
+        value = MyOwnImplementation.Value;
+        policy = MyOwnImplementation.Policy;
     }
 
-    public bool DynamicProgrammingSingleStep()
+    public bool MyOwnImplementationSingleStep()
     {
-        bool finished = DynamicProgramming.RunSingleStep();
-        value = DynamicProgramming.Value;
-        policy = DynamicProgramming.Policy;
+        bool finished = MyOwnImplementation.SingleStep();
+        value = MyOwnImplementation.Value;
+        policy = MyOwnImplementation.Policy;
         return finished;
     }
 
-    public Vector3 DynamicProgrammingHighlighted
-    {
-        get
-        {
-            return new Vector3(DynamicProgramming.CurrentPosition.x, DynamicProgramming.CurrentPosition.y, DynamicProgramming.CurrentDelta);
-        }
-    }
-
-    public Color CostToColor(int cost)
-    {
-        return new Color(1, (255 - cost / 2) / 255.0f, (255 - cost) / 255.0f);
-    }
-
-    public void CalculateAStar()
-    {
-        if (start.x != -1)
-            shortestPath = AStar.CalculateAStar(grid, GameData.Instance.goals, start);
-        else
-            shortestPath = new List<Vector2>();
-    }
-
-    public string Print2DArray<T>(T[,] array)
-    {
-        string s = "";
-        for (int i = 0; i < array.GetLength(0); i++)
-        {
-            for (int j = 0; j < array.GetLength(1); j++)
-            {
-                s += (array[i, j] + " ");
-            }
-            s += ("\n");
-        }
-        return (s);
-    }
+    public Vector2 MyOwnImplementationCurrentOpen { get { return MyOwnImplementation.lastExpanded; } }
+    public List<Vector2> MyOwnImplementationOpenList { get { return MyOwnImplementation.openList; } }
+    public Vector2 MyOwnImplementationProcessingGoal { get { return goals[MyOwnImplementation.currentGoal]; } }
+    #endregion
 }

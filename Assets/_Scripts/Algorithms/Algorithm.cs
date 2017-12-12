@@ -18,10 +18,15 @@ public abstract class Algorithm : MonoBehaviour
 
     public static int MaxCost { get { return 999999999; } }
 
+    public static int Iterations { get; set; }
+
+
     public static void Init(int[,] grid, List<Vector2> goals)
     {
         Algorithm.grid = grid;
         Algorithm.goals = goals;
+        Iterations = 0;
+
     }
 
     public static void Print2DArray<T>(T[,] array)

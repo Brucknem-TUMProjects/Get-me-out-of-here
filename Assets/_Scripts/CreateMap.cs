@@ -21,6 +21,7 @@ public abstract class CreateMap : MonoBehaviour {
     public abstract void ShowCostTable_Reachable(Vector2 pos);
 
     public abstract void ShowCostTable_DynamicProgrammingHighlight();
+    public abstract void ShowCostTable_MyOwnImplementationHighlight();
     public abstract void AStarHighlight();
 
     public abstract void ShortestPathColor(Vector2 pos, Color color);
@@ -33,7 +34,7 @@ public abstract class CreateMap : MonoBehaviour {
     [Header("GameObjects")]
     public GameObject tile;
 
-    public readonly float mapWidth = 800;
+    public readonly float mapWidth = 795;
     public readonly float mapHeight = 555;
 
 
@@ -155,7 +156,11 @@ public abstract class CreateMap : MonoBehaviour {
 
                 if(inputs.allOrStep.value == 1)
                 {
-                    ShowCostTable_DynamicProgrammingHighlight();
+                    if (inputs.mode.value == 0)
+                        ShowCostTable_DynamicProgrammingHighlight();
+                    else
+                        ShowCostTable_MyOwnImplementationHighlight();
+
                 }
             }
         }
@@ -165,7 +170,7 @@ public abstract class CreateMap : MonoBehaviour {
             AStarHighlight();
     }
 
-    public Vector2 HighlightedPosition
+    public Vector2 DynamicProgramming_HighlightedPosition
     {
         get
         {
@@ -173,17 +178,22 @@ public abstract class CreateMap : MonoBehaviour {
         }
     }
 
-    public Vector2 HighlightedLookingAt
+    public Vector2 DynamicProgramming_HighlightedLookingAt
     {
         get
         {
             int delta = (int)GameData.Instance.DynamicProgrammingHighlighted.z;
-            Vector2 hla = HighlightedPosition + Algorithm.deltas[delta];
+            Vector2 hla = DynamicProgramming_HighlightedPosition + Algorithm.deltas[delta];
             if (hla.x < 0 || hla.y < 0 || hla.x >= inputs.Width || hla.y >= inputs.Height)
                 return new Vector2(-1, -1);
             return hla;
         }
     }
+
+    public Vector2 MyOwnImplementation_CurrentOpen { get { return GameData.Instance.MyOwnImplementationCurrentOpen; } }
+    public List<Vector2> MyOwnImplementation_OpenList { get { return GameData.Instance.MyOwnImplementationOpenList; } }
+    public Vector2 MyOwnImplementation_ProcessingGoal { get { return GameData.Instance.MyOwnImplementationProcessingGoal; } }
+
 
     //public List<Vector2> HighlightedAll
     //{

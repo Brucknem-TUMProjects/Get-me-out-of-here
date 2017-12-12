@@ -77,6 +77,8 @@ public class CreateMap3D : CreateMap
         tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
         tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
         tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
+        tiles[pos].transform.GetChild(0).GetComponent<Renderer>().material.color = Color.white;
+
         tiles[pos].transform.position = new Vector3((int)pos.x, 0, (int)pos.y);
     }
 
@@ -166,7 +168,7 @@ public class CreateMap3D : CreateMap
     //    {
     //        Color color;
     //        if (GameData.Instance.goals.Contains(v))
-    //            color = GameData.Instance.goal;
+    //            color = GameData.Instance.goal;tiles[pos].transform.GetChild(0).GetComponent<Renderer>().material.color
     //        else if (GameData.Instance.start == v)
     //            color = GameData.Instance.begin;
     //        else
@@ -177,17 +179,19 @@ public class CreateMap3D : CreateMap
 
     public override void ShowCostTable_Begin(Vector2 pos)
     {
+        tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+        tiles[pos].transform.GetChild(0).GetComponent<Renderer>().material.color = Color.white;
+
         if (inputs.allOrStep.value == 0)
         {
             tiles[pos].transform.GetChild(0).gameObject.SetActive(true);
-            tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
             tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
             tiles[pos].transform.GetChild(2).gameObject.SetActive(false);
         }
         else
         {
             tiles[pos].transform.GetChild(0).gameObject.SetActive(false);
-            tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
+            //tiles[pos].transform.GetChild(1).gameObject.SetActive(false);
             //tiles[pos].transform.GetChild(2).gameObject.SetActive(true);
             tiles[pos].transform.GetChild(3).gameObject.SetActive(false);
         }
@@ -242,21 +246,38 @@ public class CreateMap3D : CreateMap
     public override void ShortestPathColor(Vector2 pos, Color color)
     {
         tiles[pos].GetComponent<Renderer>().material.color = color;
+        //if(color == Color.green)
+        //{
+            tiles[pos].transform.GetChild(0).GetComponent<Renderer>().material.color = color;
+        //}
     }
 
     public override void ShowCostTable_DynamicProgrammingHighlight()
     {
-        int x = (int)HighlightedPosition.x;
+        int x = (int)DynamicProgramming_HighlightedPosition.x;
         //int y = (int)HighlightedPosition.y;
 
         if (x == -1)
             return;
 
         //print("Highlightet Position: " + HighlightedPosition);
-        tiles[HighlightedPosition].GetComponent<Renderer>().material.color = Color.yellow;
-        if (HighlightedLookingAt != new Vector2(-1, -1))
-            tiles[HighlightedLookingAt].GetComponent<Renderer>().material.color = Color.cyan;
+        tiles[DynamicProgramming_HighlightedPosition].GetComponent<Renderer>().material.color = Color.yellow;
+        if (DynamicProgramming_HighlightedLookingAt != new Vector2(-1, -1))
+            tiles[DynamicProgramming_HighlightedLookingAt].GetComponent<Renderer>().material.color = Color.cyan;
 
+    }
+
+    public override void ShowCostTable_MyOwnImplementationHighlight()
+    {
+        tiles[MyOwnImplementation_CurrentOpen].GetComponent<Renderer>().material.color = Color.magenta;
+
+        tiles[MyOwnImplementation_CurrentOpen].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = (GameData.Instance.value[(int)MyOwnImplementation_CurrentOpen.x, (int)MyOwnImplementation_CurrentOpen.y]).ToString();
+
+        foreach (Vector2 v in MyOwnImplementation_OpenList)
+        {
+            tiles[v].GetComponent<Renderer>().material.color = Color.cyan;
+            tiles[v].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = (GameData.Instance.value[(int)v.x, (int)v.y]).ToString();
+        }
     }
 
     public override void AStarHighlight()

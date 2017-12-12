@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -30,6 +32,9 @@ public class Inputs : MonoBehaviour
     public GameObject iterations;
     [Header("Camera")]
     public MoveCamera Viewer;
+    [Header("Debug Texts")]
+    public Text width;
+    public Text height;
 
 
     private ToggleGroup toggleGroup;
@@ -39,6 +44,8 @@ public class Inputs : MonoBehaviour
 
     public int Width { get { return (int)widthSlider.value; } }
     public int Height { get { return (int)heightSlider.value; } }
+
+    public bool threading = false;
 
     private class PreventCameraMove : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
@@ -91,6 +98,32 @@ public class Inputs : MonoBehaviour
         }
     }
 
+    private float oldH;
+    //private float oldW;
+
+    //private void Update()
+    //{
+    //    float h = maps[0].GetComponent<RectTransform>().rect.height;
+    //    //float w = maps[0].GetComponent<RectTransform>().rect.height;
+    //    if (oldH != h /*|| oldW != w*/)
+    //    {
+    //        print(h);
+    //        height.text = h.ToString();// Screen.height.ToString();
+    //        //width.text = w.ToString();
+
+    //        maps[0].GetComponent<CreateMap>().mapHeight = (int)h - 5; /*Screen.height + plus;*/
+    //        heightSlider.maxValue = (int)((h) / 30.0f) + 5;
+    //        GameData.Instance.MaxHeight = (int)((h) / 30.0f) + 5;
+
+    //        //maps[0].GetComponent<CreateMap>().mapWidth = (int)w - 5; /*Screen.height + plus;*/
+    //        //widthSlider.maxValue = (int)((w) / 30.0f) + 5;
+    //        //GameData.Instance.MaxWidth = (int)((w) / 30.0f) + 5;
+
+    //        OnSliderValueChange();
+    //        oldH = h;
+    //    }
+    //}
+
     // Use this for initialization
     void Start()
     {
@@ -140,15 +173,17 @@ public class Inputs : MonoBehaviour
             //preventInputChange = true;
             if (showPolicy.isOn)
             {
-                GameData.Instance.CalculatePolicy();
-                map.ShowCostTable();
-                //StartCoroutine(ShowIterations());
+                if (mode.value == 0)
+                    CalculateThreaded(GameData.Instance.CalculateDynamicProgramming);
+                else if (mode.value == 2)
+                    CalculateThreaded(GameData.Instance.CalculateMyOwnImplementation);
             }
             else
             {
                 map.AdjustMap();
+                ShowIterations();
             }
-            ShowIterations();
+
             //preventInputChange = false;
         });
 
@@ -217,28 +252,80 @@ public class Inputs : MonoBehaviour
         //});
     }
 
+    public void CalculateThreaded(Action algorithm)
+    {
+        StartCoroutine(CalculationThread(algorithm));
+    }
+
+    private IEnumerator<WaitForSeconds> CalculationThread(Action algorithm)
+    {
+        Thread t = new Thread(() => {
+            algorithm();
+        });
+        showPolicy.GetComponentInChildren<Text>().text = "Calculating..";
+        SetButtonsInteractive(false);
+        threading = true;
+        t.Start();
+        while (t.IsAlive)
+            yield return null;
+        //print(GameData.Instance.AlgorithmIterations);
+        map.ShowCostTable();
+        ShowIterations();
+        SetButtonsInteractive(true);
+        threading = false;
+    }
+
+    private void SetButtonsInteractive(bool active)
+    {
+        widthSlider.interactable = active;
+        heightSlider.interactable = active;
+        showPolicy.interactable = active;
+        resetButton.interactable = active;
+        randomButton.interactable = active;
+        mode.interactable = active;
+        dimension.interactable = active;
+        allOrStep.interactable = active;
+    }
+
     private void OnStepButton()
     {
         //In Dynamic programming mode
-        if (mode.value == 0)
-        {
-            if (GameData.Instance.DynamicProgrammingSingleStep())
-            {
-                allOrStep.value = 0;
-                showPolicy.isOn = true;
-                //StartCoroutine(ShowIterations());
-                ShowIterations();
-            }
-            else
-            {
-                map.ShowCostTable();
-            }
-        }
-        else
+        if (mode.value == 1)
         {
             if (GameData.Instance.AStarSingleStep())
                 allOrStep.value = 0;
             map.Redraw();
+        }
+        else
+        {
+            if (mode.value == 0)
+            {
+                if (GameData.Instance.DynamicProgrammingSingleStep())
+                {
+                    allOrStep.value = 0;
+                    showPolicy.isOn = true;
+                    //StartCoroutine(ShowIterations());
+                    ShowIterations();
+                }
+                else
+                {
+                    map.ShowCostTable();
+                }
+            }
+            else
+            {
+                if (GameData.Instance.MyOwnImplementationSingleStep())
+                {
+                    allOrStep.value = 0;
+                    showPolicy.isOn = true;
+                    //StartCoroutine(ShowIterations());
+                    ShowIterations();
+                }
+                else
+                {
+                    map.ShowCostTable();
+                }
+            }
         }
     }
 
@@ -253,18 +340,7 @@ public class Inputs : MonoBehaviour
         }
         else
         {
-            if (mode.value == 0)
-            {
-                stepButton.gameObject.SetActive(true);
-                showPolicy.gameObject.SetActive(false);
-                setStart.gameObject.SetActive(false);
-                //showPolicy.isOn = true;
-                map.Redraw();
-
-                setStart.isOn = false;
-                GameData.Instance.InitDynamicProgrammingSingleStep();
-            }
-            else
+            if (mode.value == 1)
             {
                 //GameData.Instance.RemoveShortestPath();
                 GameData.Instance.ResetAStar();
@@ -274,6 +350,19 @@ public class Inputs : MonoBehaviour
                 setStart.gameObject.SetActive(true);
                 setStart.isOn = true;
             }
+            else
+            {
+                stepButton.gameObject.SetActive(true);
+                showPolicy.gameObject.SetActive(false);
+                setStart.gameObject.SetActive(false);
+                //showPolicy.isOn = true;
+
+                setStart.isOn = false;
+                GameData.Instance.InitDynamicProgrammingSingleStep();
+                GameData.Instance.InitMyOwnImplementationSingleStep();
+                map.Redraw();
+
+            }
         }
     }
 
@@ -282,30 +371,32 @@ public class Inputs : MonoBehaviour
         allOrStep.value = 0;
         if (showPolicy.isOn)
         {
-            GameData.Instance.CalculatePolicy();
+            if (mode.value == 0)
+                CalculateThreaded(GameData.Instance.CalculateDynamicProgramming);
+            else
+                CalculateThreaded(GameData.Instance.CalculateMyOwnImplementation);
+
+            ShowIterations();
+
         }
         map.Redraw();
 
 
-        if (mode.value == 0)
+        if (mode.value == 1)
+        {
+            setStart.gameObject.SetActive(true);
+            showPolicy.gameObject.SetActive(false);
+            stepButton.gameObject.SetActive(false);
+            setStart.isOn = true;
+        }
+        else 
         {
             setStart.gameObject.SetActive(false);
             showPolicy.gameObject.SetActive(true);
             stepButton.gameObject.SetActive(false);
             setStart.isOn = false;
         }
-        else
-        {
-            //GameData.Instance.RemoveShortestPath();
-            //if (showPolicy.isOn)
-            //    map.ShowCostTable();
-            //else
-            //    map.AdjustMap();
-            setStart.gameObject.SetActive(true);
-            showPolicy.gameObject.SetActive(false);
-            stepButton.gameObject.SetActive(false);
-            setStart.isOn = true;
-        }
+
     }
 
     private void OnSliderValueChange()
@@ -362,50 +453,13 @@ public class Inputs : MonoBehaviour
         GameData.Instance.currentWidth = Width;
         GameData.Instance.currentHeight = Height;
     }
-
-    //IEnumerator<WaitForSeconds> ShowIterations()
-    //{
-    //    showPolicy.GetComponentInChildren<Text>().text = "Iterations: " + GameData.Instance.DynamicProgrammingIterations;
-
-    //    //Image i = iterations.GetComponent<Image>();
-    //    //Text t = iterations.transform.GetChild(0).GetComponent<Text>();
-
-    //    //t.text = "Iterations: " + GameData.Instance.DynamicProgrammingIterations;
-    //    //iterations.SetActive(true);
-
-    //    //Color ci = i.color;
-    //    //Color ct = t.color;
-
-    //    //for (float f = 0; f <= 1.0; f += 0.1f)
-    //    //{
-    //    //    ci.a = f;
-    //    //    ct.a = f;
-    //    //    i.color = ci;
-    //    //    t.color = ct;
-    //    //    yield return new WaitForSeconds(0.01f);
-    //    //}
-
-    //    yield return new WaitForSeconds(2);
-
-    //    //for (float f = 1.0f; f >= 0; f -= 0.1f)
-    //    //{
-    //    //    ci.a = f;
-    //    //    ct.a = f;
-    //    //    i.color = ci;
-    //    //    t.color = ct;
-    //    //    yield return new WaitForSeconds(0.01f);
-    //    //}
-
-    //    //iterations.SetActive(false);
-
-    //    showPolicy.GetComponentInChildren<Text>().text = "Show Policy";
-
-    //}
-
-    void ShowIterations()
+    
+    public void ShowIterations()
     {
         if (showPolicy.isOn)
-            showPolicy.GetComponentInChildren<Text>().text = "Iterations: " + GameData.Instance.DynamicProgrammingIterations;
+        {
+            showPolicy.GetComponentInChildren<Text>().text = "Iterations: " + GameData.Instance.AlgorithmIterations;
+        }
         else
             showPolicy.GetComponentInChildren<Text>().text = "Show Policy";
     }

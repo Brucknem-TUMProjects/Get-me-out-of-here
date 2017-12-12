@@ -17,8 +17,11 @@ public abstract class Click : MonoBehaviour {
 
     public void CalculatePolicy()
     {
-        if(inputs.showPolicy.isOn)
-            GameData.Instance.CalculatePolicy();
+        if (inputs.showPolicy.isOn)
+        {
+                inputs.CalculateThreaded( GameData.Instance.CalculateMyOwnImplementation);
+            inputs.ShowIterations();
+        }
     }
 
     public void RemoveAStar()
@@ -36,6 +39,9 @@ public abstract class Click : MonoBehaviour {
 
     public void LeftClick(Vector2 position)
     {
+        if (inputs.threading)
+            return;
+
         if (inputs.setStart.isOn && GameData.Instance.grid[(int)position.x, (int)position.y] != Algorithm.MaxCost)
         {
             if (GameData.Instance.start != position)
@@ -61,6 +67,9 @@ public abstract class Click : MonoBehaviour {
 
     public void RightClick(Vector2 position)
     {
+        if (inputs.threading)
+            return;
+
         if (!GameData.Instance.goals.Contains(position) && GameData.Instance.start != position)
         {
             if (GameData.Instance.grid[(int)position.x, (int)position.y] == Algorithm.MaxCost)
@@ -85,6 +94,9 @@ public abstract class Click : MonoBehaviour {
 
     public void MiddleClick(Vector2 position)
     {
+        if (inputs.threading)
+            return;
+
         if (GameData.Instance.grid[(int)position.x, (int)position.y] != Algorithm.MaxCost)
         {
             if (!GameData.Instance.goals.Contains(position))
@@ -95,11 +107,16 @@ public abstract class Click : MonoBehaviour {
             {
                 GameData.Instance.goals.Remove(position);
             }
-            GameData.Instance.InitDynamicProgrammingSingleStep();
+            if (inputs.mode.value == 0)
+                GameData.Instance.InitDynamicProgrammingSingleStep();
+            else if (inputs.mode.value == 2)
+                GameData.Instance.InitMyOwnImplementationSingleStep();
+
             if (inputs.allOrStep.value == 0)
                 CalculateAStar();
             else
                 GameData.Instance.InitAStarSingleStep();
+
             CalculatePolicy();
             RedrawMap();
         }

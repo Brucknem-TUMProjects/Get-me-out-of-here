@@ -16,6 +16,8 @@ public class TileClick : Click, IPointerClickHandler {
         if(inputs == null)
             inputs = transform.parent.parent.GetChild(1).GetComponent<Inputs>();
         map = transform.parent.gameObject.GetComponent<CreateMap>();
+        GetComponent<InputField>().lineType = InputField.LineType.MultiLineNewline;
+        transform.GetChild(1).GetComponent<Text>().resizeTextForBestFit = true;
     }
 
   
