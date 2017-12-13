@@ -253,6 +253,7 @@ public class Inputs : MonoBehaviour
 
     private void DimensionSwitch()
     {
+        print("switching dimension");
         map.gameObject.SetActive(false);
         map = maps[dimension.value];
         map.gameObject.SetActive(true);
