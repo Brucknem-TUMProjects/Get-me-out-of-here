@@ -467,7 +467,7 @@ For solving a problem with Dynamic Programming, the problem gets broken down and
 \\
 It provides a general framework for analyzing many problem types, like planning of industrial production lines, scheduling of patients at a medical clinic or long term investment programs.
 \\
-//TODO: Mehr ausbauen
+//TODO: Mehr ausbauen Review ARSLAN DISSERT P.13
 \\
 Underlying of these problems is always a multistage decision problem. "The characteristic feature of these problems is that they concern a system whose state $x_k \in X_k$ evolves according to a recursive relation of the form
 \begin{equation*}
@@ -759,7 +759,6 @@ From this the following function can be derived, which solves the Bellman equati
 \begin{equation}
 v(i,j) =
   \begin{cases}
-  \centering
     \infty & \text{if } (i,j) \in \{\text{Walls}\} \cup \{ \mathbb{R}^2 \setminus \{n \times m\}\}\\
     0 & \text{if } (i,j) \in \{\text{Goals}\}\\
     \min \{v(i,j+1) + 1, \\v(i+1,j) + 1, \\v(i,j-1) + 1, \\v(i-1,j) + 1\} & \text{if in the maze and not a wall or a goal}
@@ -948,18 +947,179 @@ The main idea behind RRTs is a randomized data structure that is designed for a 
 WHAT IS A METRIC\\
 In addition, a fixed obstacle region $X_\text{obs} \subset X$ must be avoided, but there is no explicit representation of it available, thus one can only check if a specific state lies in $X_\text{obs}$.\\
 WHAT IS EXPLICIT REPRESENTATION\\
-The nice thing about RRTs is, that $X_\text{obs}$ not only represents solid obstacles like walls, trees or blocks as known from computer games, but can represent any type of constraints. These include velocity bounds of a self-driving car, configurations at which a robot is in collision with an obstacle in the world and any other occuring in motion planning problems.\\
-When constructing the RRT, the vertices represent the states of the system in $X_\text{free}$, and each edge will correspond to a path that lies in completely in $X_\text{free}$.\\
+The nice thing about RRTs is, that $X_\text{obs}$ not only represents solid obstacles like walls, trees or blocks as known from computer games, but can represent any type of constraints. These include velocity bounds of a self-driving car, configurations at which a robot is in collision with an obstacle in the world, Planning Detailed Animation at runtime and any other constraints occurring in motion planning problems.\\
+When constructing the RRT, the vertices represent the states of the system in $X_\text{free}$, and each edge will correspond to a path that lies in completely in $X_\text{free}$. \cite{LaValle.October1998}\\
 
 \subsubsection{How does a RRT look like an how to construct}
 \quad \\
+\begin{enumerate}
+\item Pick a random sample in the search space.
+\item Find the nearest neighbor of that sample.
+\item Select an action from the neighbor that heads towards the random sample.
+\item Create a new sample based on the outcome of the action applied to the neighbor.
+\item Add the new sample to the tree, and connect it to the neighbor.
+\end{enumerate}
 
+\begin{figure}[h]
+\centering
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/01.png}
+\caption{At the beginning the search space is completely unexplored. The tree begins spanning into it.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/02.png}
+\caption{The tree reaches further into the unexplored space.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/03.png}
+\caption{The tree is reaching to the limits of the plane and is getting denser. At the limit it will have covered the whole $X_\text{free}$}
+\end{minipage}
+\\
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/01_v.png}
+\caption{Looking at the voronoi bias of the vertices, there are huge unexplored parts.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/02_v.png}
+\caption{The tree is always taking a sample out of the biggest unexplored part. This smallers the part.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/03_v.png}
+\caption{When proceeding, the voronoi bias are simultaneously getting smaller with every iteration. Their area tends to be 0 at the limit.}
+\end{minipage}
+\caption{}
+\end{figure}
 
+\subsubsection{RRTs and dynamic programming}
+\quad \\
+In the dissertation of Oktay Arslan at the Georgia Institute of Technology in December 2015, he gives a extension of the solely sampling based approach of the original RRT.\\
+He introduces an algorithm called $\text{RRT}^\#$ which utilizes the main ideas from RRT, but expand it to a relaxation step, used in Dynamic Programming.\\
+Relaxation is a term used iterative methods for solving systems of equations, in this case of optimization problems in numerical mathematics.\\
+They can be written down in the form of
+\begin{equation}
+x(k+1) = f(x(k)), \quad k = 0,1,\cdots
+\end{equation}
+where $x(k) \in \mathbb{R}^n$ is an n-dimensional vector, and $f : \mathbb{R}^n \mapsto \mathbb{R}^n$ is a vector-valued function.\\
+The Bellman function is of this form, what spans the bow between Dynamic Programming and $\text{RRT}^\#$.\\
+For understanding the algorithm, some concepts have to be defined:
+\begin{itemize}
+\item Successor vertices: Given a vertex $v \in V$ in a directed Graph $G = (V,E)$, the function $\text{succ} : (G,v) \mapsto V' \subseteq V$ returns the vertices in $V$ that can be reached from vertex v.
+\begin{center}
+$\text{succ}(G,v) := \{u \in V: (v,u) \in E\}$
+\end{center}
+\item Predecessor vertices: Given a vertex $v \in V$ in a directed Graph $G = (V,E)$, the function $\text{pred} : (G,v) \mapsto V' \subseteq V$ returns the vertices in $V$ from which vertex v can be reached.
+\begin{center}
+$\text{pred}(G,v) := \{u \in V: (v,u) \in E\}$
+\end{center}
+\end{itemize}
+Following thereof, they rewrote the bellman equation for their purpose in terms of the cost-to-come value as follows:
+\begin{equation}
+g*(v_i) = 
+\begin{cases}
+0 & v_i = x_\text{init}\\
+\min_{v_j \in pred(G,v_i)} (g^*(v_j) + c(v_j,v_i)) & v_i \in V \setminus \{x_\text{init}\}
+\end{cases}
+\end{equation}
+P.42  
+Based on their formulation of the Bellman equation, they split the Algorithm into two parts:
+\paragraph{Exploration}
+This samples randomly a point in $X_\text{free}$ and then extends the underlying graph towards the sampled point by including it as a new vertex in the current graph by connecting the missing edges. \cite{OktayArslan.December2015}\\
+\paragraph{Exploitation}
+This step implements the task of improving the cost-to-come values of the current vertices as new information becomes available. It also encodes the lowest-cost path information for the promising vertices (see equation (20) below) and $v_\text{goal}^*$ (the goal vertex that has the lowest cost-to-come value in the goal set) as a spanning tree rooted at the initial vertex. Cost-to-come values of nonstationary vertices are updated in an order based on their f-values, i.e., an underestimate of the cost of the optimal path from the initial vertex to the goal set passing through the vertex of interest, and ties are broken in favor of vertices which have smaller g-values at each iteration of the Gauss-Seidel version of the Bellman-Ford algorithm.
 
+The following images show the two algorithms.
+
+\begin{figure}[h]
+\centering
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/ARSLAN/01.png}
+\caption{}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/ARSLAN/02.png}
+\caption{}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/ARSLAN/03.png}
+\caption{}
+\end{minipage}
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/ARSLAN/01_v.png}
+\caption{}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/ARSLAN/02_v.png}
+\caption{}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/RRT/ARSLAN/03_v.png}
+\caption{}
+\end{minipage}
+\caption{}
+\end{figure}
+
+As you can see, dynamic programming is a great way to improve the runtime and the speed in which an algorithm converges to an optimal solution.
+The interested reader can have a look at \cite{OktayArslan.December2015} for further information and mathematical proofs.
+
+\subsection{Bellman Ford, Gauss Seidel and Jakobi}
 
 
 
 \section{Conclusion}
+
+
+
+
+%-----------------------------------------------------------------
+%Image Template
+%-----------------------------------------------------------------
+%\quad \\
+%\begin{figure}[h]
+%\centering
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/RRT/01.png}
+%\caption{}
+%\end{minipage}
+%\hfill
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/RRT/02.png}
+%\caption{}
+%\end{minipage}
+%\hfill
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/RRT/03.png}
+%\caption{}
+%\end{minipage}
+%\caption{}
+%\end{figure}
+
+
+
+
+
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
