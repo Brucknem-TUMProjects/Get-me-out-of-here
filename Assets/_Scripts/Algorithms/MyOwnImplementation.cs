@@ -92,7 +92,6 @@ public class MyOwnImplementation : Algorithm {
             //Nimm den mit der niedrigsten value
             ValueFunction(open[index], open/*, closed*/);
         }
-
     }
 
     public static void InitForSingleStep(int[,] grid, List<Vector2> goals)

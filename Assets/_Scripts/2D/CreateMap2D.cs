@@ -259,7 +259,7 @@ public class CreateMap2D : CreateMap
 
         LastHighlighted = new List<Vector2>();
 
-        tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().image.color = Color.magenta;
+        //tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().image.color = Color.magenta;
 
         tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().text = (GameData.Instance.value[(int)MyOwnImplementation_CurrentOpen.x, (int)MyOwnImplementation_CurrentOpen.y]).ToString();
 
@@ -267,7 +267,8 @@ public class CreateMap2D : CreateMap
 
         foreach (Vector2 v in MyOwnImplementation_OpenList)
         {
-            tiles[v].GetComponent<InputField>().image.color = Color.cyan;
+            //tiles[v].GetComponent<InputField>().image.color = Color.cyan;
+            ProcessPosition(v);
             tiles[v].GetComponent<InputField>().text = (GameData.Instance.value[(int)v.x, (int)v.y]).ToString();
             LastHighlighted.Add(v);
         }

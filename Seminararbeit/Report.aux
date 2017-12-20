@@ -1,0 +1,68 @@
+\relax 
+\citation{Pra.1995}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The original grid showing the costs of each tile, walls (black) and goals (blue).\relax }}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Initialization of the algorithm with $\infty $ cost. Only the goal (blue) is set and is the starting point. It has a value of 0.\relax }}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces After a few iterations the values of some tiles are set. The value is equal to the length of the shortest path to the goal.\relax }}{2}}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Fundamentals}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-A}}What is Dynamic Programming}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces A few more iterations. The algorithm is reaching tiles further away from the goal.\relax }}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces All values are calculated. Every tile is holding its value.\relax }}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The final optimal policy showing the best action for every position derived from the values of the tiles.\relax }}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-B}}Richard Bellman}{2}}
+\citation{Bellman.30.07.1954}
+\citation{Bellman.30.07.1954}
+\citation{Bellman.30.07.1954}
+\citation{Bellman.30.07.1954}
+\citation{Bellman.30.07.1954}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-C}}The Principle of Optimality}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}1}The fundamental approach}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}2}Mathematical formulation}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}3}Which characteristics does a problem need to be solvable by Dynamic Programming}{3}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}3a}Overlapping subproblems}{3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces An example of overlapping subproblems. In all three cases the yellow passage will be recalculated no matter from where you started (red). \relax }}{4}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}3b}Optimal substructure}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces The overall shortest path $s$ (green) from start (red) to goal (blue).\relax }}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces A first split of $s$ into $s_1$ (yellow) and $s_2$ (cyan).\relax }}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces A second split of $s_2$ into $s_{2,1}$ (magenta) and $s_{2,2}$ (orange).\relax }}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces An example of optimal substructure. The shortest path $s$ (green) can be split down into subproblems recursively until only the shortest path between two neighbored tiles has to be calculated. Based on these optimal solutions for the subproblems, the whole problem can be solved.\relax }}{4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}4}How to apply Dynamic Programming in computer science}{4}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}4a}Memoization}{4}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}4b}Bellman equation}{4}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Finding the value function and implementing the maze}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Finding the value function}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces All tiles are having a cost of $1$.  $c(i,j) = 1, \hskip 1em\relax \forall (i,j) \in n \times m$\relax }}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Standing at position X you could reach A, B, C, D.\relax }}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Now standing at position $A$ looking for all the reachable positions.\relax }}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces A goal state has been reached. We know, by definition, it's value is $0$.\relax }}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Position $A$ has a value of 1.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Position $X$ has a value of 2.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces All values are found.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces Stepping onto the tile with the lowest value next to you, you can derive the best action.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces The optimal policy is $(\leftarrow ,\leftarrow ,\delimiter "3222378 ,\rightarrow ,\rightarrow ,$ $\delimiter "3222378 ,\rightarrow ,\rightarrow ,\delimiter "3223379 ,\delimiter "3223379 ,\delimiter "3223379 )$\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces The optimal policy is $(\delimiter "3223379 ,\delimiter "3223379 ,\rightarrow ,\rightarrow ,\delimiter "3223379 ,\delimiter "3223379 ,\delimiter "3223379 )$\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces The optimal policy is $(\delimiter "3223379 ,\delimiter "3223379 ,\delimiter "3223379 ,\rightarrow ,\rightarrow ,\rightarrow ,$ $\delimiter "3222378 ,\rightarrow ,\rightarrow ,\delimiter "3223379 ,\delimiter "3223379 ,\delimiter "3223379 )$\relax }}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}Pseudo code for solving this task}{6}}
+\citation{LaValle.}
+\citation{LaValle.October1998}
+\bibstyle{IEEEtran}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Related Work}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Algorithmic Design of Feasible Trajectories}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}1}abstract}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}2}problem formulation}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}3}Dynamic Programming}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}}Rapidly exploring Random Trees (RRT)}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}1}What is a RRT}{7}}
+\bibcite{Bellman.1953}{1}
+\bibcite{Bellman.1958}{2}
+\bibcite{Bellman.30.07.1954}{3}
+\bibcite{Bradley.1992}{4}
+\bibcite{Cooke.1966}{5}
+\bibcite{Derigs.1995}{6}
+\bibcite{Dreyfus.2002}{7}
+\bibcite{LaValle.}{8}
+\bibcite{LaValle.2006Referencesfromthebook}{9}
+\bibcite{OktayArslan.December2015}{10}
+\bibcite{Pra.1995}{11}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Conclusion}{8}}
+\@writefile{toc}{\contentsline {section}{References}{8}}

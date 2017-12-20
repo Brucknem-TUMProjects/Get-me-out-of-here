@@ -22,6 +22,7 @@ public class AStar : Algorithm
     public static List<Vector2> ShortestPath { get { return shortestPath; } }
     public static Vector2 LastExpanded { get { return lastExpanded; } }
     public static int[,] Value { get { return aStar; } }
+    private int averageCost = 0;
 
     public static void Reset()
     {
@@ -31,6 +32,23 @@ public class AStar : Algorithm
         shortestPath = new List<Vector2>();
         lastExpanded = new Vector2(-1, -1);
         aStar = new int[Width, Height];
+    }
+
+    private void CalculateAverageCost()
+    {
+        int count = 0;
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                if(grid[i,j] != MaxCost)
+                {
+                    averageCost += grid[i, j];
+                    count++;
+                }
+            }
+        }
+        averageCost /= count;
     }
 
     public static void InitForSingleStep(int[,] grid, List<Vector2> goals, Vector2 start)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -35,6 +36,8 @@ public class Inputs : MonoBehaviour
     [Header("Debug Texts")]
     public Text width;
     public Text height;
+
+    private DateTime startTime;
 
 
     private ToggleGroup toggleGroup;
@@ -129,6 +132,8 @@ public class Inputs : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        startTime = DateTime.Now;
+
         PreventCameraMove pcm = gameObject.AddComponent<PreventCameraMove>();
         pcm.SetCamera(Viewer);
 
@@ -249,6 +254,39 @@ public class Inputs : MonoBehaviour
         //{
         //    OnStepButton();
         //});
+
+        GameData.Instance.currentWidth = (int)widthSlider.value;
+        GameData.Instance.currentHeight = (int)heightSlider.value;
+        map.AdjustMap();
+    }
+
+    int screenCounter = 0;
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space)){
+            MakeScreenshot();
+        }
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            GameData.Instance.goals = new List<Vector2>();
+            map.Redraw();
+        }
+    }
+
+    void MakeScreenshot()
+    {
+        try
+        {
+            print(Directory.GetDirectories(Application.dataPath + "/Screenshots/" + startTime.ToString("ddMMyyyy_HHmmss")));
+        }
+        catch (Exception)
+        {
+            Directory.CreateDirectory(Application.dataPath + "/Screenshots/" + startTime.ToString("ddMMyyyy_HHmmss"));
+        }
+        finally
+        {
+            ScreenCapture.CaptureScreenshot(Application.dataPath + "/Screenshots/" + startTime.ToString("ddMMyyyy_HHmmss") + "/screenshot (" + screenCounter++ + ").png", 2);
+        };
     }
 
     private void DimensionSwitch()
@@ -317,6 +355,8 @@ public class Inputs : MonoBehaviour
         }
         else
         {
+            if(Input.GetKey(KeyCode.S))
+                MakeScreenshot();
             if (mode.value == 0)
             {
                 if (GameData.Instance.DynamicProgrammingSingleStep())
