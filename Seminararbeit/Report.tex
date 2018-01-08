@@ -405,13 +405,13 @@ This paper gives a brief overview on the field of dynamic programming and it's a
 \IEEEpeerreviewmaketitle
 
 \section{Introduction}
-Remember the game Labyrinth, in which the game represents a maze. The field is build up by fixed and moving pieces showing walls and passages. The goal of the game is to rearrange the maze by moving rows of not fixed tiles and enable ones game character to find treasures and return them to goal tiles.
+Remember the game Labyrinth, in which the game represents a maze where the field is build up by fixed and moving pieces showing walls and passages. The goal of the game is to rearrange the maze by moving rows of not fixed tiles and enable ones game character to find treasures and return them to goal tiles.
 \\
-For reaching the goal in this game, a way for calculating the shortest path to exit the maze has to be found. This can be achieved with classical pathfinding algorithms like Dijkstras Algorithm or Breadth-First Search, but also with \textbf{Dynamic Programming}, which I will be using in this Paper.
+To reach the goal in this game, a way for calculating the shortest path to exit the maze has to be found. This can be achieved with classical motion planning algorithms, like Dijkstras Algorithm or Breadth-First Search, but also with \textbf{Dynamic Programming}, which will be used in this Paper.
 \\
-Therefore, I define a grid map $M=\mathbb{N}^{nxm}$ containing static walls $M(i,j)=\infty$ representing the maze, and exit(s) of the labyrinth which the player wants to reach.
+Therefore, let a grid map $M=\mathbb{N}^{n \times m}$ containing static walls $M(i,j)=\infty$ represent the maze and let there be a set of exits $X_\text{goal}$ in the labyrinth which the player wants to reach.
 \\
-The goal of this paper is to point out ways to determine an optimal policy $P=\mathbb{N}^{nxm}\rightarrow A$ to exit the labyrinth. To achieve this, a way to calculate the value $v(i,j)$ of the current position is searched from what the actual best action can be derived.\\
+The goal of this paper is to point out ways to determine optimal policies $P=\mathbb{N}^{nxm}\rightarrow A$ to exit the labyrinth. To achieve this, a way to calculate the value $v(i,j)$ of the current position is introduced from what the actual best action can be derived.\\
 Later on, the algorithm will look like in the following example:
 
 
@@ -420,7 +420,7 @@ Later on, the algorithm will look like in the following example:
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/intro/original.png}
-\caption{The original grid showing the costs of each tile, walls (black) and goals (blue).}
+\caption{The original grid showing the cost of each tile, walls (black) and goals (blue).}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
@@ -434,11 +434,8 @@ Later on, the algorithm will look like in the following example:
 \includegraphics[width=1\textwidth]{images/intro/few.png}
 \caption{After a few iterations the values of some tiles are set. The value is equal to the length of the shortest path to the goal.}
 \end{minipage}
-\end{figure}
 
 
-\begin{figure}[h]
-\centering
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/intro/more.png}
@@ -461,32 +458,42 @@ Later on, the algorithm will look like in the following example:
 
 \section{Fundamentals}
 \subsection{What is Dynamic Programming}
-Dynamic Programming is a method used in mathematical optimization and computer programming that transforms complex problems into sequences of simpler subproblems. Each of those subproblems will be solved just once, and their solutions will be stored, so when reoccuring, the previously computed solution will be looked up to save computation time.
+Dynamic Programming is a method used in mathematical optimization and computer programming that transforms complex problems into sequences of simpler subproblems. Each of those subproblems will be solved just once and their solutions will be stored, so when reoccuring, the previously computed solution will be looked up to save computation time.
 \\
 For solving a problem with Dynamic Programming, the problem gets broken down and by recursively finding the optimal solution for the subproblems a optimal solution for the whole problem can be found.
 \\
-It provides a general framework for analyzing many problem types, like planning of industrial production lines, scheduling of patients at a medical clinic or long term investment programs.
+It provides a general framework for analyzing many problem types, like the planning of industrial production lines, scheduling of patients at a medical clinic, long term investment programs and, of course, robot motion planning.
 \\
 //TODO: Mehr ausbauen Review ARSLAN DISSERT P.13
 \\
-Underlying of these problems is always a multistage decision problem. "The characteristic feature of these problems is that they concern a system whose state $x_k \in X_k$ evolves according to a recursive relation of the form
-\begin{equation*}
-x_{k+1} = f_k(x_k, a_k, w_k); \quad k = 0,1,...
-\end{equation*}
-where $a_k \in C_k$ is the decision in period $k$ and $w_k \in D_k$ is the value in period $k$"\cite{Pra.1995}.
+Underlying of these problems is always a sequence of decisions that have to be made within a finite number of stages. E.g. a robot wants to move from one position to another by a finite number of steps and investment programs do have to calculate their wealth at every step in time.\\"A sequential decision making problem with finite stages is a tupel $\langle X, U, f, g, G, x_\text{init}\rangle$ where
+\begin{itemize}
+\item $\mathbf{X}$ is the set of all possible states of the system, i.e., the state space;
+\item $\mathbf{U}$ is the set of controls, i.e., the control space;
+\item $\mathbf{f}: X \times U \mapsto X$ is a transition function, a mapping specifying the next state $f(x,u)$ if control $u$ is executed when the system is in state $x$;
+\item $\mathbf{g}: X \times U \mapsto \mathbb{R}$ is a cost function that gives a real value $g(x, u)$ obtained if control $u$ is executed when the system is in the state $x$;
+\item $\mathbf{G}: X \mapsto \mathbb{R}$ is a cost function that gives a real value $G(u)$ obtained if the final state is $x$;
+\item $\mathbf{x_\text{init}} \in X$ is the initial state of the system."\cite{OktayArslan.December2015}
+\end{itemize}
+
+%---------------------------------
+%\\
+%Underlying of these problems is always a multistage decision problem. "The characteristic feature of these problems is that they concern a system whose state $x_k \in X_k$ evolves according to a recursive relation of the form
+%\begin{equation*}
+%x_{k+1} = f_k(x_k, a_k, w_k); \quad k = 0,1,...
+%\end{equation*}
+%where $a_k \in C_k$ is the decision in period $k$ and $w_k \in D_k$ is the value in period $k$"\cite{Pra.1995}.
 \subsection{Richard Bellman}
-Dynamic Programming was first described by the american mathematician Richard Bellman who was working on multistage decision problems from 1949 until 1955. After received his Ph.D. from Princeton at the age of 25, he started his research at RAND Corporation (Research and Development), where his secretary really had a hatred of the term \textit{mathematical research}. So he started his work with finding a name under which he could hide his projects.
+Dynamic Programming was introduced by the american mathematician Richard Bellman who was working on multistage decision problems from 1949 until 1955. After he received his Ph.D. from Princeton at the age of 25, he started his research at RAND Corporation (Research and Development), where his secretary really had a hatred of the term \textit{mathematical research}. So he started his work with finding a name under which he could hide his projects.
 \\
-He was interested in planning, decision making and thinking, but none of these were good terms, so he decides on the word programming, and because of his love for physics and his ideas in multistage and time varying problems, he came to the conclusion that dynamic is the best adjective to accompany the word programming.\\
-So the name Dynamic Programming was born and no one could imagine what he was doing which made it perfect for hiding his mathematical research.
+He was interested in planning, decision making and thinking, but none of these were good terms, so he decided on the word programming, and because of his love for physics and his ideas in multistage and time varying problems, he came to the conclusion that dynamic is the best adjective to accompany it.\\
+Following the name Dynamic Programming was born and no one could imagine what he was doing which made it perfect for hiding his mathematical research.
 \subsection{The Principle of Optimality}
-But how does Dynamic Programming break down complex problems and ensures that by solving the subproblems a optimal policy is found?
-\\
-For starting a more precise discussion, let me define the term optimal policy:
-\begin{center}
-A policy is a sequence of decisions.\\
-An optimal policy is a sequence of decisions that has the best outcome w.r.t. a predefined criterion.
-\end{center}
+For starting a more precise discussion, let define the term optimal policy:
+\begin{itemize}
+\item A \textbf{policy} is a sequence of decisions.
+\item An \textbf{optimal policy} is a sequence of decisions that has the best outcome w.r.t. a predefined criterion.
+\end{itemize}
 When being asked the task for finding the optimal policy for a given problem, the classical approach would be to compute all possible policies and maximize the return to determine which of these is the optimal one. In practice, this is often not practical due to the fact, that even for a low number of stages and choices the dimension of the resulting maximization problem will explode.
 \\
 But Bellman saw that the knowledge of the complete sequence of decisions isn't even required to solve these multistage decision problems. He stated that it would be much better to find a general prescription which gives the best decision at any time and depending only on the current state of the system.
@@ -510,15 +517,15 @@ But what does this mean for the functional equations needed for actual problem s
 \\
 Imagine the simplest case, where a process of a system is described at any time by an M-dimensional vector
 \begin{equation}
-p = (p_1, p_2, ..., p_M) \in D
+p = (p_1, p_2, ..., p_M) \in X
 \end{equation}
-Let $T = \{T_k\}$ be a set of transformations with the property
+Let $U = \{T_k\}$ be a set of transformations with the property
 \begin{equation}
-p \in D \Rightarrow T_k(p) \in D, \quad \forall k
+p \in X \Rightarrow T_k(p) \in X, \quad \forall k
 \end{equation}
-Now thinking of an N-stage process, the goal is to maximize a scalar function $R(p)$ giving the return or the value of the final state. "We shall call this function the N-stage return. A policy consists of a selection of N transformations 
+Now thinking of an N-stage process, the goal is to maximize a scalar function $R(p)$ giving the return or the value of the final state. This function will be called the N-stage return and a policy consists of a selection of N transformations 
 \begin{equation}
-P = (T_1, T_2, ..., T_N)
+\text{"}P = (T_1, T_2, ..., T_N)
 \end{equation}
 yielding successively the states
 \begin{equation*}
@@ -531,23 +538,23 @@ p_2 = T_2(p_1),
 \vdots
 \end{equation}
 \begin{equation*}
-p_N = T_N(p_{N-1})
+p_N = T_N(p_{N-1}) \quad \text{"\cite{Bellman.30.07.1954}}
 \end{equation*}
-"\cite{Bellman.30.07.1954}
-Now considering the maximum value of the return function $R(p_N)$, regulated by the optimal policy, will only depend of the initial vector p and the number of stages N.
+
+As you can see the maximum value of the return function $R(p_N)$, regulated by the optimal policy, will only depend on the initial vector p and the number of stages N.
 \\
-Now we can give a direct formula for the N-stage return that we get only using the optimal policy and by starting from the initial state p as
+One can now give a direct formula for the N-stage return that we get only using the optimal policy and by starting from the initial state p as
 \begin{equation}
-f_N(p) = \max_P R(p_N)
+h_N(p) = \max_P R(p_N)
 \end{equation}
-To get a functional equation for $f_N(p)$, the principle of of optimality is used. By making our first decision, some transformation $T_k$ will be made and we come to a new state $T_k(p)$.
-From the new state $T_k(p)$, there are now left $(N-1)$ stages and the maximum return of these is, as defined above $f_{N-1}(T_k(p))$. 
+To get a functional equation for $h_N(p)$, the principle of of optimality is used. By making our first decision, some transformation $T_k$ will be made and we come to a new state $T_k(p)$.
+From the new state $T_k(p)$, there are now left $(N-1)$ stages and the maximum return of these is, as defined above, $f_{N-1}(T_k(p))$. 
 \\
 As you might see, $k$ and thereof $T_k$ have to be chosen so as to maximize the return, which finally results in the basic functional equation
 \begin{equation}
-f_N(p) = \max_k f_{N-1}(T_k(p)), \quad N = 2, 3, ...
+h_N(p) = \max_k h_{N-1}(T_k(p)), \quad N = 2, 3, ...
 \end{equation}
-"It is clear that a knowledge of any particular optimal policy, not necessarily unique, will yield $f_N(p)$, which is unique. Conversely, given the sequence $\{f_N(p)\}$, all optimal policies may be determined."\cite{Bellman.30.07.1954}
+Resulting from this equation it is now clear, that any optimal policy does not have to be unique, but will yield $h_N(p)$. On the other hand, if looking at the sequence $\{h_N(p)\}$, one can reversely determine all optimal policies.
 %\subsection{Usage of Dynamic Programming in computer science}
 \\
 \subsubsection{Which characteristics does a problem need to be solvable by Dynamic Programming}
@@ -618,9 +625,9 @@ On the other hand the storage consumption will expand due to the need for storin
 \paragraph{Bellman equation}
 \quad \\
 The Bellman equation, often also referred to as the Dynamic Programming equation, is a necessary condition for optimality.
-It states a relationship between the value of a decision problem at a certain point in time depending on the outcome of the initial choices and the value of the remaining decisions that result from the \textbf{vorhergehenden} choices. 
+It states a relationship between the value of a decision problem at a certain point in time depending on the outcome of the initial choices and the value of the remaining decisions that result from the previous choices. 
 This breaks the problem down into subproblems that can be calculated seperately, as Bellman's principle of optimality suggests.\\
-Before coming to the actual Bellmn equation, some underlying concepts have to be defined.
+Before coming to the actual Bellman equation, some underlying concepts have to be defined.
 At first, optimizing a problem is always under a certain objective: maximizing utility, minimizing path length, maximizing profits. The function describing these objectives is called the \textbf{objective function}.\\
 Second, Dynamic Programming needs to keep track of the \textbf{state} of the system when evolving over time, because when breaking down a multi-period planning problem into simpler steps at different points in time, in every step the information about the current situation that is needed has to be available.\\
 Furthermore, the next state is always affected by some factors in addition to the current \textbf{control}. That means, that choosing the control variables may be equivalent to choosing the action to reach the next state. This, in fact means making a decision.\\
@@ -649,7 +656,7 @@ The goal of this paper is to point out ways to determine an optimal policy $P=\m
 To do so, we have to solve the Bellman equation for the task of finding all pair shortest paths in the maze.\\
 This means, that for any arbitrary point in the maze a value function
 \begin{equation}
-v(i,j)\in \mathbb{N} \quad 1 <= i <= n, 1 <= j <= m
+v(i,j)\in \mathbb{N}
 \end{equation}
 representing the length of the shortest path of the position $(i, j)$ to the nearest goal in the maze has to be found.\\
 Therefore let $c(i,j) \in \mathbb{R}$ be the cost it would take a prisoner in the maze to step on the field $(i,j)$.\\
@@ -657,12 +664,16 @@ Therefore let $c(i,j) \in \mathbb{R}$ be the cost it would take a prisoner in th
 So now let us at first begin with the trivial cases.\\
 If a prisoner is already standing on a goal field, the cost to reach the goal would, obviously, be 
 \begin{equation}
-c(i,j) = 0, \quad \text{if } (i,j) \in \{Goals\}
+c(i,j) = 0, \quad \text{if } (i,j) \in \{X_\text{goal}\}
 \end{equation}. 
-Furthermore would also the value of a goal be $0$, because the length of the shortest path from a position to itself is $0$.
-In addition, if the prisoner isn't even in the goal, he will never be able to reach a goal, resulting in
+Furthermore, also the value of a goal would be $0$, because the length of the shortest path from a position to itself is $0$.
+In addition, if the prisoner isn't even in the maze, he will never be able to reach a goal, resulting in
 \begin{equation}
-v(i,j) = \infty, \quad \text{if } i < 1, i > n, j < 1, j > m
+v(i,j) = 
+  \begin{cases}	
+	\infty, \quad \text{if } i < 1 \text{ or } i > n \text{ or } j < 1 \text{ or } j > m \\
+	0 \quad \quad \text{if } (i,j) \in \{X_\text{goal}\}
+  \end{cases}
 \end{equation}.
 At last if the position we're looking for is a wall, the cost is, by definition
 \begin{equation}
@@ -683,94 +694,56 @@ Therefore let us have a look at a maze looking like
 $1$.\\
 $c(i,j) = 1, \quad \forall (i,j) \in n \times m$}
 \end{figure}
-Now consider being at any position $X$ in the maze. All you can do is move into one of the four directions
-right, down, left and up,
-so the positions you could reach would be
-A, B, C and D.\\
-Now, if you moved onto one of these positions, you would have to pay the cost for each position and have to add it onto the value of this position. So making one of the steps, you would have to pay $1$. The resulting length of the shortest path now would be the value of the new position added to the cost it needed to step here.\\
-Now you could repeat this step and look at all the positions reachable from this position. As an example, let us look at the position $A$.\\
-One can now easily repeat these steps in an recursive way, summing up the cost until a goal is reached.\\
-So, if finally a goal state is reached, we would know that it's value is $0$, what would give us the possibility to calculate the values of the positions visited to reach it.\\
+Using the approach of backwards induction introduced by Richard Bellman we can start from the goal state in the grid and calculate the value at the step $N: v(3,4) = 0$.
+Now having the result for $N$, we can induce backwards the results for the step $(N-1)$, whereas their results are
+\begin{align}
+v(2,4) = v(3,4) + c(3,4) = 0 + 1 = 1\\
+v(4,4) = v(3,4) + c(3,4) = 0 + 1 = 1\\
+v(2,3) = v(3,4) + c(3,4) = 0 + 1 = 1\\
+v(2,5) = v(3,4) + c(3,4) = 0 + 1 = 1
+\end{align}
+When exemplary applying this procedure at the position $v(2,4)$, we can again give the equations for the positions lying around it
+\begin{align}
+v(1,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
+v(3,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
+v(2,3) = v(2,4) + c(2,4) = 1 + 1 = 2\\
+v(2,5) = v(2,4) + c(2,4) = 1 + 1 = 2
+\end{align}
+Now we have calculated the values of the step $(N-2)$ depending on the decisions that will be made optimally in $(N-1) \text{ and } N$. The results are getting stored in a second matrix $V^{n \times m}$ which holds the results of the value function. So $V(3,4) = 0, V(2,4)=1 \dots$\\ 
+One thing that has to be considered at this step is, that the value for the tile $v(3,4)$ is getting calculated again, which might cause troubles due to the fact that now the value of this position would be
+\begin{equation}
+v(3,4) = v(2,4) + c(2,4) = (v(3,4) + c(3,4)) + c(2,4) = 2
+\end{equation}
+which is in fact bigger than the initially calculated value of $0$. At this point we have to take into account if there is already a result of the value function memoized in the matrix $V$. If there is a result, and the value is less than the one currently calculated, the result can be discarded.\\
+
 \begin{figure}[h]
 \centering
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/ValueFunction/01.png}
-\caption{Standing at position X you could reach A, B, C, D.}
+\caption{Only the value of the goal position is known at step $N$.}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/ValueFunction/02.png}
-\caption{Now standing at position $A$ looking for all the reachable positions.}
+\caption{At step $(N-1)$ the values of the four adjacent positions are calculated.}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
-\includegraphics[width=1\textwidth]{images/ValueFunction/03.png}
-\caption{A goal state has been reached. We know, by definition, it's value is $0$.}
+\includegraphics[width=1\textwidth]{images/ValueFunction/06.png}
+\caption{At step $(N-5)$ the values of all the positions are calculated.}
 \end{minipage}
 \end{figure}
-
-To step on the goal, we would have to pay a cost of $1$ and the value of the goal is $0$. So summed up, for a tile that is in direct neighborhood of a goal state, it's value would be
-\begin{equation}
-v(i,j) = v(x,y) + 1, \quad (x,y) \in \{Goals\}
-\end{equation}
-This would propagate back until the initial position is reached.
-\begin{figure}[h]
-\centering
-\begin{minipage}[t]{0.3\linewidth}
-\centering
-\includegraphics[width=1\textwidth]{images/ValueFunction/04.png}
-\caption{Position $A$ has a value of 1.}
-\end{minipage}
-\begin{minipage}{0.2\linewidth}
-\end{minipage}
-\begin{minipage}[t]{0.3\linewidth}
-\centering
-\includegraphics[width=1\textwidth]{images/ValueFunction/05.png}
-\caption{Position $X$ has a value of 2.}
-\end{minipage}
-\end{figure}
-\newpage
-If you apply this approach to every position in the maze, you could calculate the value of every single position and from this grid of values, you could just always step on the position next to you which has the lowest cost which would result in a the optimal action for every tile in the maze.
-
-\begin{figure}[h]
-\centering
-\begin{minipage}[t]{0.3\linewidth}
-\centering
-\includegraphics[width=1\textwidth]{images/ValueFunction/all.png}
-\caption{All values are found.}
-\end{minipage}
-\begin{minipage}{0.2\linewidth}
-\end{minipage}
-\begin{minipage}[t]{0.3\linewidth}
-\centering
-\includegraphics[width=1\textwidth]{images/ValueFunction/policy.png}
-\caption{Stepping onto the tile with the lowest value next to you, you can derive the best action.}
-\end{minipage}
-\end{figure}
-
-When coming to a mathematical representation of this problem, we saw that for every tile it's value was the value of the tile with the lowest cost next to it summed up with the cost it would take to step on this tile.\\
-From this the following function can be derived, which solves the Bellman equation.
-
-\begin{scriptsize}
-
-\begin{equation}
-v(i,j) =
-  \begin{cases}
-    \infty & \text{if } (i,j) \in \{\text{Walls}\} \cup \{ \mathbb{R}^2 \setminus \{n \times m\}\}\\
-    0 & \text{if } (i,j) \in \{\text{Goals}\}\\
-    \min \{v(i,j+1) + 1, \\v(i+1,j) + 1, \\v(i,j-1) + 1, \\v(i-1,j) + 1\} & \text{if in the maze and not a wall or a goal}
-  \end{cases}
-\end{equation}
-
-\end{scriptsize}
-
-The first to lines are the base cases to stop the recursion if a goal is found, the maze is left or a wall would be visited. If $n$ and $m$ are both finite numbers we can see that the recursion will always terminate because at some point in iterations the maze will be left in all directions which causes the calculation to stop.\\
-The third one is the recursive step searching for the minimum of the sum of the value of the four adjacent positions and their corresponding costs.\\
-If we now don't only allow $1$ as cost per tile, but also arbitrary positive values, the equation can be generalized to be used in any grid or graph with non negative costs.
-
+Following this procedure, a general relation between the steps can be stated
+\begin{align}
+v(i-1,j) = v(i,j) + c(i,j) \quad \text{if } v(i-1,j) < V(i,j)\\
+v(i+1,j) = v(i,j) + c(i,j) \quad \text{if } v(i+1,j) < V(i,j)\\
+v(i,j-1) = v(i,j) + c(i,j) \quad \text{if } v(i,j-1) < V(i,j)\\
+v(i,j+1) = v(i,j) + c(i,j) \quad \text{if } v(i,j+1) < V(i,j)
+\end{align}
+With this equation, the value of every position in the maze can be calculated, which leads to the function solving the functional Bellman equation
 \begin{scriptsize}
 \begin{equation}
 v(i,j) =
@@ -783,133 +756,261 @@ v(i,j) =
 \end{equation}
 \end{scriptsize}
 
-When the precomputation of the best action for every tile is finished, one can easily derive the optimal policy with ease.
-
+\subsection{Finding optimal policies}
 \begin{figure}[h]
 \centering
 \begin{minipage}[t]{0.3\linewidth}
 \centering
-\includegraphics[width=1\textwidth]{images/Policies/01.png}
-\caption{The optimal policy is $(\leftarrow,\leftarrow,\uparrow,\rightarrow,\rightarrow,$\\$\uparrow,\rightarrow,\rightarrow,\downarrow,\downarrow,\downarrow)$}
+\includegraphics[width=1\textwidth]{images/FindingPolicy/01.png}
+\caption{Starting from the red tile an optimal policy will be found.}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
-\includegraphics[width=1\textwidth]{images/Policies/02.png}
-\caption{The optimal policy is $(\downarrow,\downarrow,\rightarrow,\rightarrow,\downarrow,\downarrow,\downarrow)$}
+\includegraphics[width=1\textwidth]{images/FindingPolicy/02.png}
+\caption{So looking at the adjacent tiles the green one is one of the tiles with the lowest value.}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
-\includegraphics[width=1\textwidth]{images/Policies/03.png}
-\caption{The optimal policy is $(\downarrow,\downarrow,\downarrow,\rightarrow,\rightarrow,\rightarrow,$\\$\uparrow,\rightarrow,\rightarrow,\downarrow,\downarrow,\downarrow)$}
+\includegraphics[width=1\textwidth]{images/FindingPolicy/03.png}
+\caption{Following equation \ref{policy} a path is getting found.}
 \end{minipage}
+\caption{}
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/FindingPolicy/04.png}
+\caption{The path is reaching closer to the goal.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/FindingPolicy/05.png}
+\caption{The path has reached the goal and the algorithm terminates returning one shortest path from red to blue.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/FindingPolicy/policy.png}
+\caption{When \ref{policy} is applied to every tile, the best action at every position can be given.}
+\end{minipage}
+\caption{}
 \end{figure}
+With the value of every tile calculated and stored in the matrix $V$, it is now trivial to find the optimal policy for any position.\\
+Consider being at any position $x$ in the maze. All you can do is move into one of the four directions right, down, left and up. \\
+Due to the fact that we are searching for the shortest path to the nearest goal, and the value of every tile is known, we can now make our decision where to step depending on the values of the tiles adjacent to the current position. By always choosing the tile with the lowest value, the best action $a \in A$ can be chosen accordingly.\\
+Defined in a mathematical sense, the equation describing the value of every tile is the equation 
+\begin{small}
+\begin{align} 
+\label{policy}
+a(i,j)=
+	\begin{cases}
+		\text{up} \quad \quad \text{if } v(i,j-1) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+		\text{right} \quad \text{if } v(i+1,j) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+		\text{down} \quad \text{if } v(i,j+1) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+		\text{left} \quad \quad \text{if } v(i-1,j) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+	\end{cases} \\
+	\text{With } (x,y) \in \{(i+1,j),(i-1,j),(i,j+1),(i,j-1)\}
+\end{align}
+\end{small}
 
-\subsection{Pseudo code for solving this task}
-\begin{scriptsize}
 
-
-\lstset{
-  basicstyle=\ttfamily,
-  columns=fullflexible,
-  frame=single,
-  breaklines=true,
-  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
-  language=csh
-}
-\begin{lstlisting}
-
-public class Algorithm {
-
-private static int[,] grid;
-private static List<Vector2> goals;
-private static List<Vector2> openList = new List<Vector2>();
-
-public static void Recursive(int[,] grid, List<Vector2> goals){
-
-  Algorithm.grid = grid;
-  Algorithm.goals = goals;
-
-  value = new int[Width, Height];
-  policy = new char[Width, Height];
-
-  for (int i = 0; i < Width; i++)
-  {
-    for (int j = 0; j < Height; j++)
-      {
-        value[i, j] = MaxCost;
-      }
-  }
-
-  foreach (Vector2 goal in goals)
-  {
-    value[(int)goal.x, (int)goal.y] = 0;
-    policy[(int)goal.x, (int)goal.y] = '*';
-    ValueFunction(goal, new List<Vector2>() { goal });
-  }
-}
+%
+%
+%Now, if you moved onto one of these positions, you would have to pay the cost for each position and have to add it onto the value of this position. So making one of the steps, you would have to pay $1$. The resulting length of the shortest path now would be the value of the new position added to the cost it needed to step here.\\
+%Now you could repeat this step and look at all the positions reachable from this position. As an example, let us look at the position $A$.\\
+%One can now easily repeat these steps in an recursive way, summing up the cost until a goal is reached.\\
+%So, if finally a goal state is reached, we would know that it's value is $0$, what would give us the possibility to calculate the values of the positions visited to reach it.\\
+%
+%To step on the goal, we would have to pay a cost of $1$ and the value of the goal is $0$. So summed up, for a tile that is in direct neighborhood of a goal state, it's value would be
+%\begin{equation}
+%v(i,j) = v(x,y) + 1, \quad (x,y) \in \{Goals\}
+%\end{equation}
+%This would propagate back until the initial position is reached.
 
 
 
-private static void ValueFunction(Vector2 pos, List<Vector2> open/*, List<Vector2> closed*/){
-  open.Remove(pos);
 
-  for (int i = 0; i < deltas.Count; i++){
-    Vector2 prev = pos - deltas[i];
-    if (prev.x >= 0 && prev.x < Width && prev.y >= 0 && prev.y < Height)
-    {
-      if (grid[(int)prev.x, (int)prev.y] == MaxCost)
-      {
-        value[(int)prev.x, (int)prev.y] = MaxCost;
-      }
-      else if (goals.Contains(prev))
-      {
-        value[(int)prev.x, (int)prev.y] = 0;
-      }
-      else if (value[(int)prev.x, (int)prev.y] > value[(int)pos.x, (int)pos.y] + grid[(int)pos.x, (int)pos.y])
-      {
-        if (!open.Contains(prev))
-          open.Add(prev);
-
-        if (goals.Contains(prev))
-        {
-          value[(int)prev.x, (int)prev.y] = 0;
-          policy[(int)prev.x, (int)prev.y] = '*';
-        }
-        else
-        {
-          value[(int)prev.x, (int)prev.y] = value[(int)pos.x, (int)pos.y] + grid[(int)pos.x, (int)pos.y];
-          policy[(int)prev.x, (int)prev.y] = deltaNames[i];
-        }
-      }
-    }
-  }
-
-  //Sort list
-  if (open.Count > 0)
-  {
-    int index = -1;
-    int lowest = int.MaxValue;
-    for (int i = 0; i < open.Count; i++)
-    {
-      if (value[(int)open[i].x, (int)open[i].y] + grid[(int)pos.x, (int)pos.y] < lowest)
-      {
-        lowest = value[(int)open[i].x, (int)open[i].y];
-        index = i;
-      }
-    }
-    ValueFunction(open[index], open/*, closed*/);
-  }
-}
-
-}
-\end{lstlisting}
-\end{scriptsize}
+%If you apply this approach to every position in the maze, you could calculate the value of every single position and from this grid of values, you could just always step on the position next to you which has the lowest cost which would result in a the optimal action for every tile in the maze.
+%
+%\begin{figure}[h]
+%\centering
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/ValueFunction/all.png}
+%\caption{All values are found.}
+%\end{minipage}
+%\begin{minipage}{0.2\linewidth}
+%\end{minipage}
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/ValueFunction/policy.png}
+%\caption{Stepping onto the tile with the lowest value next to you, you can derive the best action.}
+%\end{minipage}
+%\end{figure}
+%
+%When coming to a mathematical representation of this problem, we saw that for every tile it's value was the value of the tile with the lowest cost next to it summed up with the cost it would take to step on this tile.\\
+%From this the following function can be derived, which solves the Bellman equation.
+%
+%\begin{scriptsize}
+%
+%\begin{equation}
+%v(i,j) =
+%  \begin{cases}
+%    \infty & \text{if } (i,j) \in \{\text{Walls}\} \cup \{ \mathbb{R}^2 \setminus \{n \times m\}\}\\
+%    0 & \text{if } (i,j) \in \{\text{Goals}\}\\
+%    \min \{v(i,j+1) + 1, \\v(i+1,j) + 1, \\v(i,j-1) + 1, \\v(i-1,j) + 1\} & \text{if in the maze and not a wall or a goal}
+%  \end{cases}
+%\end{equation}
+%
+%\end{scriptsize}
+%
+%The first to lines are the base cases to stop the recursion if a goal is found, the maze is left or a wall would be visited. If $n$ and $m$ are both finite numbers we can see that the recursion will always terminate because at some point in iterations the maze will be left in all directions which causes the calculation to stop.\\
+%The third one is the recursive step searching for the minimum of the sum of the value of the four adjacent positions and their corresponding costs.\\
+%If we now don't only allow $1$ as cost per tile, but also arbitrary positive values, the equation can be generalized to be used in any grid or graph with non negative costs.
+%
+%\begin{scriptsize}
+%\begin{equation}
+%v(i,j) =
+%  \begin{cases}
+%  \centering
+%    \infty & \text{if } (i,j) \in \{\text{Walls}\} \cup \{ \mathbb{R}^2 \setminus \{n \times m\}\}\\
+%    0 & \text{if } (i,j) \in \{\text{Goals}\}\\
+%    \min \{v(i,j+1) + c(i,j+1), \\v(i+1,j) + c(i+1,j), \\v(i,j-1) + c(i,j-1), \\v(i-1,j) + c(i-1,j)\} & \text{if in the maze and not a wall or a goal}
+%  \end{cases}
+%\end{equation}
+%\end{scriptsize}
+%
+%When the precomputation of the best action for every tile is finished, one can easily derive the optimal policy with ease.
+%
+%\begin{figure}[h]
+%\centering
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/Policies/01.png}
+%\caption{The optimal policy is $(\leftarrow,\leftarrow,\uparrow,\rightarrow,\rightarrow,$\\$\uparrow,\rightarrow,\rightarrow,\downarrow,\downarrow,\downarrow)$}
+%\end{minipage}
+%\hfill
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/Policies/02.png}
+%\caption{The optimal policy is $(\downarrow,\downarrow,\rightarrow,\rightarrow,\downarrow,\downarrow,\downarrow)$}
+%\end{minipage}
+%\hfill
+%\begin{minipage}[t]{0.3\linewidth}
+%\centering
+%\includegraphics[width=1\textwidth]{images/Policies/03.png}
+%\caption{The optimal policy is $(\downarrow,\downarrow,\downarrow,\rightarrow,\rightarrow,\rightarrow,$\\$\uparrow,\rightarrow,\rightarrow,\downarrow,\downarrow,\downarrow)$}
+%\end{minipage}
+%\end{figure}
+%
+%\subsection{Pseudo code for solving this task}
+%\begin{scriptsize}
+%
+%
+%\lstset{
+%  basicstyle=\ttfamily,
+%  columns=fullflexible,
+%  frame=single,
+%  breaklines=true,
+%  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+%  language=csh
+%}
+%\begin{lstlisting}
+%
+%public class Algorithm {
+%
+%private static int[,] grid;
+%private static List<Vector2> goals;
+%private static List<Vector2> openList = new List<Vector2>();
+%
+%public static void Recursive(int[,] grid, List<Vector2> goals){
+%
+%  Algorithm.grid = grid;
+%  Algorithm.goals = goals;
+%
+%  value = new int[Width, Height];
+%  policy = new char[Width, Height];
+%
+%  for (int i = 0; i < Width; i++)
+%  {
+%    for (int j = 0; j < Height; j++)
+%      {
+%        value[i, j] = MaxCost;
+%      }
+%  }
+%
+%  foreach (Vector2 goal in goals)
+%  {
+%    value[(int)goal.x, (int)goal.y] = 0;
+%    policy[(int)goal.x, (int)goal.y] = '*';
+%    ValueFunction(goal, new List<Vector2>() { goal });
+%  }
+%}
+%
+%
+%
+%private static void ValueFunction(Vector2 pos, List<Vector2> open/*, List<Vector2> closed*/){
+%  open.Remove(pos);
+%
+%  for (int i = 0; i < deltas.Count; i++){
+%    Vector2 prev = pos - deltas[i];
+%    if (prev.x >= 0 && prev.x < Width && prev.y >= 0 && prev.y < Height)
+%    {
+%      if (grid[(int)prev.x, (int)prev.y] == MaxCost)
+%      {
+%        value[(int)prev.x, (int)prev.y] = MaxCost;
+%      }
+%      else if (goals.Contains(prev))
+%      {
+%        value[(int)prev.x, (int)prev.y] = 0;
+%      }
+%      else if (value[(int)prev.x, (int)prev.y] > value[(int)pos.x, (int)pos.y] + grid[(int)pos.x, (int)pos.y])
+%      {
+%        if (!open.Contains(prev))
+%          open.Add(prev);
+%
+%        if (goals.Contains(prev))
+%        {
+%          value[(int)prev.x, (int)prev.y] = 0;
+%          policy[(int)prev.x, (int)prev.y] = '*';
+%        }
+%        else
+%        {
+%          value[(int)prev.x, (int)prev.y] = value[(int)pos.x, (int)pos.y] + grid[(int)pos.x, (int)pos.y];
+%          policy[(int)prev.x, (int)prev.y] = deltaNames[i];
+%        }
+%      }
+%    }
+%  }
+%
+%  //Sort list
+%  if (open.Count > 0)
+%  {
+%    int index = -1;
+%    int lowest = int.MaxValue;
+%    for (int i = 0; i < open.Count; i++)
+%    {
+%      if (value[(int)open[i].x, (int)open[i].y] + grid[(int)pos.x, (int)pos.y] < lowest)
+%      {
+%        lowest = value[(int)open[i].x, (int)open[i].y];
+%        index = i;
+%      }
+%    }
+%    ValueFunction(open[index], open/*, closed*/);
+%  }
+%}
+%
+%}
+%\end{lstlisting}
+%\end{scriptsize}
 \section{Related Work}
+\subsection{Robot Motion Planning}
+But how can the Dynamic Programming approach be used for robot motion planning with more than 2 dimensions? Imagine a two-armed robot having six degrees of freedom for every arm resulting in a twelve-dimensional motion planning problem.\\
+For every possible configuration of the arms a node in a graph $G$ can be defined holding the specific attributes of that configuration. For every transition between two configurations an edge between these two can be drawn describing uniquely the transformation between the two states.\\
+With this approach every N-dimensional problem can be projected down onto a two-dimensional plane where the algorithms can easily be applied.\\
+Based on this method many robot motion planning algorithms have been introduced.
 \subsection{Algorithmic Design of Feasible Trajectories}
-\subsubsection{abstract}
-\quad \\
 Written by Steven M. LaValle, this paper summarizes the recent development of algorithms that construct feasible trajectories made at the University of Illinois. They use et al dynamic programming approaches that produce approximately-optimal solutions for low-dimensional problems. \\
 The difficulties they had to come over are on the one side differential constraints, which means that in a systems the number of actuators is strictly less than the dimension of the configuration space. For example imagine a spacecraft floating in $\mathbb{R}^3$ that has three thrusters. These are called the actuators of the spacecraft system. Opposite, the spacecraft has six degrees of freedom (X-Pos., Y-Pos., Z-Pos., Yaw, Pitch, Roll) which makes it an underactuated system having differential constraints.\\
 On the other hand they had to deal with global constraints arising from robot collisions.\\
@@ -1023,6 +1124,7 @@ $\text{pred}(G,v) := \{u \in V: (v,u) \in E\}$
 \end{center}
 \end{itemize}
 Following thereof, they rewrote the bellman equation for their purpose in terms of the cost-to-come value as follows:
+\begin{small}
 \begin{equation}
 g*(v_i) = 
 \begin{cases}
@@ -1030,6 +1132,7 @@ g*(v_i) =
 \min_{v_j \in pred(G,v_i)} (g^*(v_j) + c(v_j,v_i)) & v_i \in V \setminus \{x_\text{init}\}
 \end{cases}
 \end{equation}
+\end{small}
 P.42  
 Based on their formulation of the Bellman equation, they split the Algorithm into two parts:
 \paragraph{Exploration}
@@ -1081,12 +1184,13 @@ The following images show the two algorithms.
 As you can see, dynamic programming is a great way to improve the runtime and the speed in which an algorithm converges to an optimal solution.
 The interested reader can have a look at \cite{OktayArslan.December2015} for further information and mathematical proofs.
 
-\subsection{Bellman Ford, Gauss Seidel and Jakobi}
+%\subsection{Bellman Ford, Gauss Seidel and Jakobi}
 
-
+\newpage
 
 \section{Conclusion}
-
+As we have seen in this paper, Dynamic Programming is a very straight forward approach for solving multistage decision problems. By breaking down difficult problems into sets of overlapping subproblems with optimal substructure an overall optimal solution can be found by only solving the small subproblems. In robot motion, dynamic programming can be applied in a wide field of tasks and can be a really useful approach that takes the place of the classic algorithms.
+Many algorithms are already getting improved or replaced by Dynamic Programming algorithms and the set of fields where it can be applied is nearly unlimited.
 
 
 
