@@ -1,5 +1,6 @@
 \relax 
 \citation{OktayArslan.December2015}
+\citation{Dreyfus.2002}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{2}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The original grid showing the cost of each tile, walls (black) and goals (blue).\relax }}{2}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Initialization of the algorithm with $\infty $ cost. Only the goal (blue) is set and is the starting point. It has a value of 0.\relax }}{2}}
@@ -14,14 +15,15 @@
 \citation{Bellman.30.07.1954}
 \citation{Bellman.30.07.1954}
 \citation{Bellman.30.07.1954}
-\citation{Bellman.30.07.1954}
-\citation{Bellman.30.07.1954}
-\citation{Bellman.30.07.1954}
+\citation{Cormen.2009}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-C}}The Principle of Optimality}{3}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}1}The fundamental approach}{3}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}2}Mathematical formulation}{3}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}3}Which characteristics does a problem need to be solvable by Dynamic Programming}{3}}
 \@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}3a}Overlapping subproblems}{3}}
+\citation{Cormen.2009}
+\citation{Cormen.2009}
+\citation{Cormen.2009}
 \@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces An example of overlapping subproblems. In all three cases the yellow passage will be recalculated no matter from where you started (red). \relax }}{4}}
 \@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}3b}Optimal substructure}{4}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces The overall shortest path $s$ (green) from start (red) to goal (blue).\relax }}{4}}
@@ -31,63 +33,72 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {II-C}4}How to apply Dynamic Programming in computer science}{4}}
 \@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}4a}Memoization}{4}}
 \@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {II-C}4b}Bellman equation}{4}}
+\citation{Bellman.2013}
 \@writefile{toc}{\contentsline {section}{\numberline {III}Finding the value function and implementing the maze}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Finding the value function}{5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces All tiles are having a cost of $1$.  $c(i,j) = 1, \hskip 1em\relax \forall (i,j) \in n \times m$\relax }}{5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Only the value of the goal position is known at step $N$.\relax }}{6}}
 \@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces At step $(N-1)$ the values of the four adjacent positions are calculated.\relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces At step $(N-5)$ the values of all the positions are calculated.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces At step $(N-2)$ the values of the positions adjacent to the previous positions are calculated.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces  \relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Step $(N-3)$\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Step $(N-4)$\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces At step $(N-5)$ the values of all the positions are calculated.\relax }}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}Finding optimal policies}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Starting from the red tile an optimal policy will be found.\relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces So looking at the adjacent tiles the green one is one of the tiles with the lowest value.\relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Following equation 27\hbox {} a path is getting found.\relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces \relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces The path is reaching closer to the goal.\relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces The path has reached the goal and the algorithm terminates returning one shortest path from red to blue.\relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces When 27\hbox {} is applied to every tile, the best action at every position can be given.\relax }}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces \relax }}{6}}
 \newlabel{policy}{{27}{6}}
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Related Work}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Robot Motion Planning}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}}Algorithmic Design of Feasible Trajectories}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces Starting from the red tile an optimal policy will be found.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces So looking at the adjacent tiles the green one is one of the tiles with the lowest value.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces Following equation 28\hbox {} a path is getting found.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces  \relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces The path is reaching closer to the goal.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces The path has reached the goal and the algorithm terminates returning one shortest path from red to blue.\relax }}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces When 28\hbox {} is applied to every tile, the best action at every position can be given.\relax }}{6}}
 \citation{LaValle.}
 \citation{LaValle.October1998}
 \citation{LaValle.October1998}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}1}problem formulation}{7}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}2}Dynamic Programming}{7}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}}Rapidly exploring Random Trees (RRT)}{7}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}1}What is a RRT}{7}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}2}How does a RRT look like an how to construct}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces At the beginning the search space is completely unexplored. The tree begins spanning into it.\relax }}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces The tree reaches further into the unexplored space.\relax }}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces The tree is reaching to the limits of the plane and is getting denser. At the limit it will have covered the whole $X_\text  {free}$\relax }}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces Looking at the voronoi bias of the vertices, there are huge unexplored parts.\relax }}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces The tree is always taking a sample out of the biggest unexplored part. This smallers the part.\relax }}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces When proceeding, the voronoi bias are simultaneously getting smaller with every iteration. Their area tends to be 0 at the limit.\relax }}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {30}{\ignorespaces \relax }}{7}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}3}RRTs and dynamic programming}{7}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Related Work}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Autonomous vehicles}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}}Extending the 2-dimensional algorithms onto N-dimensional problems}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}}Algorithmic Design of Feasible Trajectories}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}1}Dynamic Programming}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-D}}Rapidly exploring Random Trees (RRT)}{7}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-D}1}What is a RRT}{7}}
+\citation{LaValle.October1998}
 \citation{OktayArslan.December2015}
 \citation{OktayArslan.December2015}
+\citation{OktayArslan.December2015}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-D}2}How does a RRT look like and how to construct}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces At the beginning the search space is completely unexplored. The tree begins spanning into it.\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces The tree reaches further into the unexplored space.\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces The tree is reaching to the limits of the plane and is getting denser. At the limit it will have covered the whole $X_\text  {free}$\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {30}{\ignorespaces Looking at the voronoi bias of the vertices, there are huge unexplored parts.\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {31}{\ignorespaces The tree is always taking a sample out of the biggest unexplored part. This smallers the part.\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {32}{\ignorespaces When proceeding, the voronoi bias are simultaneously getting smaller with every iteration. Their area tends to be 0 at the limit.\relax }}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-D}3}RRTs and dynamic programming}{8}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {IV-D}3a}Exploration}{8}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {IV-D}3b}Exploitation}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {33}{\ignorespaces The tree after 250 iterations\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {34}{\ignorespaces The tree after 2500 iterations\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {35}{\ignorespaces The tree after 25000 iterations\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {36}{\ignorespaces The evolution of the tree computed by RRT, the original algorithm. The tree is spanning equally in all directions resulting in a uniform density.\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {37}{\ignorespaces The tree after 250 iterations\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {38}{\ignorespaces The tree after 2500 iterations\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {39}{\ignorespaces The tree after 25000 iterations\relax }}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {40}{\ignorespaces The evolution of the tree computed by $\text  {RRT}^\#$. The tree is spanning mostly into the direction of the promising vertices. The density around the shortest path is much higher than in the regions not associated with it.\relax }}{8}}
 \bibstyle{IEEEtran}
-\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {IV-C}3a}Exploration}{8}}
-\@writefile{toc}{\contentsline {paragraph}{\numberline {\unhbox \voidb@x \hbox {IV-C}3b}Exploitation}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {31}{\ignorespaces \relax }}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {32}{\ignorespaces \relax }}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {33}{\ignorespaces \relax }}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {34}{\ignorespaces \relax }}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {35}{\ignorespaces \relax }}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {36}{\ignorespaces \relax }}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {37}{\ignorespaces \relax }}{8}}
-\@writefile{toc}{\contentsline {section}{\numberline {V}Conclusion}{8}}
-\bibcite{Bellman.1953}{1}
-\bibcite{Bellman.1958}{2}
+\bibcite{OktayArslan.December2015}{1}
+\bibcite{Dreyfus.2002}{2}
 \bibcite{Bellman.30.07.1954}{3}
-\bibcite{Bradley.1992}{4}
-\bibcite{Cooke.1966}{5}
-\bibcite{Derigs.1995}{6}
-\bibcite{Dreyfus.2002}{7}
-\bibcite{LaValle.}{8}
-\bibcite{LaValle.2006Referencesfromthebook}{9}
-\bibcite{OktayArslan.December2015}{10}
-\bibcite{Pra.1995}{11}
+\bibcite{Bellman.2013}{4}
+\bibcite{LaValle.}{5}
+\bibcite{LaValle.October1998}{6}
+\bibcite{Bellman.1953}{7}
+\bibcite{Bellman.1958}{8}
+\bibcite{Bradley.1992}{9}
+\bibcite{Cooke.1966}{10}
+\bibcite{Cormen.2007}{11}
+\bibcite{Derigs.1995}{12}
+\bibcite{LaValle.2006Referencesfromthebook}{13}
+\bibcite{Pra.1995}{14}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Conclusion}{9}}
 \@writefile{toc}{\contentsline {section}{References}{9}}

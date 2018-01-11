@@ -386,7 +386,7 @@ Email: mbruckner94@gmail.com}}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-This paper gives a brief overview on the field of dynamic programming and it's applicability in robot motion planning. Exemplary, some use cases in other papers will be shown and an algorithm to find optimal policies in a maze will be discussed.
+This paper gives a brief overview on the field of dynamic programming and it's applicability in robot motion planning. Exemplary, some use cases in other papers will be shown and an algorithm to find optimal policies in a maze will be introduced.
 \end{abstract}
 
 % no keywords
@@ -464,16 +464,15 @@ For solving a problem with Dynamic Programming, the problem gets broken down and
 \\
 It provides a general framework for analyzing many problem types, like the planning of industrial production lines, scheduling of patients at a medical clinic, long term investment programs and, of course, robot motion planning.
 \\
-//TODO: Mehr ausbauen Review ARSLAN DISSERT P.13
-\\
-Underlying of these problems is always a sequence of decisions that have to be made within a finite number of stages. E.g. a robot wants to move from one position to another by a finite number of steps and investment programs do have to calculate their wealth at every step in time.\\"A sequential decision making problem with finite stages is a tupel $\langle X, U, f, g, G, x_\text{init}\rangle$ where
+Underlying of these problems is always a sequence of decisions that have to be made within a finite number of stages. E.g. a robot wants to move from one position to another by a finite number of steps and investment programs do have to calculate their wealth at every step in time.\\
+A sequential decision making problem with finite stages can be defined with the following statements:
 \begin{itemize}
-\item $\mathbf{X}$ is the set of all possible states of the system, i.e., the state space;
-\item $\mathbf{U}$ is the set of controls, i.e., the control space;
+\item $\mathbf{X}$ is the set of all possible states of the system;
+\item $\mathbf{U}$ is the set of controls or also called transformations;
 \item $\mathbf{f}: X \times U \mapsto X$ is a transition function, a mapping specifying the next state $f(x,u)$ if control $u$ is executed when the system is in state $x$;
-\item $\mathbf{g}: X \times U \mapsto \mathbb{R}$ is a cost function that gives a real value $g(x, u)$ obtained if control $u$ is executed when the system is in the state $x$;
-\item $\mathbf{G}: X \mapsto \mathbb{R}$ is a cost function that gives a real value $G(u)$ obtained if the final state is $x$;
-\item $\mathbf{x_\text{init}} \in X$ is the initial state of the system."\cite{OktayArslan.December2015}
+\item $\mathbf{c}: X \times U \mapsto \mathbb{R}$ is a cost function that gives a real value $c(x, u)$ obtained if control $u$ is executed when the system is in the state $x$;
+\item $\mathbf{v}: X \mapsto \mathbb{R}$ is a value function that gives a real value $v(x)$ associated with the state $x$;
+\item $\mathbf{x_\text{init}} \in X$ is the initial state of the system. \cite{OktayArslan.December2015}
 \end{itemize}
 
 %---------------------------------
@@ -487,7 +486,7 @@ Underlying of these problems is always a sequence of decisions that have to be m
 Dynamic Programming was introduced by the american mathematician Richard Bellman who was working on multistage decision problems from 1949 until 1955. After he received his Ph.D. from Princeton at the age of 25, he started his research at RAND Corporation (Research and Development), where his secretary really had a hatred of the term \textit{mathematical research}. So he started his work with finding a name under which he could hide his projects.
 \\
 He was interested in planning, decision making and thinking, but none of these were good terms, so he decided on the word programming, and because of his love for physics and his ideas in multistage and time varying problems, he came to the conclusion that dynamic is the best adjective to accompany it.\\
-Following the name Dynamic Programming was born and no one could imagine what he was doing which made it perfect for hiding his mathematical research.
+Following the name Dynamic Programming was born and no one could imagine what he was doing which made it perfect for hiding his mathematical research. \cite{Dreyfus.2002}
 \subsection{The Principle of Optimality}
 For starting a more precise discussion, let define the term optimal policy:
 \begin{itemize}
@@ -498,8 +497,9 @@ When being asked the task for finding the optimal policy for a given problem, th
 \\
 But Bellman saw that the knowledge of the complete sequence of decisions isn't even required to solve these multistage decision problems. He stated that it would be much better to find a general prescription which gives the best decision at any time and depending only on the current state of the system.
 \begin{center}
-"If at any particular time we know what to do, it is never necessary to know the decisions required at subsequent times."\cite{Bellman.30.07.1954}
+"If at any particular time we know what to do, it is never necessary to know the decisions required at subsequent times."
 \end{center}
+\cite{Bellman.30.07.1954}
 \subsubsection{The fundamental approach}
 \quad \\
 From the previous stated point of view, Bellman went over to define an optimal policy and described it as one "determining the decision required at each time in terms of the current state of the system. Following this line of thought, "\cite{Bellman.30.07.1954} he was able to formulate his 
@@ -507,9 +507,9 @@ From the previous stated point of view, Bellman went over to define an optimal p
 \begin{center}
 \textbf{Principle of Optimality}
 \\
-"An optimal policy has the property, that whatever the initial state and initial decisions are, the remaining decisions must constitute an optimal policy with regard to the state resulting from the first decisions."\cite{Bellman.30.07.1954}
+An optimal policy has the property, that whatever the initial state and initial decisions are, the remaining decisions must constitute an optimal policy with regard to the state resulting from the first decisions.
 \end{center} 
-and thereof derive the fundamental mathematical equations on which Dynamic Programming is based on.
+and thereof derive the fundamental mathematical equations on which Dynamic Programming is based on. \cite{Bellman.30.07.1954}
 \\
 \subsubsection{Mathematical formulation} 
 \quad \\
@@ -538,7 +538,7 @@ p_2 = T_2(p_1),
 \vdots
 \end{equation}
 \begin{equation*}
-p_N = T_N(p_{N-1}) \quad \text{"\cite{Bellman.30.07.1954}}
+p_N = T_N(p_{N-1}) 
 \end{equation*}
 
 As you can see the maximum value of the return function $R(p_N)$, regulated by the optimal policy, will only depend on the initial vector p and the number of stages N.
@@ -556,12 +556,13 @@ h_N(p) = \max_k h_{N-1}(T_k(p)), \quad N = 2, 3, ...
 \end{equation}
 Resulting from this equation it is now clear, that any optimal policy does not have to be unique, but will yield $h_N(p)$. On the other hand, if looking at the sequence $\{h_N(p)\}$, one can reversely determine all optimal policies.
 %\subsection{Usage of Dynamic Programming in computer science}
-\\
+\cite{Bellman.30.07.1954}\\
 \subsubsection{Which characteristics does a problem need to be solvable by Dynamic Programming}
 \quad \\
 \paragraph{Overlapping subproblems}
 \quad \\
-A problem is said to have overlapping subproblems if the space of subproblems is small an thus, if broken down, solutions for these are reused many times or a recursive algorithm solves the same subproblems over and over, insted of generating new subproblems.\\
+A problem is said to have overlapping subproblems if the space of subproblems is small an thus, if broken down, solutions for these are reused many times or a recursive algorithm solves the same subproblems over and over, insted of generating new subproblems. \cite{Cormen.2009}
+\\
 Remember the game Labyrinth, where the goal was to find treasures and return to a goal tile.\\
 If there is a treasure you want to discover and it lays down a narrow passage, any algorithm calculating the shortest path from any arbitrary position in the maze will guide you through the passage.\\
 So if you would calculate the shortest path from your current position and move one tile, you'd have to recalculate the path again, which leads you to also recalculate the way down the passage.\\
@@ -588,7 +589,8 @@ So for any position, the passage would be a subproblem that overlaps in every ca
 
 \paragraph{Optimal substructure}
 \quad \\
-A problem has optimal substructure if the solution for the whole problem can be found by a combination of solutions for its subproblems. Normally, greedy algorithms are used to solve problems with this property because they lead to an optimal overall solution in this case.\\
+A problem has optimal substructure if the solution for the whole problem can be found by a combination of solutions for its subproblems. Normally, greedy algorithms are used to solve problems with this property because they lead to an optimal overall solution in this case. \cite{Cormen.2009}
+\\
 But also the principle of optimality is based in this idea.\\
 To come back to the labyrinth, for any given position $p$ in the labyrinth a shortest path $s$ avoiding the walls and reaching a goal can be calculated. If $s$ is really the shortest path, it can be split into subpaths $s_1$ from $p$ to an point $x$ on the shortest path and $s_2$ from $x$ to the goal, such that $s_1, s_2$ are indeed the shortest paths between the three positions.\\
 From that, a recursive way for finding shortest paths can easily be formulated, which is what is applied in Dynamic Programming.
@@ -619,8 +621,9 @@ From that, a recursive way for finding shortest paths can easily be formulated, 
 \quad \\
 \paragraph{Memoization}
 \quad \\
-An important concept when applying Dynamic Programming in computer science is memoization. As a result of the optimal substructure a problem can be broken down into simpler subproblems and for each of these subproblems, a solution can be calculated and the result can be stored in a table, so that a solution has to be found only once. When a subproblem reoccurs, the cached result can be returned to save computation time. \\
-On the other hand the storage consumption will expand due to the need for storing the results. But in times of rapidly increasing memory sizes and shrinking costs this draw off can often be considered as negligible.
+An important concept when applying Dynamic Programming in computer science is memoization. As a result of the optimal substructure a problem can be broken down into simpler subproblems and for each of these subproblems, a solution can be calculated and the result can be stored in a table, so that a solution has to be found only once. When a subproblem reoccurs, the cached result can be returned to save computation time. \cite{Cormen.2009}
+\\
+On the other hand the storage consumption will expand due to the need for storing the results. But in times of rapidly increasing memory sizes and shrinking costs this draw off can often be considered as negligible. \cite{Cormen.2009}
 \\
 \paragraph{Bellman equation}
 \quad \\
@@ -647,7 +650,8 @@ The Bellman equation can be simplified even more when dropping the time dependen
 \begin{equation}
 V(x) = \max_{a \in \Gamma(x)} \{F(x,a) + V(T(x,a))\}
 \end{equation}
-Solving this functional equation means now finding the unknown function V, which is the value function of the Problem.\\
+Solving this functional equation means now finding the unknown function V, which is the value function of the Problem. \cite{Bellman.2013}
+\\
 
 \section{Finding the value function and implementing the maze}
 \subsection{Finding the value function}
@@ -674,7 +678,7 @@ v(i,j) =
 	\infty, \quad \text{if } i < 1 \text{ or } i > n \text{ or } j < 1 \text{ or } j > m \\
 	0 \quad \quad \text{if } (i,j) \in \{X_\text{goal}\}
   \end{cases}
-\end{equation}.
+\end{equation}
 At last if the position we're looking for is a wall, the cost is, by definition
 \begin{equation}
 c(i,j) = \infty, \quad if (i,j) \in \{Walls\}
@@ -702,6 +706,7 @@ v(4,4) = v(3,4) + c(3,4) = 0 + 1 = 1\\
 v(2,3) = v(3,4) + c(3,4) = 0 + 1 = 1\\
 v(2,5) = v(3,4) + c(3,4) = 0 + 1 = 1
 \end{align}
+
 When exemplary applying this procedure at the position $v(2,4)$, we can again give the equations for the positions lying around it
 \begin{align}
 v(1,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
@@ -709,7 +714,7 @@ v(3,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
 v(2,3) = v(2,4) + c(2,4) = 1 + 1 = 2\\
 v(2,5) = v(2,4) + c(2,4) = 1 + 1 = 2
 \end{align}
-Now we have calculated the values of the step $(N-2)$ depending on the decisions that will be made optimally in $(N-1) \text{ and } N$. The results are getting stored in a second matrix $V^{n \times m}$ which holds the results of the value function. So $V(3,4) = 0, V(2,4)=1 \dots$\\ 
+Now we have calculated the values of the step $(N-2)$ depending on the decisions that will be made optimally in $(N-1) \text{ and } N$. The results are getting memoized in a second matrix $V^{n \times m}$ which is initialized with the value $\infty$ at all positions. So $V(3,4) = 0, V(2,4)=1 \dots$\\ 
 One thing that has to be considered at this step is, that the value for the tile $v(3,4)$ is getting calculated again, which might cause troubles due to the fact that now the value of this position would be
 \begin{equation}
 v(3,4) = v(2,4) + c(2,4) = (v(3,4) + c(3,4)) + c(2,4) = 2
@@ -732,18 +737,45 @@ which is in fact bigger than the initially calculated value of $0$. At this poin
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
+\includegraphics[width=1\textwidth]{images/ValueFunction/03.png}
+\caption{At step $(N-2)$ the values of the positions adjacent to the previous positions are calculated.}
+\end{minipage}
+\caption{ }
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/ValueFunction/04.png}
+\caption{Step $(N-3)$}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
+\includegraphics[width=1\textwidth]{images/ValueFunction/05.png}
+\caption{Step $(N-4)$}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.3\linewidth}
+\centering
 \includegraphics[width=1\textwidth]{images/ValueFunction/06.png}
 \caption{At step $(N-5)$ the values of all the positions are calculated.}
 \end{minipage}
 \end{figure}
-Following this procedure, a general relation between the steps can be stated
+
+Following this procedure, a general relation between the steps can be stated:
 \begin{align}
 v(i-1,j) = v(i,j) + c(i,j) \quad \text{if } v(i-1,j) < V(i,j)\\
 v(i+1,j) = v(i,j) + c(i,j) \quad \text{if } v(i+1,j) < V(i,j)\\
 v(i,j-1) = v(i,j) + c(i,j) \quad \text{if } v(i,j-1) < V(i,j)\\
 v(i,j+1) = v(i,j) + c(i,j) \quad \text{if } v(i,j+1) < V(i,j)
 \end{align}
-With this equation, the value of every position in the maze can be calculated, which leads to the function solving the functional Bellman equation
+
+With these equations, the value of every position in the maze can be calculated.\\
+When now solving the Bellman equation, a way to formulate the previous stated algorithm recursively has to be found.\\
+In the backwards iterated method we started at the goal tile $(N)$ and derived the value of the positions adjacent to it $(N-1)$. On the opposite, we could have also started at the adjacent positions and look at the positions lying around them. For every position we want to find the position next to it, which holds the lowest sum of its value and its cost.\\
+So for example when looking at the tile right of the goal state the four adjacent tiles would be observed. They would all but one have a value that is not yet calculated so we can't use these tiles to get a proper result. But the one tile that already has a value calculated is the goal tile lying left of this position. It's value would be $0$ as defined and it's cost would be $1$. So the value of the right adjacent tile would be $1$.\\
+For the position on the top of the right tile, we could use the same method. Look at the four adjacent positions, find that some of the values aren't calculated yet and thereof can not be used but that there is one tile that is already calculated. So we could again add up the value and the cost to find the current value.\\
+But what to do when coming to a tile that has more than one value next to it already calculated? Due to the fact that we want to find optimal policies and shortest paths, we want to minimize the value function. This can be achieved by deciding for the adjacent tile with the lowest value for itself. When now adding up it's value and it's cost, one can be sure to have calculated the lowest value for the tile.\\
+Coming from this thought, it leads to the function solving the functional Bellman equation:
+
 \begin{scriptsize}
 \begin{equation}
 v(i,j) =
@@ -757,6 +789,24 @@ v(i,j) =
 \end{scriptsize}
 
 \subsection{Finding optimal policies}
+With the value of every tile calculated and stored in the matrix $V$, it is now trivial to find the optimal policy for any position.\\
+Consider being at any position $x$ in the maze. All you can do is move into one of the four directions right, down, left and up. \\
+Due to the fact that we are searching for the shortest path to the nearest goal, and the value of every tile is known, we can now make our decision where to step depending on the values of the tiles adjacent to the current position. By always choosing the tile with the lowest value, the best action $a \in A$ can be chosen accordingly.\\
+Defined in a mathematical sense, the equation describing the value of every tile is the equation 
+\begin{small}
+\begin{align} 
+\label{policy}
+a(i,j)=
+	\begin{cases}
+		\text{up} \quad \quad \text{if } v(i,j-1) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+		\text{right} \quad \text{if } v(i+1,j) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+		\text{down} \quad \text{if } v(i,j+1) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+		\text{left} \quad \quad \text{if } v(i-1,j) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
+	\end{cases} \\
+	\text{With } (x,y) \in \{(i+1,j),(i-1,j),(i,j+1),(i,j-1)\}
+\end{align}
+\end{small}
+
 \begin{figure}[h]
 \centering
 \begin{minipage}[t]{0.3\linewidth}
@@ -776,7 +826,7 @@ v(i,j) =
 \includegraphics[width=1\textwidth]{images/FindingPolicy/03.png}
 \caption{Following equation \ref{policy} a path is getting found.}
 \end{minipage}
-\caption{}
+\caption{ }
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/FindingPolicy/04.png}
@@ -794,26 +844,7 @@ v(i,j) =
 \includegraphics[width=1\textwidth]{images/FindingPolicy/policy.png}
 \caption{When \ref{policy} is applied to every tile, the best action at every position can be given.}
 \end{minipage}
-\caption{}
 \end{figure}
-With the value of every tile calculated and stored in the matrix $V$, it is now trivial to find the optimal policy for any position.\\
-Consider being at any position $x$ in the maze. All you can do is move into one of the four directions right, down, left and up. \\
-Due to the fact that we are searching for the shortest path to the nearest goal, and the value of every tile is known, we can now make our decision where to step depending on the values of the tiles adjacent to the current position. By always choosing the tile with the lowest value, the best action $a \in A$ can be chosen accordingly.\\
-Defined in a mathematical sense, the equation describing the value of every tile is the equation 
-\begin{small}
-\begin{align} 
-\label{policy}
-a(i,j)=
-	\begin{cases}
-		\text{up} \quad \quad \text{if } v(i,j-1) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
-		\text{right} \quad \text{if } v(i+1,j) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
-		\text{down} \quad \text{if } v(i,j+1) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
-		\text{left} \quad \quad \text{if } v(i-1,j) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
-	\end{cases} \\
-	\text{With } (x,y) \in \{(i+1,j),(i-1,j),(i,j+1),(i,j-1)\}
-\end{align}
-\end{small}
-
 
 %
 %
@@ -1005,23 +1036,31 @@ a(i,j)=
 %\end{lstlisting}
 %\end{scriptsize}
 \section{Related Work}
-\subsection{Robot Motion Planning}
-But how can the Dynamic Programming approach be used for robot motion planning with more than 2 dimensions? Imagine a two-armed robot having six degrees of freedom for every arm resulting in a twelve-dimensional motion planning problem.\\
+\subsection{Autonomous vehicles}
+As cars being just one special type of robots, finding the navigation paths has been a field with many research dedicated to. They have to go straight, take turns, switch lanes and always avoid collisions with pedestrians or other cars.\\
+Classic algorithms like Dijkstras algorithm or based on it A* are a very prominent example of algorithms solving these tasks. But their disadvantage is often the fact that they only solve the shortest path problem for the current location to the nearest goal.\\
+The huge advantage Dynamic Programming brings to the field of autonomous driving is that with the calculation of optimal policies a best action for every position on the map can be calculated previously, so that even if there is an unexpected obstacle blocking a lane shift or a turn and resulting in being in a position not in the optimal shortest path, a alternative solution is already calculated.\\
+But also for smaller autonomous robots like vacuum robots dynamic programming is a nice way to navigate. A map of the room has to be given or found by the little helper based on which it can then define solid obstacles like tables or cupboards, whereas goals can be defined as dirt hotspots or the loading station for the robot.\\
+
+
+\subsection{Extending the 2-dimensional algorithms onto N-dimensional problems}
+But how can the Dynamic Programming approach be used for robot motion planning with more than 2 dimensions? Imagine a two-armed robot having six degrees of freedom for every arm resulting in a 12-dimensional motion planning problem.\\
 For every possible configuration of the arms a node in a graph $G$ can be defined holding the specific attributes of that configuration. For every transition between two configurations an edge between these two can be drawn describing uniquely the transformation between the two states.\\
 With this approach every N-dimensional problem can be projected down onto a two-dimensional plane where the algorithms can easily be applied.\\
 Based on this method many robot motion planning algorithms have been introduced.
+
 \subsection{Algorithmic Design of Feasible Trajectories}
 Written by Steven M. LaValle, this paper summarizes the recent development of algorithms that construct feasible trajectories made at the University of Illinois. They use et al dynamic programming approaches that produce approximately-optimal solutions for low-dimensional problems. \\
 The difficulties they had to come over are on the one side differential constraints, which means that in a systems the number of actuators is strictly less than the dimension of the configuration space. For example imagine a spacecraft floating in $\mathbb{R}^3$ that has three thrusters. These are called the actuators of the spacecraft system. Opposite, the spacecraft has six degrees of freedom (X-Pos., Y-Pos., Z-Pos., Yaw, Pitch, Roll) which makes it an underactuated system having differential constraints.\\
 On the other hand they had to deal with global constraints arising from robot collisions.\\
-\subsubsection{problem formulation}
-\begin{enumerate}
-\item State Space: $X \subset \mathbb{R}^n$
-\item Boundary Values: $x_\text{init} \in X, X_\text{goal} \subset X$
-\item Contraint Satisfaction: A function, $D : X \rightarrow \{\text{true, false}\}$, that determines wheater global constraints are satisfied from state $x$.
-\item Inputs: $U(x) \subset \mathbb{R}^m, \forall x \in X$, which specifies the set of controls.
-\item State Transition Equation: $\dot{x} = f(x, u)$
-\end{enumerate}
+%\subsubsection{problem formulation}
+%\begin{enumerate}
+%\item State Space: $X \subset \mathbb{R}^n$
+%\item Boundary Values: $x_\text{init} \in X, X_\text{goal} \subset X$
+%\item Contraint Satisfaction: A function, $D : X \rightarrow \{\text{true, false}\}$, that determines wheater global constraints are satisfied from state $x$.
+%\item Inputs: $U(x) \subset \mathbb{R}^m, \forall x \in X$, which specifies the set of controls.
+%\item State Transition Equation: $\dot{x} = f(x, u)$
+%\end{enumerate}
 \subsubsection{Dynamic Programming}
 \quad \\
 Using Bellman's principle of optimality, let $k$ refer to a \textit{stage} or \textit{time step}, and let $x_k$ and $u_k$ refer to the state and input at stage $k$. For their purpose $K+1$ represented the final stage.\\
@@ -1045,14 +1084,11 @@ For further reading see \cite{LaValle.}
 \quad \\
 Another very interesting field of research are Rapidly-exploring Random Trees, which were first introduced by LaValle in October 1998 \cite{LaValle.October1998}.\\
 The main idea behind RRTs is a randomized data structure that is designed for a broad class of path planning problems that are viewed as search in a metric space X for a continuous path from an initial state $x_{\text{init}}$ to a goal region $X_\text{goal} \subset X$\\
-WHAT IS A METRIC\\
 In addition, a fixed obstacle region $X_\text{obs} \subset X$ must be avoided, but there is no explicit representation of it available, thus one can only check if a specific state lies in $X_\text{obs}$.\\
-WHAT IS EXPLICIT REPRESENTATION\\
-The nice thing about RRTs is, that $X_\text{obs}$ not only represents solid obstacles like walls, trees or blocks as known from computer games, but can represent any type of constraints. These include velocity bounds of a self-driving car, configurations at which a robot is in collision with an obstacle in the world, Planning Detailed Animation at runtime and any other constraints occurring in motion planning problems.\\
+The nice thing about RRTs is, that $X_\text{obs}$ not only represents solid obstacles like walls, trees or blocks, but can represent any type of constraints. These include velocity bounds of a self-driving car, configurations at which a robot is in collision with an obstacle in the world and any other constraints occurring in motion planning problems.\\
 When constructing the RRT, the vertices represent the states of the system in $X_\text{free}$, and each edge will correspond to a path that lies in completely in $X_\text{free}$. \cite{LaValle.October1998}\\
 
-\subsubsection{How does a RRT look like an how to construct}
-\quad \\
+\subsubsection{How does a RRT look like and how to construct}
 \begin{enumerate}
 \item Pick a random sample in the search space.
 \item Find the nearest neighbor of that sample.
@@ -1098,13 +1134,12 @@ When constructing the RRT, the vertices represent the states of the system in $X
 \includegraphics[width=1\textwidth]{images/RRT/03_v.png}
 \caption{When proceeding, the voronoi bias are simultaneously getting smaller with every iteration. Their area tends to be 0 at the limit.}
 \end{minipage}
-\caption{}
 \end{figure}
-
+\cite{LaValle.October1998}, \cite{OktayArslan.December2015}
 \subsubsection{RRTs and dynamic programming}
 \quad \\
 In the dissertation of Oktay Arslan at the Georgia Institute of Technology in December 2015, he gives a extension of the solely sampling based approach of the original RRT.\\
-He introduces an algorithm called $\text{RRT}^\#$ which utilizes the main ideas from RRT, but expand it to a relaxation step, used in Dynamic Programming.\\
+He introduces an algorithm called $\text{RRT}^\#$ which utilizes the main ideas from RRT, but expanded it with a relaxation step which uses Dynamic Programming.\\
 Relaxation is a term used iterative methods for solving systems of equations, in this case of optimization problems in numerical mathematics.\\
 They can be written down in the form of
 \begin{equation}
@@ -1114,10 +1149,10 @@ where $x(k) \in \mathbb{R}^n$ is an n-dimensional vector, and $f : \mathbb{R}^n 
 The Bellman function is of this form, what spans the bow between Dynamic Programming and $\text{RRT}^\#$.\\
 For understanding the algorithm, some concepts have to be defined:
 \begin{itemize}
-\item Successor vertices: Given a vertex $v \in V$ in a directed Graph $G = (V,E)$, the function $\text{succ} : (G,v) \mapsto V' \subseteq V$ returns the vertices in $V$ that can be reached from vertex v.
-\begin{center}
-$\text{succ}(G,v) := \{u \in V: (v,u) \in E\}$
-\end{center}
+%\item Successor vertices: Given a vertex $v \in V$ in a directed Graph $G = (V,E)$, the function $\text{succ} : (G,v) \mapsto V' \subseteq V$ returns the vertices in $V$ that can be reached from vertex v.
+%\begin{center}
+%$\text{succ}(G,v) := \{u \in V: (v,u) \in E\}$
+%\end{center}
 \item Predecessor vertices: Given a vertex $v \in V$ in a directed Graph $G = (V,E)$, the function $\text{pred} : (G,v) \mapsto V' \subseteq V$ returns the vertices in $V$ from which vertex v can be reached.
 \begin{center}
 $\text{pred}(G,v) := \{u \in V: (v,u) \in E\}$
@@ -1126,19 +1161,18 @@ $\text{pred}(G,v) := \{u \in V: (v,u) \in E\}$
 Following thereof, they rewrote the bellman equation for their purpose in terms of the cost-to-come value as follows:
 \begin{small}
 \begin{equation}
-g*(v_i) = 
+g^*(v_i) = 
 \begin{cases}
 0 & v_i = x_\text{init}\\
 \min_{v_j \in pred(G,v_i)} (g^*(v_j) + c(v_j,v_i)) & v_i \in V \setminus \{x_\text{init}\}
 \end{cases}
 \end{equation}
 \end{small}
-P.42  
-Based on their formulation of the Bellman equation, they split the Algorithm into two parts:
+Based on their formulation of the Bellman equation, they split the Algorithm into two parts:\\
 \paragraph{Exploration}
 This samples randomly a point in $X_\text{free}$ and then extends the underlying graph towards the sampled point by including it as a new vertex in the current graph by connecting the missing edges. \cite{OktayArslan.December2015}\\
 \paragraph{Exploitation}
-This step implements the task of improving the cost-to-come values of the current vertices as new information becomes available. It also encodes the lowest-cost path information for the promising vertices (see equation (20) below) and $v_\text{goal}^*$ (the goal vertex that has the lowest cost-to-come value in the goal set) as a spanning tree rooted at the initial vertex. Cost-to-come values of nonstationary vertices are updated in an order based on their f-values, i.e., an underestimate of the cost of the optimal path from the initial vertex to the goal set passing through the vertex of interest, and ties are broken in favor of vertices which have smaller g-values at each iteration of the Gauss-Seidel version of the Bellman-Ford algorithm.
+In this step the explored graph is getting refined by finding promising vertices. The values of these vertices are updated and unnecessary ties are broken so that the algorithm only expands vertices that are very likely to lie on the shortest path.
 
 The following images show the two algorithms.
 
@@ -1147,46 +1181,49 @@ The following images show the two algorithms.
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/RRT/ARSLAN/01.png}
-\caption{}
+\caption{The tree after 250 iterations}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/RRT/ARSLAN/02.png}
-\caption{}
+\caption{The tree after 2500 iterations}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/RRT/ARSLAN/03.png}
-\caption{}
+\caption{The tree after 25000 iterations}
 \end{minipage}
+\caption{The evolution of the tree computed by RRT, the original algorithm. The tree is spanning equally in all directions resulting in a uniform density.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/RRT/ARSLAN/01_v.png}
-\caption{}
+\caption{The tree after 250 iterations}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/RRT/ARSLAN/02_v.png}
-\caption{}
+\caption{The tree after 2500 iterations}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/RRT/ARSLAN/03_v.png}
-\caption{}
+\caption{The tree after 25000 iterations}
 \end{minipage}
-\caption{}
+\caption{The evolution of the tree computed by $\text{RRT}^\#$. The tree is spanning mostly into the direction of the promising vertices. The density around the shortest path is much higher than in the regions not associated with it.}
 \end{figure}
 
-As you can see, dynamic programming is a great way to improve the runtime and the speed in which an algorithm converges to an optimal solution.
+In the uniform distribution of the original RRT the computation time is mostly wasted for vertices that have no chance of being part of the shortest path. Due to the fact that in $\text{RRT}^\#$ only the promising vertices are expanded and not promising ones are left, the density around the shortest path is really high. Thereof $\text{RRT}^\#$ safes the time and effort wasted by the original RRT and uses it only on the promising vertices resulting in a huge improvement in runtime and memory usage.
 The interested reader can have a look at \cite{OktayArslan.December2015} for further information and mathematical proofs.
 
 %\subsection{Bellman Ford, Gauss Seidel and Jakobi}
-
-\newpage
 
 \section{Conclusion}
 As we have seen in this paper, Dynamic Programming is a very straight forward approach for solving multistage decision problems. By breaking down difficult problems into sets of overlapping subproblems with optimal substructure an overall optimal solution can be found by only solving the small subproblems. In robot motion, dynamic programming can be applied in a wide field of tasks and can be a really useful approach that takes the place of the classic algorithms.
@@ -1335,7 +1372,7 @@ Many algorithms are already getting improved or replaced by Dynamic Programming 
 
 
 % references section
-
+\newpage
 % can use a bibliography generated by BibTeX as a .bbl file
 % BibTeX documentation can be easily obtained at:
 % http://www.ctan.org/tex-archive/biblio/bibtex/contrib/doc/
@@ -1343,9 +1380,6 @@ Many algorithms are already getting improved or replaced by Dynamic Programming 
 % http://www.michaelshell.org/tex/ieeetran/bibtex/
 \bibliographystyle{IEEEtran}
 % argument is your BibTeX string definitions and bibliography database(s)
-\newpage
-\newpage
-\newpage
 %\nocite{*}
 %\bibliography{Docs/Literatur}
 %
@@ -1353,6 +1387,124 @@ Many algorithms are already getting improved or replaced by Dynamic Programming 
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
 % Generated by IEEEtran.bst, version: 1.14 (2015/08/26)
+
+
+% Generated by IEEEtran.bst, version: 1.14 (2015/08/26)
+%\begin{thebibliography}{10}
+%\providecommand{\url}[1]{#1}
+%\csname url@samestyle\endcsname
+%\providecommand{\newblock}{\relax}
+%\providecommand{\bibinfo}[2]{#2}
+%\providecommand{\BIBentrySTDinterwordspacing}{\spaceskip=0pt\relax}
+%\providecommand{\BIBentryALTinterwordstretchfactor}{4}
+%\providecommand{\BIBentryALTinterwordspacing}{\spaceskip=\fontdimen2\font plus
+%\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+%  \fontdimen4\font\relax}
+%\providecommand{\BIBforeignlanguage}[2]{{%
+%\expandafter\ifx\csname l@#1\endcsname\relax
+%\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+%\typeout{** loaded for the language `#1'. Using the pattern for}%
+%\typeout{** the default language instead.}%
+%\else
+%\language=\csname l@#1\endcsname
+%\fi
+%#2}}
+%\providecommand{\BIBdecl}{\relax}
+%\BIBdecl
+%
+%\bibitem{OktayArslan.December2015}
+%\BIBentryALTinterwordspacing
+%O.~Arslan, ``Machine learning and dynamic programming algorithms for motion
+%  planning and control,'' 2015-12-01. [Online]. Available:
+%  \url{http://hdl.handle.net/1853/54317}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{Bellman.30.07.1954}
+%\BIBentryALTinterwordspacing
+%R.~Bellman, ``The theory of dynamic programming,'' {The RAND Corporation},
+%  1954. [Online]. Available:
+%  \url{https://www.rand.org/content/dam/rand/pubs/papers/2008/P550.pdf}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{LaValle.}
+%\BIBentryALTinterwordspacing
+%S.~LaValle, ``From dynamic programming to rrts: Algorithmic design of feasible
+%  trajectories,'' {University of Illinois}. [Online]. Available:
+%  \url{http://msl.cs.illinois.edu/~lavalle/papers/Lav02.pdf}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{LaValle.October1998}
+%\BIBentryALTinterwordspacing
+%------, ``Rapidly-exploring random trees: A new tool for path planning,'' {Iowa
+%  State University}, October 1998. [Online]. Available:
+%  \url{http://msl.cs.illinois.edu/~lavalle/papers/Lav98c.pdf}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{Bellman.1953}
+%R.~Bellman, ``On the theory of dynamic programming,'' {The RAND Corporation},
+%  1952.
+%
+%\bibitem{Bellman.1958}
+%\BIBentryALTinterwordspacing
+%------, ``On a routing problem,'' vol.~16, pp. 87--90, 1958. [Online].
+%  Available: \url{http://www.jstor.org/stable/43634538}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{Bellman.2013}
+%\BIBentryALTinterwordspacing
+%------, \emph{\BIBforeignlanguage{eng}{Dynamic Programming}}, ser. Dover Books
+%  on Computer Science.\hskip 1em plus 0.5em minus 0.4em\relax {Dover
+%  Publications}, 2013. [Online]. Available:
+%  \url{http://gbv.eblib.com/patron/FullRecord.aspx?p=1897424}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{Bradley.1992}
+%S.~P. Bradley, A.~C. Hax, and T.~L. Magnanti,
+%  \emph{\BIBforeignlanguage{eng}{Applied mathematical programming}}, [19.
+%  dr.]~ed.\hskip 1em plus 0.5em minus 0.4em\relax Addison-Wesley, 1992, hax,
+%  Arnoldo C. (VerfasserIn) Magnanti, Thomas L. (VerfasserIn).
+%
+%\bibitem{Cooke.1966}
+%\BIBentryALTinterwordspacing
+%K.~L. Cooke and E.~Halsey, ``The shortest route through a network with
+%  time-dependent internodal transit times,'' vol.~14, pp. 493--498, 1966.
+%  [Online]. Available:
+%  \url{http://www.sciencedirect.com/science/article/pii/0022247X66900096}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{Cormen.2007}
+%T.~H. Cormen, \emph{\BIBforeignlanguage{eng}{Introduction to algorithms}},
+%  2nd~ed.\hskip 1em plus 0.5em minus 0.4em\relax {MIT Press}, 2007.
+%
+%\bibitem{Derigs.1995}
+%``Operations research proceedings 1994: Selected papers of the international
+%  conference on operations research, berlin, august 30 -- september 2, 1994,''
+%  1995.
+%
+%\bibitem{Dreyfus.2002}
+%\BIBentryALTinterwordspacing
+%S.~Dreyfus, ``Richard bellman on the birth of dynamic programming,'' vol.~50,
+%  pp. 48--51, 2002. [Online]. Available:
+%  \url{https://doi.org/10.1287/opre.50.1.48.17791}
+%\BIBentrySTDinterwordspacing
+%
+%\bibitem{LaValle.2006Referencesfromthebook}
+%S.~M. LaValle, \emph{Planning Algorithms}.\hskip 1em plus 0.5em minus
+%  0.4em\relax {Cambridge University Press}, 2006 {\%} References from the book,
+%  available at http://planning.cs.uiuc.edu/.
+%
+%\bibitem{Pra.1995}
+%\BIBentryALTinterwordspacing
+%P.~D. Pra, C.~Rudari, and W.~J. Runggaldier, ``On dynamic programming for
+%  multistage decision problems under uncertainty,'' in \emph{Operations
+%  Research Proceedings 1994: Selected Papers of the International Conference on
+%  Operations Research, Berlin, August 30 -- September 2, 1994}, U.~Derigs,
+%  A.~Bachem, and A.~Drexl, Eds.\hskip 1em plus 0.5em minus 0.4em\relax
+%  {Springer Berlin Heidelberg}, 1995, pp. 70--75. [Online]. Available:
+%%  \url{https://doi.org/10.1007/978-3-642-79459-9_14}
+%\BIBentrySTDinterwordspacing
+%
+%\end{thebibliography}
 
 
 % Generated by IEEEtran.bst, version: 1.14 (2015/08/26)
@@ -1378,6 +1530,49 @@ Many algorithms are already getting improved or replaced by Dynamic Programming 
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
+\bibitem{OktayArslan.December2015}
+\BIBentryALTinterwordspacing
+O.~Arslan, ``Machine learning and dynamic programming algorithms for motion
+  planning and control,'' 2015-12-01. [Online]. Available:
+  \url{http://hdl.handle.net/1853/54317}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Dreyfus.2002}
+\BIBentryALTinterwordspacing
+S.~Dreyfus, ``Richard bellman on the birth of dynamic programming,'' vol.~50,
+  pp. 48--51, 2002. [Online]. Available:
+  \url{https://doi.org/10.1287/opre.50.1.48.17791}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Bellman.30.07.1954}
+\BIBentryALTinterwordspacing
+R.~Bellman, ``The theory of dynamic programming,'' {The RAND Corporation},
+  1954. [Online]. Available:
+  \url{https://www.rand.org/content/dam/rand/pubs/papers/2008/P550.pdf}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Bellman.2013}
+\BIBentryALTinterwordspacing
+------, \emph{\BIBforeignlanguage{eng}{Dynamic Programming}}, ser. Dover Books
+  on Computer Science.\hskip 1em plus 0.5em minus 0.4em\relax {Dover
+  Publications}, 2013. [Online]. Available:
+  \url{http://gbv.eblib.com/patron/FullRecord.aspx?p=1897424}
+\BIBentrySTDinterwordspacing
+
+\bibitem{LaValle.}
+\BIBentryALTinterwordspacing
+S.~LaValle, ``From dynamic programming to rrts: Algorithmic design of feasible
+  trajectories,'' {University of Illinois}. [Online]. Available:
+  \url{http://msl.cs.illinois.edu/~lavalle/papers/Lav02.pdf}
+\BIBentrySTDinterwordspacing
+
+\bibitem{LaValle.October1998}
+\BIBentryALTinterwordspacing
+------, ``Rapidly-exploring random trees: A new tool for path planning,'' {Iowa
+  State University}, October 1998. [Online]. Available:
+  \url{http://msl.cs.illinois.edu/~lavalle/papers/Lav98c.pdf}
+\BIBentrySTDinterwordspacing
+
 \bibitem{Bellman.1953}
 R.~Bellman, ``On the theory of dynamic programming,'' {The RAND Corporation},
   1952.
@@ -1386,13 +1581,6 @@ R.~Bellman, ``On the theory of dynamic programming,'' {The RAND Corporation},
 \BIBentryALTinterwordspacing
 ------, ``On a routing problem,'' vol.~16, pp. 87--90, 1958. [Online].
   Available: \url{http://www.jstor.org/stable/43634538}
-\BIBentrySTDinterwordspacing
-
-\bibitem{Bellman.30.07.1954}
-\BIBentryALTinterwordspacing
-------, ``The theory of dynamic programming,'' {The RAND Corporation}, 1954.
-  [Online]. Available:
-  \url{https://www.rand.org/content/dam/rand/pubs/papers/2008/P550.pdf}
 \BIBentrySTDinterwordspacing
 
 \bibitem{Bradley.1992}
@@ -1409,36 +1597,19 @@ K.~L. Cooke and E.~Halsey, ``The shortest route through a network with
   \url{http://www.sciencedirect.com/science/article/pii/0022247X66900096}
 \BIBentrySTDinterwordspacing
 
+\bibitem{Cormen.2007}
+T.~H. Cormen, \emph{\BIBforeignlanguage{eng}{Introduction to algorithms}},
+  2nd~ed.\hskip 1em plus 0.5em minus 0.4em\relax {MIT Press}, 2007.
+
 \bibitem{Derigs.1995}
 ``Operations research proceedings 1994: Selected papers of the international
   conference on operations research, berlin, august 30 -- september 2, 1994,''
   1995.
 
-\bibitem{Dreyfus.2002}
-\BIBentryALTinterwordspacing
-S.~Dreyfus, ``Richard bellman on the birth of dynamic programming,'' vol.~50,
-  pp. 48--51, 2002. [Online]. Available:
-  \url{https://doi.org/10.1287/opre.50.1.48.17791}
-\BIBentrySTDinterwordspacing
-
-\bibitem{LaValle.}
-\BIBentryALTinterwordspacing
-S.~LaValle, ``From dynamic programming to rrts: Algorithmic design of feasible
-  trajectories,'' {University of Illinois}. [Online]. Available:
-  \url{http://msl.cs.illinois.edu/~lavalle/papers/Lav02.pdf}
-\BIBentrySTDinterwordspacing
-
 \bibitem{LaValle.2006Referencesfromthebook}
 S.~M. LaValle, \emph{Planning Algorithms}.\hskip 1em plus 0.5em minus
   0.4em\relax {Cambridge University Press}, 2006 {\%} References from the book,
   available at http://planning.cs.uiuc.edu/.
-
-\bibitem{OktayArslan.December2015}
-\BIBentryALTinterwordspacing
-O.~Arslan, ``Machine learning and dynamic programming algorithms for motion
-  planning and control,'' 2015-12-01. [Online]. Available:
-  \url{http://hdl.handle.net/1853/54317}
-\BIBentrySTDinterwordspacing
 
 \bibitem{Pra.1995}
 \BIBentryALTinterwordspacing
@@ -1452,7 +1623,6 @@ P.~D. Pra, C.~Rudari, and W.~J. Runggaldier, ``On dynamic programming for
 \BIBentrySTDinterwordspacing
 
 \end{thebibliography}
-
 
 
 
