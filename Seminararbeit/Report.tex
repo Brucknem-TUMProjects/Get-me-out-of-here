@@ -525,7 +525,7 @@ p \in X \Rightarrow T_k(p) \in X, \quad \forall k
 \end{equation}
 Now thinking of an N-stage process, the goal is to maximize a scalar function $R(p)$ giving the return or the value of the final state. This function will be called the N-stage return and a policy consists of a selection of N transformations 
 \begin{equation}
-\text{"}P = (T_1, T_2, ..., T_N)
+P = (T_1, T_2, ..., T_N)
 \end{equation}
 yielding successively the states
 \begin{equation*}
@@ -561,7 +561,7 @@ Resulting from this equation it is now clear, that any optimal policy does not h
 \quad \\
 \paragraph{Overlapping subproblems}
 \quad \\
-A problem is said to have overlapping subproblems if the space of subproblems is small an thus, if broken down, solutions for these are reused many times or a recursive algorithm solves the same subproblems over and over, insted of generating new subproblems. \cite{Cormen.2009}
+A problem is said to have overlapping subproblems if the space of subproblems is small an thus, if broken down, solutions for these are reused many times or a recursive algorithm solves the same subproblems over and over, insted of generating new subproblems. \cite{Cormen.2007}
 \\
 Remember the game Labyrinth, where the goal was to find treasures and return to a goal tile.\\
 If there is a treasure you want to discover and it lays down a narrow passage, any algorithm calculating the shortest path from any arbitrary position in the maze will guide you through the passage.\\
@@ -589,7 +589,7 @@ So for any position, the passage would be a subproblem that overlaps in every ca
 
 \paragraph{Optimal substructure}
 \quad \\
-A problem has optimal substructure if the solution for the whole problem can be found by a combination of solutions for its subproblems. Normally, greedy algorithms are used to solve problems with this property because they lead to an optimal overall solution in this case. \cite{Cormen.2009}
+A problem has optimal substructure if the solution for the whole problem can be found by a combination of solutions for its subproblems. Normally, greedy algorithms are used to solve problems with this property because they lead to an optimal overall solution in this case. \cite{Cormen.2007}
 \\
 But also the principle of optimality is based in this idea.\\
 To come back to the labyrinth, for any given position $p$ in the labyrinth a shortest path $s$ avoiding the walls and reaching a goal can be calculated. If $s$ is really the shortest path, it can be split into subpaths $s_1$ from $p$ to an point $x$ on the shortest path and $s_2$ from $x$ to the goal, such that $s_1, s_2$ are indeed the shortest paths between the three positions.\\
@@ -621,9 +621,9 @@ From that, a recursive way for finding shortest paths can easily be formulated, 
 \quad \\
 \paragraph{Memoization}
 \quad \\
-An important concept when applying Dynamic Programming in computer science is memoization. As a result of the optimal substructure a problem can be broken down into simpler subproblems and for each of these subproblems, a solution can be calculated and the result can be stored in a table, so that a solution has to be found only once. When a subproblem reoccurs, the cached result can be returned to save computation time. \cite{Cormen.2009}
+An important concept when applying Dynamic Programming in computer science is memoization. As a result of the overlapping subproblems a problem can be broken down into simpler subproblems and for each of these subproblems, a solution can be calculated and the result can be stored in a table, so that a solution has to be found only once. When a subproblem reoccurs, the cached result can be returned to save computation time. \cite{Cormen.2007}
 \\
-On the other hand the storage consumption will expand due to the need for storing the results. But in times of rapidly increasing memory sizes and shrinking costs this draw off can often be considered as negligible. \cite{Cormen.2009}
+On the other hand the storage consumption will expand due to the need for storing the results. But in times of rapidly increasing memory sizes and shrinking costs this draw off can often be considered as negligible. \cite{Cormen.2007}
 \\
 \paragraph{Bellman equation}
 \quad \\
@@ -650,13 +650,13 @@ The Bellman equation can be simplified even more when dropping the time dependen
 \begin{equation}
 V(x) = \max_{a \in \Gamma(x)} \{F(x,a) + V(T(x,a))\}
 \end{equation}
-Solving this functional equation means now finding the unknown function V, which is the value function of the Problem. \cite{Bellman.2013}
+Solving this functional equation means now finding the unknown function $V$, which is the value function of the Problem. \cite{Bellman.2013}
 \\
 
 \section{Finding the value function and implementing the maze}
 \subsection{Finding the value function}
 Remember the initial task where you are given a grid map $M=\mathbb{N}^{nxm}$ containing static walls $M(i,j)=\infty$ representing the maze, and exit(s) of the labyrinth which the player wants to reach.\\
-The goal of this paper is to point out ways to determine an optimal policy $P=\mathbb{N}^{nxm}\rightarrow A$ to exit the labyrinth by using Dynamic Programming. To achieve this, a way to calculate the value $v(i,j)$ of the current position is searched from what the actual best action can be derived.\\
+The goal of this paper is to point out ways to determine optimal policies $P=\mathbb{N}^{nxm}\rightarrow A$ to exit the labyrinth by using Dynamic Programming. To achieve this, a way to calculate the value $v(i,j)$ of the current position is searched from what the actual best action can be derived.\\
 To do so, we have to solve the Bellman equation for the task of finding all pair shortest paths in the maze.\\
 This means, that for any arbitrary point in the maze a value function
 \begin{equation}
@@ -668,7 +668,7 @@ Therefore let $c(i,j) \in \mathbb{R}$ be the cost it would take a prisoner in th
 So now let us at first begin with the trivial cases.\\
 If a prisoner is already standing on a goal field, the cost to reach the goal would, obviously, be 
 \begin{equation}
-c(i,j) = 0, \quad \text{if } (i,j) \in \{X_\text{goal}\}
+c(i,j) = 0, \quad \text{if } (i,j) \in X_\text{goal}
 \end{equation}. 
 Furthermore, also the value of a goal would be $0$, because the length of the shortest path from a position to itself is $0$.
 In addition, if the prisoner isn't even in the maze, he will never be able to reach a goal, resulting in
@@ -701,18 +701,18 @@ $c(i,j) = 1, \quad \forall (i,j) \in n \times m$}
 Using the approach of backwards induction introduced by Richard Bellman we can start from the goal state in the grid and calculate the value at the step $N: v(3,4) = 0$.
 Now having the result for $N$, we can induce backwards the results for the step $(N-1)$, whereas their results are
 \begin{align}
-v(2,4) = v(3,4) + c(3,4) = 0 + 1 = 1\\
+v(3,3) = v(3,4) + c(3,4) = 0 + 1 = 1\\
 v(4,4) = v(3,4) + c(3,4) = 0 + 1 = 1\\
-v(2,3) = v(3,4) + c(3,4) = 0 + 1 = 1\\
-v(2,5) = v(3,4) + c(3,4) = 0 + 1 = 1
+v(3,5) = v(3,4) + c(3,4) = 0 + 1 = 1\\
+v(2,4) = v(3,4) + c(3,4) = 0 + 1 = 1
 \end{align}
 
 When exemplary applying this procedure at the position $v(2,4)$, we can again give the equations for the positions lying around it
 \begin{align}
-v(1,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
-v(3,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
 v(2,3) = v(2,4) + c(2,4) = 1 + 1 = 2\\
-v(2,5) = v(2,4) + c(2,4) = 1 + 1 = 2
+v(3,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
+v(2,5) = v(2,4) + c(2,4) = 1 + 1 = 2\\
+v(1,4) = v(2,4) + c(2,4) = 1 + 1 = 2
 \end{align}
 Now we have calculated the values of the step $(N-2)$ depending on the decisions that will be made optimally in $(N-1) \text{ and } N$. The results are getting memoized in a second matrix $V^{n \times m}$ which is initialized with the value $\infty$ at all positions. So $V(3,4) = 0, V(2,4)=1 \dots$\\ 
 One thing that has to be considered at this step is, that the value for the tile $v(3,4)$ is getting calculated again, which might cause troubles due to the fact that now the value of this position would be
