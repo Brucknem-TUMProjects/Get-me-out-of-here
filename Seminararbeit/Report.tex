@@ -348,6 +348,7 @@
 
 \usepackage[font=scriptsize,labelfont=bf,labelformat=empty,justification=centering]{caption}
 \usepackage{listings} 
+\usepackage{float}
 
 
 
@@ -623,7 +624,7 @@ From that, a recursive way for finding shortest paths can easily be formulated, 
 \quad \\
 An important concept when applying Dynamic Programming in computer science is memoization. As a result of the overlapping subproblems a problem can be broken down into simpler subproblems and for each of these subproblems, a solution can be calculated and the result can be stored in a table, so that a solution has to be found only once. When a subproblem reoccurs, the cached result can be returned to save computation time. \cite{Cormen.2007}
 \\
-On the other hand the storage consumption will expand due to the need for storing the results. But in times of rapidly increasing memory sizes and shrinking costs this draw off can often be considered as negligible. \cite{Cormen.2007}
+On the other hand the storage consumption will expand due to the need for storing the results. But in times of rapidly increasing memory sizes and shrinking costs this draw off can often be considered as negligible.
 \\
 \paragraph{Bellman equation}
 \quad \\
@@ -658,46 +659,43 @@ Solving this functional equation means now finding the unknown function $V$, whi
 Remember the initial task where you are given a grid map $M=\mathbb{N}^{nxm}$ containing static walls $M(i,j)=\infty$ representing the maze, and exit(s) of the labyrinth which the player wants to reach.\\
 The goal of this paper is to point out ways to determine optimal policies $P=\mathbb{N}^{nxm}\rightarrow A$ to exit the labyrinth by using Dynamic Programming. To achieve this, a way to calculate the value $v(i,j)$ of the current position is searched from what the actual best action can be derived.\\
 To do so, we have to solve the Bellman equation for the task of finding all pair shortest paths in the maze.\\
-This means, that for any arbitrary point in the maze a value function
-\begin{equation}
-v(i,j)\in \mathbb{N}
-\end{equation}
+This means, that for any arbitrary point in the maze a value function $v(i,j)\in \mathbb{N}$
 representing the length of the shortest path of the position $(i, j)$ to the nearest goal in the maze has to be found.\\
 Therefore let $c(i,j) \in \mathbb{R}$ be the cost it would take a prisoner in the maze to step on the field $(i,j)$.\\
-
-So now let us at first begin with the trivial cases.\\
-If a prisoner is already standing on a goal field, the cost to reach the goal would, obviously, be 
+The cost function is defined as
 \begin{equation}
-c(i,j) = 0, \quad \text{if } (i,j) \in X_\text{goal}
-\end{equation}. 
-Furthermore, also the value of a goal would be $0$, because the length of the shortest path from a position to itself is $0$.
-In addition, if the prisoner isn't even in the maze, he will never be able to reach a goal, resulting in
+c(i,j) = 
+\begin{cases}
+	\infty & \text{if} (i,j) \in \{ \mathbb{R}^2 \setminus \{n \times m\}\}\\
+	M(i,j) & \text{else}
+	\end{cases}
+\end{equation}
+This describes that if we are looking at a position outside of the maze, it would need an infinite cost to reach it and if we are in the maze we just retrieve the value of the grip map. \\
+Let us now begin with the trivial cases.
+If the player is already standing on a goal, its value would be $0$, because the length of the shortest path from a position to itself is $0$.
+In addition, if the prisoner isn't even in the maze, he will never be able to reach a goal, so the shortest path would be infinite long, resulting in
 \begin{equation}
 v(i,j) = 
   \begin{cases}	
-	\infty, \quad \text{if } i < 1 \text{ or } i > n \text{ or } j < 1 \text{ or } j > m \\
-	0 \quad \quad \text{if } (i,j) \in \{X_\text{goal}\}
+	\infty & \text{if } c(i,j) = \infty \\
+	0 & \text{if } (i,j) \in X_\text{goal}
   \end{cases}
 \end{equation}
-At last if the position we're looking for is a wall, the cost is, by definition
-\begin{equation}
-c(i,j) = \infty, \quad if (i,j) \in \{Walls\}
-\end{equation}
-and the value of the tile is also $\infty$, because there will never be a payoff of stepping into a wall, because it isn't possible at all.
-\\\\
+%\text{ or } (i,j) \in \{ \mathbb{R}^2 \setminus \{n \times m\}\}
+
 Now to the non trivial cases.\\
 Therefore let us have a look at a maze looking like
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{minipage}[t]{0.3\linewidth}
 \centering
 \includegraphics[width=1\textwidth]{images/ValueFunction/original.png}
 \end{minipage}
 \caption{All tiles are having a cost of
-$1$.\\
-$c(i,j) = 1, \quad \forall (i,j) \in n \times m$}
+$1$.}
 \end{figure}
+
 Using the approach of backwards induction introduced by Richard Bellman we can start from the goal state in the grid and calculate the value at the step $N: v(3,4) = 0$.
 Now having the result for $N$, we can induce backwards the results for the step $(N-1)$, whereas their results are
 \begin{align}
@@ -714,7 +712,7 @@ v(3,4) = v(2,4) + c(2,4) = 1 + 1 = 2\\
 v(2,5) = v(2,4) + c(2,4) = 1 + 1 = 2\\
 v(1,4) = v(2,4) + c(2,4) = 1 + 1 = 2
 \end{align}
-Now we have calculated the values of the step $(N-2)$ depending on the decisions that will be made optimally in $(N-1) \text{ and } N$. The results are getting memoized in a second matrix $V^{n \times m}$ which is initialized with the value $\infty$ at all positions. So $V(3,4) = 0, V(2,4)=1 \dots$\\ 
+Now we have calculated the values of the step $(N-2)$ depending on the decisions that will be made optimally in $(N-1) \text{ and } N$. The results are getting memoized in a second matrix $V = \mathbb{N}^{n \times m}$ which is initialized with the value $\infty$ at all positions. So $V(3,4) = 0, V(2,4)=1 \dots$\\ 
 One thing that has to be considered at this step is, that the value for the tile $v(3,4)$ is getting calculated again, which might cause troubles due to the fact that now the value of this position would be
 \begin{equation}
 v(3,4) = v(2,4) + c(2,4) = (v(3,4) + c(3,4)) + c(2,4) = 2
@@ -770,31 +768,37 @@ v(i,j+1) = v(i,j) + c(i,j) \quad \text{if } v(i,j+1) < V(i,j)
 
 With these equations, the value of every position in the maze can be calculated.\\
 When now solving the Bellman equation, a way to formulate the previous stated algorithm recursively has to be found.\\
-In the backwards iterated method we started at the goal tile $(N)$ and derived the value of the positions adjacent to it $(N-1)$. On the opposite, we could have also started at the adjacent positions and look at the positions lying around them. For every position we want to find the position next to it, which holds the lowest sum of its value and its cost.\\
+In the backwards iterated method we started at the goal tile $(N)$ and derived the value of the positions adjacent to it $(N-1)$. \\
+On the opposite, we could have also started at the adjacent positions and look at the positions lying around them. For every position we want to find the position next to it, which holds the lowest sum of its value and its cost.\\
 So for example when looking at the tile right of the goal state the four adjacent tiles would be observed. They would all but one have a value that is not yet calculated so we can't use these tiles to get a proper result. But the one tile that already has a value calculated is the goal tile lying left of this position. It's value would be $0$ as defined and it's cost would be $1$. So the value of the right adjacent tile would be $1$.\\
 For the position on the top of the right tile, we could use the same method. Look at the four adjacent positions, find that some of the values aren't calculated yet and thereof can not be used but that there is one tile that is already calculated. So we could again add up the value and the cost to find the current value.\\
 But what to do when coming to a tile that has more than one value next to it already calculated? Due to the fact that we want to find optimal policies and shortest paths, we want to minimize the value function. This can be achieved by deciding for the adjacent tile with the lowest value for itself. When now adding up it's value and it's cost, one can be sure to have calculated the lowest value for the tile.\\
 Coming from this thought, it leads to the function solving the functional Bellman equation:
 
-\begin{scriptsize}
+\begin{small}
 \begin{equation}
 v(i,j) =
   \begin{cases}
   \centering
-    \infty & \text{if } (i,j) \in \{\text{Walls}\} \cup \{ \mathbb{R}^2 \setminus \{n \times m\}\}\\
-    0 & \text{if } (i,j) \in \{\text{Goals}\}\\
-    \min \{v(i,j+1) + c(i,j+1), \\v(i+1,j) + c(i+1,j), \\v(i,j-1) + c(i,j-1), \\v(i-1,j) + c(i-1,j)\} & \text{if in the maze and not a wall or a goal}
-  \end{cases}
+    \infty & \text{if } c(i,j) = \infty\\
+    0 & \text{if } (i,j) \in X_\text{goals}\\
+    \min_{(x,y)} \{v(x,y) + c(x,y)\} & \text{else}\\
+  \end{cases}\\
 \end{equation}
-\end{scriptsize}
+% \text{ or } (i,j) \in \{ \mathbb{R}^2 \setminus \{n \times m\}\}
+\begin{equation*}
+\text{With } (x,y) \in \{(i+1,j),(i-1,j),(i,j+1),(i,j-1)\}
+\end{equation*}
+\end{small}
 
 \subsection{Finding optimal policies}
 With the value of every tile calculated and stored in the matrix $V$, it is now trivial to find the optimal policy for any position.\\
 Consider being at any position $x$ in the maze. All you can do is move into one of the four directions right, down, left and up. \\
 Due to the fact that we are searching for the shortest path to the nearest goal, and the value of every tile is known, we can now make our decision where to step depending on the values of the tiles adjacent to the current position. By always choosing the tile with the lowest value, the best action $a \in A$ can be chosen accordingly.\\
 Defined in a mathematical sense, the equation describing the value of every tile is the equation 
+
 \begin{small}
-\begin{align} 
+\begin{equation} 
 \label{policy}
 a(i,j)=
 	\begin{cases}
@@ -803,8 +807,10 @@ a(i,j)=
 		\text{down} \quad \text{if } v(i,j+1) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
 		\text{left} \quad \quad \text{if } v(i-1,j) = \min_{(x,y)} \{v(x,y) + c(x,y)\} \\
 	\end{cases} \\
-	\text{With } (x,y) \in \{(i+1,j),(i-1,j),(i,j+1),(i,j-1)\}
-\end{align}
+\end{equation}
+\begin{equation*}
+\text{With } (x,y) \in \{(i+1,j),(i-1,j),(i,j+1),(i,j-1)\}
+\end{equation*}
 \end{small}
 
 \begin{figure}[h]
