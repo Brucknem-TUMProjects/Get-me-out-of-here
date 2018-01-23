@@ -124,7 +124,9 @@ public abstract class CreateMap : MonoBehaviour {
             for (int y = 0; y < GameData.Instance.currentHeight; y++)
             {
                 Vector2 pos = new Vector2(x, y);
-                ProcessPosition(pos);
+
+                if(!(inputs.mode.value == 1 && inputs.allOrStep.value == 1))
+                    ProcessPosition(pos);
 
                 //tiles[pos].SetActive(true);
                 ////tiles[pos].GetComponent<InputField>().contentType = InputField.ContentType.Standard;
@@ -157,15 +159,24 @@ public abstract class CreateMap : MonoBehaviour {
                 //    //tiles[pos].GetComponent<InputField>().text = GameData.Instance.policy[x, y].ToString();
                 //}
 
-                if (inputs.allOrStep.value == 1)
-                {
-                    if (inputs.mode.value == 0)
-                        ShowCostTable_DynamicProgrammingHighlight();
-                    else if (inputs.mode.value == 2)
-                        ShowCostTable_MyOwnImplementationHighlight();
-                }
+                //if (inputs.allOrStep.value == 1)
+                //{
+                //    if (inputs.mode.value == 0)
+                //        ShowCostTable_DynamicProgrammingHighlight();
+                //    else if (inputs.mode.value == 2)
+                //        ShowCostTable_MyOwnImplementationHighlight();
+                //}
             }
         }
+
+        if (inputs.allOrStep.value == 1)
+        {
+            if (inputs.mode.value == 0)
+                ShowCostTable_DynamicProgrammingHighlight();
+            else if (inputs.mode.value == 2)
+                ShowCostTable_MyOwnImplementationHighlight();
+        }
+
         if (inputs.allOrStep.value == 0)
             ShowShortestPath();
         else if (inputs.mode.value == 1)
@@ -174,6 +185,7 @@ public abstract class CreateMap : MonoBehaviour {
 
     public void ProcessPosition(Vector2 pos)
     {
+        //print("Processing");
         int x = (int)pos.x;
         int y = (int)pos.y;
         tiles[pos].SetActive(true);

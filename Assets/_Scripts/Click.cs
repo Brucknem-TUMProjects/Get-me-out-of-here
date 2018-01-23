@@ -21,7 +21,7 @@ public abstract class Click : MonoBehaviour {
     {
         if (inputs.showPolicy.isOn)
         {
-                inputs.CalculateThreaded( GameData.Instance.CalculateMyOwnImplementation);
+            inputs.CalculateThreaded(GameData.Instance.CalculateMyOwnImplementation);
             inputs.ShowIterations();
         }
     }

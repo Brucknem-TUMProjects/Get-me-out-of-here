@@ -294,13 +294,13 @@ public class CreateMap3D : CreateMap
 
     public override void ShowCostTable_MyOwnImplementationHighlight()
     {
+        print("Highlight");
         foreach (Vector2 last in LastHighlighted)
         {
             ProcessPosition(last);
         }
 
         //ProcessPosition(MyOwnImplementation_CurrentOpen);
-        tiles[MyOwnImplementation_CurrentOpen].GetComponent<Renderer>().material.color = Color.magenta;
 
         tiles[MyOwnImplementation_CurrentOpen].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = (GameData.Instance.value[(int)MyOwnImplementation_CurrentOpen.x, (int)MyOwnImplementation_CurrentOpen.y]).ToString();
 
@@ -312,6 +312,17 @@ public class CreateMap3D : CreateMap
             tiles[v].GetComponent<Renderer>().material.color = Color.cyan;
             tiles[v].transform.GetChild(2).GetChild(0).GetComponent<InputField>().text = (GameData.Instance.value[(int)v.x, (int)v.y]).ToString();
             LastHighlighted.Add(v);
+        }
+
+        tiles[MyOwnImplementation_CurrentOpen].GetComponent<Renderer>().material.color = Color.magenta; foreach (Vector2 delta in Algorithm.deltas)
+        {
+            Vector2 v = MyOwnImplementation_CurrentOpen + delta;
+
+            if (v.x >= 0 && v.x < GameData.Instance.currentWidth && v.y >= 0 && v.y < GameData.Instance.currentHeight && GameData.Instance.grid[(int)v.x, (int)v.y] != Algorithm.MaxCost)
+            {
+                tiles[v].GetComponent<Renderer>().material.color = Color.yellow;
+                LastHighlighted.Add(v);
+            }
         }
     }
 

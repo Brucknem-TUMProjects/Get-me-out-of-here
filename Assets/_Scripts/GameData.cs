@@ -230,7 +230,7 @@ public class GameData
         return finished;
     }
 
-    public Vector2 MyOwnImplementationCurrentOpen { get { return MyOwnImplementation.lastExpanded; } }
+    public Vector2 MyOwnImplementationCurrentOpen { get { return MyOwnImplementation.currentOpen; } }
     public List<Vector2> MyOwnImplementationOpenList { get { return MyOwnImplementation.openList; } }
     //public Vector2 MyOwnImplementationProcessingGoal { get { return goals[MyOwnImplementation.currentGoal]; } }
     #endregion

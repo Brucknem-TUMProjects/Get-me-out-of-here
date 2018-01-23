@@ -252,6 +252,8 @@ public class CreateMap2D : CreateMap
 
     public override void ShowCostTable_MyOwnImplementationHighlight()
     {
+        print("Highlight");
+
         foreach (Vector2 last in LastHighlighted)
         {
             ProcessPosition(last);
@@ -259,45 +261,55 @@ public class CreateMap2D : CreateMap
 
         LastHighlighted = new List<Vector2>();
 
-        //tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().image.color = Color.magenta;
-
         tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().text = (GameData.Instance.value[(int)MyOwnImplementation_CurrentOpen.x, (int)MyOwnImplementation_CurrentOpen.y]).ToString();
 
         LastHighlighted.Add(MyOwnImplementation_CurrentOpen);
 
         foreach (Vector2 v in MyOwnImplementation_OpenList)
         {
-            //tiles[v].GetComponent<InputField>().image.color = Color.cyan;
-            ProcessPosition(v);
+            tiles[v].GetComponent<InputField>().image.color = Color.cyan;
+           // ProcessPosition(v);
             tiles[v].GetComponent<InputField>().text = (GameData.Instance.value[(int)v.x, (int)v.y]).ToString();
             LastHighlighted.Add(v);
+        }
+
+        tiles[MyOwnImplementation_CurrentOpen].GetComponent<InputField>().image.color = Color.magenta;
+        foreach (Vector2 delta in Algorithm.deltas)
+        {
+            Vector2 v = MyOwnImplementation_CurrentOpen + delta;
+
+            if (v.x >= 0 && v.x < GameData.Instance.currentWidth && v.y >= 0 && v.y < GameData.Instance.currentHeight && GameData.Instance.grid[(int)v.x, (int)v.y] != Algorithm.MaxCost)
+            {
+                tiles[v].GetComponent<InputField>().image.color = Color.yellow;
+                LastHighlighted.Add(v);
+            }
         }
     }
 
     public override void AStarHighlight()
     {
         int x, y;
-        foreach(Vector2 pos in GameData.Instance.ClosedList)
-        {
-            x = (int)pos.x;
-            y = (int)pos.y;
-            if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
-                tiles[pos].GetComponent<InputField>().image.color = Color.black;
-            else
-                tiles[pos].GetComponent<InputField>().image.color = Color.yellow;
-            tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
-        }
+        //foreach(Vector2 pos in GameData.Instance.ClosedList)
+        //{
+        //    x = (int)pos.x;
+        //    y = (int)pos.y;
+        //    if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
+        //        tiles[pos].GetComponent<InputField>().image.color = Color.black;
+        //    else
+        //        tiles[pos].GetComponent<InputField>().image.color = Color.yellow;
+        //    tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+        //}
 
-        foreach(Vector2 pos in GameData.Instance.OpenList)
-        {
-            x = (int)pos.x;
-            y = (int)pos.y;
-            if(GameData.Instance.grid[x,y] == Algorithm.MaxCost)
-                tiles[pos].GetComponent<InputField>().image.color = Color.black;
-            else
-                tiles[pos].GetComponent<InputField>().image.color = Color.cyan;
-            tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
-        }
+        //foreach(Vector2 pos in GameData.Instance.OpenList)
+        //{
+        //    x = (int)pos.x;
+        //    y = (int)pos.y;
+        //    if(GameData.Instance.grid[x,y] == Algorithm.MaxCost)
+        //        tiles[pos].GetComponent<InputField>().image.color = Color.black;
+        //    else
+        //        tiles[pos].GetComponent<InputField>().image.color = Color.cyan;
+        //    tiles[pos].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+        //}
 
         x = (int)GameData.Instance.LastExpanded.x;
         if (x != -1)
@@ -305,6 +317,34 @@ public class CreateMap2D : CreateMap
             y = (int)GameData.Instance.LastExpanded.y;
             tiles[GameData.Instance.LastExpanded].GetComponent<InputField>().image.color = Color.magenta;
             tiles[GameData.Instance.LastExpanded].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+
+            foreach (Vector2 delta in Algorithm.deltas)
+            {
+                Vector2 v = GameData.Instance.LastExpanded + delta;
+                if (v.x >= 0 && v.x < GameData.Instance.currentWidth && v.y >= 0 && v.y < GameData.Instance.currentHeight && GameData.Instance.grid[(int)v.x, (int)v.y] != Algorithm.MaxCost)
+                {
+                    ProcessPosition(v);
+                    if (GameData.Instance.OpenList.Contains(v))
+                    {
+                        x = (int)v.x;
+                        y = (int)v.y;
+                        if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
+                            tiles[v].GetComponent<InputField>().image.color = Color.black;
+                        else
+                            tiles[v].GetComponent<InputField>().image.color = Color.cyan;
+                        tiles[v].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+                    }else if (GameData.Instance.ClosedList.Contains(v))
+                    {
+                        x = (int)v.x;
+                        y = (int)v.y;
+                        if (GameData.Instance.grid[x, y] == Algorithm.MaxCost)
+                            tiles[v].GetComponent<InputField>().image.color = Color.black;
+                        else
+                            tiles[v].GetComponent<InputField>().image.color = Color.yellow;
+                        tiles[v].GetComponent<InputField>().text = GameData.Instance.AStarLengths[x, y].ToString();
+                    }
+                }
+            }
         }
 
         ShowShortestPath();

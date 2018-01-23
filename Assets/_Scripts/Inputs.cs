@@ -351,7 +351,7 @@ public class Inputs : MonoBehaviour
         {
             if (GameData.Instance.AStarSingleStep())
                 allOrStep.value = 0;
-            map.Redraw();
+            map.AStarHighlight();
         }
         else
         {
@@ -392,6 +392,7 @@ public class Inputs : MonoBehaviour
 
     private void AllOrStepChange()
     {
+        print("AllOrStepChange");
         GameData.Instance.ResetDynamicProgramming();
 
         if (allOrStep.value == 0)
@@ -413,18 +414,21 @@ public class Inputs : MonoBehaviour
             }
             else
             {
+                print("Here");
                 stepButton.gameObject.SetActive(true);
                 showPolicy.gameObject.SetActive(false);
                 setStart.gameObject.SetActive(false);
                 //showPolicy.isOn = true;
 
                 setStart.isOn = false;
-                
-                if(mode.value == 0)
-                    GameData.Instance.InitDynamicProgrammingSingleStep();
-                else if(mode.value == 2)
-                    GameData.Instance.InitMyOwnImplementationSingleStep();
 
+                if (mode.value == 0)
+                    GameData.Instance.InitDynamicProgrammingSingleStep();
+                else if (mode.value == 2)
+                {
+                    GameData.Instance.InitMyOwnImplementationSingleStep();
+                    print("Inner");
+                }
                 map.ShowCostTable();
                 //if (mode.value == 0)
                 //    map.ResetForSingleSteps();
