@@ -34,12 +34,58 @@ public class MyOwnImplementation : Algorithm {
         {
             value[(int)goal.x, (int)goal.y] = 0;
             policy[(int)goal.x, (int)goal.y] = '*';
-            ValueFunction(goal, new List<Vector2>() { goal });
+            //openList = new List<Vector2>() { goal };
+            ValueFunction_Old(goal, new List<Vector2>() { goal });
         }
 
     }
 
-    private static void ValueFunction(Vector2 pos, List<Vector2> open/*, List<Vector2> closed*/)
+    private static void ValueFunction_New(Vector2 pos)
+    {
+        Iterations++;
+        openList.Remove(pos);
+
+        for (int i = 0; i < deltas.Count; i++)
+        {
+            Vector2 prev = pos - deltas[i];
+            if (prev.x >= 0 && prev.x < Width && prev.y >= 0 && prev.y < Height)
+            {
+                if (grid[(int)prev.x, (int)prev.y] == MaxCost)
+                {
+                    value[(int)prev.x, (int)prev.y] = MaxCost;
+                }
+                else if (goals.Contains(prev))
+                {
+                    value[(int)prev.x, (int)prev.y] = 0;
+                }
+                else if (value[(int)prev.x, (int)prev.y] > value[(int)pos.x, (int)pos.y] + grid[(int)pos.x, (int)pos.y])
+                {
+                    if (!openList.Contains(prev))
+                        PriorityAdd(prev);
+
+                    if (goals.Contains(prev))
+                    {
+                        value[(int)prev.x, (int)prev.y] = 0;
+                        policy[(int)prev.x, (int)prev.y] = '*';
+                    }
+                    else
+                    {
+                        value[(int)prev.x, (int)prev.y] = value[(int)pos.x, (int)pos.y] + grid[(int)pos.x, (int)pos.y];
+                        policy[(int)prev.x, (int)prev.y] = deltaNames[i];
+                    }
+                }
+            }
+        }
+
+        //Sort list
+        if (openList.Count > 0)
+        {
+            //Nimm den mit der niedrigsten value
+            ValueFunction_New(openList[0]/*, closed*/);
+        }
+    }
+
+    private static void ValueFunction_Old(Vector2 pos, List<Vector2> open/*, List<Vector2> closed*/)
     {
         Iterations++;
         open.Remove(pos);
@@ -60,6 +106,7 @@ public class MyOwnImplementation : Algorithm {
                 else if (value[(int)prev.x, (int)prev.y] > value[(int)pos.x, (int)pos.y] + grid[(int)pos.x, (int)pos.y])
                 {
                     if (!open.Contains(prev))
+                        //PriorityAdd(prev, ref open);
                         open.Add(prev);
 
                     if (goals.Contains(prev))
@@ -90,7 +137,25 @@ public class MyOwnImplementation : Algorithm {
                 }
             }
             //Nimm den mit der niedrigsten value
-            ValueFunction(open[index], open/*, closed*/);
+            ValueFunction_Old (open[index], open/*, closed*/);
+        }
+    }
+
+    private static void PriorityAdd(Vector2 pos)
+    {
+        int x = (int)pos.x;
+        int y = (int)pos.y;
+        int value = grid[x, y];
+        for(int i = 0; i < openList.Count; i++)
+        {
+            x = (int)openList[i].x;
+            y = (int)openList[i].y;
+
+            if(value >= grid[x, y])
+            {
+                openList.Insert(i, pos);
+                return;
+            }
         }
     }
 

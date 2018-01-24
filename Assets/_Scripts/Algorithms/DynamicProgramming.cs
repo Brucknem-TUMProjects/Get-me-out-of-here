@@ -49,8 +49,8 @@ public class DynamicProgramming : Algorithm {
         //print(x + " - " + y + " - " + delta);
         bool isGoal = false;
 
-        for (int i = 0; i < goals.Count; i++)
-        {
+        //for (int i = 0; i < goals.Count; i++)
+        //{
             if (goals.Contains(new Vector2(x,y)))
             {
                 if (value[x, y] > 0)
@@ -62,7 +62,7 @@ public class DynamicProgramming : Algorithm {
                 }
                 isGoal = true;
             }
-        }
+        //}
 
         if (grid[x, y] == MaxCost)
         {
@@ -155,8 +155,8 @@ public class DynamicProgramming : Algorithm {
                 {
                     bool isGoal = false;
                     Iterations++;
-                    for (int i = 0; i < goals.Count; i++)
-                    {
+                    //for (int i = 0; i < goals.Count; i++)
+                    //{
                         if (goals.Contains(new Vector2(x, y)))
                         {
                             if (value[x, y] > 0)
@@ -167,7 +167,7 @@ public class DynamicProgramming : Algorithm {
                             }
                             isGoal = true;
                         }
-                    }
+                    //}
                     
                     if (!isGoal && grid[x, y] < MaxCost)
                     {

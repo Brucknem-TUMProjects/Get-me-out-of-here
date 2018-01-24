@@ -21,7 +21,10 @@ public abstract class Click : MonoBehaviour {
     {
         if (inputs.showPolicy.isOn)
         {
-            inputs.CalculateThreaded(GameData.Instance.CalculateMyOwnImplementation);
+            if (inputs.mode.value == 2)
+                inputs.CalculateThreaded(GameData.Instance.CalculateMyOwnImplementation);
+            else if (inputs.mode.value == 0)
+                inputs.CalculateThreaded(GameData.Instance.CalculateDynamicProgramming);
             inputs.ShowIterations();
         }
     }
@@ -109,6 +112,7 @@ public abstract class Click : MonoBehaviour {
             {
                 GameData.Instance.goals.Remove(position);
             }
+
             if (inputs.mode.value == 0)
                 GameData.Instance.InitDynamicProgrammingSingleStep();
             else if (inputs.mode.value == 2)

@@ -19,6 +19,7 @@ public class Inputs : MonoBehaviour
     public Button randomButton;
     public Button resetButton;
     public Button stepButton;
+    public Button quitButton;
     [Header("Toggles")]
     public Toggle showPolicy;
     //public Toggle inputCosts;
@@ -149,6 +150,11 @@ public class Inputs : MonoBehaviour
 
         foreach (CreateMap m in maps)
             m.Init();
+
+        quitButton.onClick.AddListener(delegate
+        {
+            Application.Quit();
+        });
 
         widthSlider.onValueChanged.AddListener(delegate
         {
