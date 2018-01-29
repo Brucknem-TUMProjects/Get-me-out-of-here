@@ -215,18 +215,7 @@ public class Inputs : MonoBehaviour
 
         resetButton.onClick.AddListener(delegate
         {
-            toggleGroup.SetAllTogglesOff();
-            mode.value = 0;
-            allOrStep.value = 0;
-            showPolicy.isOn = false;
-
-            GameData.Instance.Initialize(Width, Height);
-            //GameData.Instance.InitDynamicProgrammingSingleStep();
-            //GameData.Instance.InitAStarSingleStep();
-            //AllOrStepChange();
-            GameData.Instance.goals = new List<Vector2>();
-            GameData.Instance.shortestPath = new List<Vector2>();
-            map.AdjustMap();
+            OnReset();
         });
 
         help.onValueChanged.AddListener(delegate
@@ -263,6 +252,22 @@ public class Inputs : MonoBehaviour
 
         GameData.Instance.currentWidth = (int)widthSlider.value;
         GameData.Instance.currentHeight = (int)heightSlider.value;
+        map.AdjustMap();
+    }
+
+    private void OnReset()
+    {
+        toggleGroup.SetAllTogglesOff();
+        mode.value = 0;
+        allOrStep.value = 0;
+        showPolicy.isOn = false;
+
+        GameData.Instance.Initialize(Width, Height);
+        //GameData.Instance.InitDynamicProgrammingSingleStep();
+        //GameData.Instance.InitAStarSingleStep();
+        //AllOrStepChange();
+        GameData.Instance.goals = new List<Vector2>();
+        GameData.Instance.shortestPath = new List<Vector2>();
         map.AdjustMap();
     }
 
@@ -480,12 +485,13 @@ public class Inputs : MonoBehaviour
     {
         SetMapDimensions();
         GameData.Instance.Initialize(Width, Height);
-        showPolicy.isOn = false;
+        OnReset();
+        //showPolicy.isOn = false;
         //setStart.isOn = false;
         //GameData.Instance.RemoveShortestPath();
-        GameData.Instance.ResetAStar();
-        toggleGroup.SetAllTogglesOff();
-        map.AdjustMap();
+        //GameData.Instance.ResetAStar();
+        //toggleGroup.SetAllTogglesOff();
+        //map.AdjustMap();
     }
 
     void ToggleColorChange(Toggle t)
